@@ -62,9 +62,11 @@ add_library(ossiaco_converter INTERFACE)
 
 target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/config.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/template_get_write.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/char_types.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/exceptions.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/traits.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/hooks/logging.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/is_detected.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/detect_specialization.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/print_type_name.hpp
@@ -85,8 +87,9 @@ target_compile_definitions(ossiaco_converter INTERFACE
 )
 
 if(MSVC)
-    target_compile_definitions(ossiaco_converter 
-        INTERFACE _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+    target_compile_definitions(ossiaco_converter INTERFACE 
+        _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+        _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
     )
 endif()
 

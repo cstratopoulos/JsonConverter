@@ -1,0 +1,47 @@
+#ifndef OSSIACO_CONVERTER_LOGGING_HPP
+#define OSSIACO_CONVERTER_LOGGING_HPP
+
+#include <ossiaco/converter/utils/is_detected.hpp>
+
+#include <type_traits>
+
+namespace Ossiaco::converter {
+
+namespace detail {
+
+template<typename Base, typename Derived>
+using ConverterDecoratorHook = decltype(
+    hookOssiacoConverterDecoratorLog(static_cast<Base*>(nullptr), static_cast<Derived*>(nullptr))
+    );
+
+template<typename Base, typename Derived, typename Enum>
+using ConverterEnumMappedHook = decltype(hookOssiacoConverterEnumMappedLog(
+    static_cast<Base*>(nullptr), static_cast<Derived*>(nullptr), static_cast<Enum*>(nullptr))
+    );
+
+} // namespace detail
+
+template<typename Base, typename Derived>
+void adlInvokeDecoratorHook()
+{
+    static_assert(std::is_base_of_v<Base, Derived>);
+
+    if constexpr(stdxp::is_detected_v<detail::ConverterDecoratorHook, Base, Derived>)
+        hookOssiacoConverterDecoratorLog(static_cast<Base*>(nullptr), static_cast<Derived*>(nullptr));
+}
+
+template<typename Base, typename Derived, typename Enum>
+void adlInvokeEnumMappedHook()
+{
+    static_assert(std::is_base_of_v<Base, Derived> && std::is_enum_v<Enum>);
+
+    if constexpr(stdxp::is_detected_v<detail::ConverterEnumMappedHook, Base, Derived, Enum>)
+        hookOssiacoConverterEnumMappedLog(
+            static_cast<Base*>(nullptr),
+            static_cast<Derived*>(nullptr),
+            static_cast<EnumType*>(nullptr));
+}
+
+} // namespace Ossiaco::converter
+
+#endif // OSSIACO_CONVERTER_LOGGING_HPP
