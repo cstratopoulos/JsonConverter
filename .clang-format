@@ -25,6 +25,7 @@ ColumnLimit: 100
 ContinuationIndentWidth: 4
 FixNamespaceComments: true
 IndentCaseLabels: false
+IndentPPDirectives: AfterHash
 IndentWidth: 4
 NamespaceIndentation: None
 PointerAlignment: Left

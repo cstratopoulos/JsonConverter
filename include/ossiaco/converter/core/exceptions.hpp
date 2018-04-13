@@ -1,12 +1,7 @@
 #ifndef OSSIACO_CONVERTER_EXCEPTIONS_HPP
 #define OSSIACO_CONVERTER_EXCEPTIONS_HPP
 
-#ifdef OSSIACO_ASSERT_THROW
-#ifdef RAPIDJSON_RAPIDJSON_H_
-#error "This header must be included before <rapidjson/rapidjson.h>" to prevent redefinition of the assert macro, check include orders"
-#endif // RAPIDJSON_RAPIDJSON_H_
-#endif // OSSIACO_ASSERT_THROW
-
+#include <ossiaco/converter/config.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/utils/print_type_name.hpp>
 #include <ossiaco/converter/utils/string_convert.hpp>
@@ -15,6 +10,12 @@
 #include <type_traits>
 
 #include <cstdint>
+
+#if OSSIACO_RAPIDJSON_ASSERT_THROW
+#    ifdef RAPIDJSON_RAPIDJSON_H_
+#        error "This header must be included before <rapidjson/rapidjson.h>" to prevent redefinition of the assert macro, check include orders"
+#    endif
+#endif 
 
 namespace Ossiaco::converter {
 
@@ -48,7 +49,7 @@ class TypeFieldMissing;
 // Wraps a file I/O error.
 class OpenFileError;
 
-// If OSSIACO_ASSERT_THROW is defined, this class represents an occurrence of
+// If OSSIACO_RAPIDJSON_ASSERT_THROW is defined, this class represents an occurrence of
 // RAPIDJSON_ASSERT which has been turned into an an exception throw.
 class RapidJsonAssert;
 
@@ -144,28 +145,28 @@ public:
     {}
 };
 
-#ifdef OSSIACO_ASSERT_THROW
+#if OSSIACO_RAPIDJSON_ASSERT_THROW
 
 class RapidJsonAssert : public SerializationException {
 public:
     using SerializationException::SerializationException;
 };
 
-#define RAPIDJSON_ASSERT(x)                                                                        \
-    if (!(x))                                                                                      \
-        throw Ossiaco::converter::RapidJsonAssert(RAPIDJSON_STRINGIFY(x))
+#    define RAPIDJSON_ASSERT(x)                                                                    \
+        if (!(x))                                                                                  \
+            throw Ossiaco::converter::RapidJsonAssert(RAPIDJSON_STRINGIFY(x))
 
-#endif // OSSIACO_ASSERT_THROW
+#endif // OSSIACO_RAPIDJSON_ASSERT_THROW
 
 } // namespace Ossiaco::converter
 
 #include <rapidjson/error/error.h>
 
-#ifdef OSSIACO_ASSERT_THROW
-#ifndef RAPIDJSON_RAPIDJSON_H_
-#error "Expected RAPIDJSON_RAPIDJSON_H_ to be defined after including a rapidjson header, has the include guard changed"
-#endif // RAPIDJSON_RAPIDJSON_H_
-#endif // OSSIACO_ASSERT_THROW
+#if OSSIACO_RAPIDJSON_ASSERT_THROW
+#    ifndef RAPIDJSON_RAPIDJSON_H_
+#        error "Expected RAPIDJSON_RAPIDJSON_H_ to be defined after including a rapidjson header, has the include guard changed"
+#    endif 
+#endif
 
 namespace Ossiaco::converter {
 

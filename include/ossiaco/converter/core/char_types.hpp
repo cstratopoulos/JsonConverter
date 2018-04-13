@@ -1,32 +1,22 @@
 #ifndef OSSIACO_CONVERTER_CHAR_TYPES_HPP
 #define OSSIACO_CONVERTER_CHAR_TYPES_HPP
 
+#include <ossiaco/converter/config.hpp>
+
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-#ifndef OSSIACO_UNICODE
-#ifdef _UNICODE
-#define OSSIACO_UNICODE
-#endif // _UNICODE
-#endif // OSSIACO_UNICODE
-
-#ifdef OSSIACO_UNICODE
-#define OSSIACO_XPLATSTR(x) L##x
-#else
-#define OSSIACO_XPLATSTR(x) x
-#endif
-
 namespace Ossiaco::converter {
 
-#ifdef OSSIACO_UNICODE
-constexpr bool unicodeDefined = true;
+#if OSSIACO_UNICODE
+constexpr bool unicodeEnabled = true;
 #else
-constexpr bool unicodeDefined = false;
+constexpr bool unicodeEnabled = false;
 #endif
 
-using CharType = std::conditional_t<unicodeDefined, wchar_t, char>;
+using CharType = std::conditional_t<unicodeEnabled, wchar_t, char>;
 
 using string_t        = std::basic_string<CharType>;
 using string_view_t   = std::basic_string_view<CharType>;
