@@ -20,7 +20,7 @@ using CharType = std::conditional_t<unicodeEnabled, wchar_t, char>;
 
 using string_t        = std::basic_string<CharType>;
 using string_view_t   = std::basic_string_view<CharType>;
-using ostringstream_t = std::basic_ostream<CharType>;
+using ostringstream_t = std::basic_ostringstream<CharType>;
 
 } // namespace Ossiaco::converter
 
