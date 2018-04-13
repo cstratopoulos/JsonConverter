@@ -32,11 +32,11 @@ project(OssiacoConverter
 # Configuration macros
 #######################
 
-option(OSSIACO_UNICODE "whether to use whcar_t as the primary character type and string element type" OFF)
-if(${OSSIACO_UNICODE})
-    set(_ossiaco_unicode 1)
+option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
+if(${OSSIACO_WCHAR_UNICODE})
+    set(_ossiaco_wchar_unicode 1)
 else()
-    set(_ossiaco_unicode 0)
+    set(_ossiaco_wchar_unicode 0)
 endif()
 
 option(OSSIACO_RAPIDJSON_ASSERT_THROW "whether to redefine RAPIDJSON_ASSERT to throw exceptions on assertion failure" OFF)
@@ -69,6 +69,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/hooks/logging.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/is_detected.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/detect_specialization.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/file_handle.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/print_type_name.hpp
 >)
 
@@ -82,7 +83,7 @@ target_include_directories(ossiaco_converter
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
 
 target_compile_definitions(ossiaco_converter INTERFACE
-    OSSIACO_UNICODE=${_ossiaco_unicode}
+    OSSIACO_WCHAR_UNICODE=${_ossiaco_wchar_unicode}
     OSSIACO_RAPIDJSON_ASSERT_THROW=${_ossiaco_rapidjson_assert_throw}
 )
 
