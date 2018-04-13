@@ -25,7 +25,7 @@ bool writeValue(Writer&, const Value&);
 
 namespace detail {
 
-// Workaround for std::underlying_type causing a hard error if T is not an enum
+// Workaround: std::underlying_type causes hard error if T is not an enum
 template<typename T>
 using SafeUnderlyingType =
     boost::mp11::mp_eval_if_c<!std::is_enum_v<T>, T, std::underlying_type_t, T>;
