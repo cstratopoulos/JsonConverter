@@ -52,6 +52,8 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
 
     # Deserialization allocator backends
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/decorator.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/enum_to_type.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/mapped.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/simple.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/type_allocator.hpp
 
