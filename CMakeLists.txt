@@ -49,13 +49,31 @@ add_library(ossiaco_converter INTERFACE)
 
 target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/config.hpp
+
+    # Deserialization allocator backends
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/decorator.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/simple.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/type_allocator.hpp
+
+    # Converter components
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/template_get_write.hpp
+
+    # Core definitions/classes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/char_types.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/exceptions.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/pointer_wrapper.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/reference_mapper.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/traits.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/type_tree.hpp
+
+    # Customization point hooks
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/hooks/logging.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/is_detected.hpp
+
+    # Serialization/deserialization
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/deserializer.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/serializer.hpp
+
+    # Miscellaneous utilities
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/detect_specialization.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/file_handle.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/print_type_name.hpp
