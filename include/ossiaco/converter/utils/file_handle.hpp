@@ -8,8 +8,8 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_FILE_HANDLE_HPP
-#define OSSIACO_CONVERTER_FILE_HANDLE_HPP
+#ifndef OSSIACO_CONVERTER_UTILS_FILE_HANDLE_HPP
+#define OSSIACO_CONVERTER_UTILS_FILE_HANDLE_HPP
 
 #include <ossiaco/converter/config.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
@@ -46,4 +46,4 @@ inline UniqueFileHandle uniqueHandleFOpen(const CharType* fileName, const CharTy
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_FILE_HANDLE_HPP
+#endif // OSSIACO_CONVERTER_UTILS_FILE_HANDLE_HPP

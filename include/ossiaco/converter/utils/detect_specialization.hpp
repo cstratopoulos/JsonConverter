@@ -8,8 +8,8 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_DETECT_SPECIALIZATION_HPP
-#define OSSIACO_CONVERTER_DETECT_SPECIALIZATION_HPP
+#ifndef OSSIACO_CONVERTER_UTILS_DETECT_SPECIALIZATION_HPP
+#define OSSIACO_CONVERTER_UTILS_DETECT_SPECIALIZATION_HPP
 
 #include <type_traits>
 
@@ -29,4 +29,4 @@ constexpr bool isSpecialization = SpecializationType<T, Template>::value;
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_DETECT_SPECIALIZATION_HPP
+#endif // OSSIACO_CONVERTER_UTILS_DETECT_SPECIALIZATION_HPP

@@ -8,8 +8,8 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_TEMPLATE_GET_WRITE_HPP
-#define OSSIACO_CONVERTER_TEMPLATE_GET_WRITE_HPP
+#ifndef OSSIACO_CONVERTER_COMPONENTS_TEMPLATE_GET_WRITE_HPP
+#define OSSIACO_CONVERTER_COMPONENTS_TEMPLATE_GET_WRITE_HPP
 
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/core/traits.hpp>
@@ -120,4 +120,4 @@ bool writeValue(Writer& writer, const Value& value)
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_TEMPLATE_GET_WRITE_HPP
+#endif // OSSIACO_CONVERTER_COMPONENTS_TEMPLATE_GET_WRITE_HPP

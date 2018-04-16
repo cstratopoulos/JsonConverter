@@ -8,16 +8,15 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_TYPE_TREE_HPP
-#define OSSIACO_CONVERTER_TYPE_TREE_HPP
-
-#include <ossiaco/converter/utils/is_detected.hpp>
+#ifndef OSSIACO_CONVERTER_CORE_TYPE_TREE_HPP
+#define OSSIACO_CONVERTER_CORE_TYPE_TREE_HPP
 
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/map.hpp>
+#include <boost/type_traits/is_detected.hpp>
 
 #include <type_traits>
 
@@ -87,9 +86,9 @@ template<typename Enum>
 using ProvidesTypeTreeBasic = boost::mp11::mp_and<
     boost::mp11::mp_not<std::is_base_of<std::false_type, TypeTreeNode<Enum>>>,
     std::is_enum<Enum>,
-    detail::IsValidTreeMap<stdxp::detected_t<TreeNodeMap, Enum>>,
-    std::is_same<string_view_t, stdxp::detected_t<TreeNodeTypeField, Enum>>,
-    std::is_same<Enum, stdxp::detected_t<TreeNodeDefaultVal, Enum>>
+    detail::IsValidTreeMap<boost::detected_t<TreeNodeMap, Enum>>,
+    std::is_same<string_view_t, boost::detected_t<TreeNodeTypeField, Enum>>,
+    std::is_same<Enum, boost::detected_t<TreeNodeDefaultVal, Enum>>
 >;
 
 // Checks if a TypeTreeNode MapType is a leaf: none of its mapped values are enums.
@@ -98,7 +97,7 @@ template <typename Enum>
 using IsTreeMapLeaf = boost::mp11::mp_none_of<
     boost::mp11::mp_transform<
         boost::mp11::mp_second,
-        stdxp::detected_t<TreeNodeMap, Enum>>,
+        boost::detected_t<TreeNodeMap, Enum>>,
     std::is_enum
 >;
 
@@ -106,4 +105,4 @@ using IsTreeMapLeaf = boost::mp11::mp_none_of<
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_TYPE_TREE_HPP
+#endif // OSSIACO_CONVERTER_CORE_TYPE_TREE_HPP

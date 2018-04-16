@@ -8,10 +8,10 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_LOGGING_HPP
-#define OSSIACO_CONVERTER_LOGGING_HPP
+#ifndef OSSIACO_CONVERTER_HOOKS_LOGGING_HPP
+#define OSSIACO_CONVERTER_HOOKS_LOGGING_HPP
 
-#include <ossiaco/converter/utils/is_detected.hpp>
+#include <boost/type_traits/is_detected.hpp>
 
 #include <type_traits>
 
@@ -36,7 +36,7 @@ void adlInvokeDecoratorHook()
 {
     static_assert(std::is_base_of_v<Base, Derived>);
 
-    if constexpr(stdxp::is_detected_v<detail::ConverterDecoratorHook, Base, Derived>)
+    if constexpr(boost::is_detected_v<detail::ConverterDecoratorHook, Base, Derived>)
         hookOssiacoConverterDecoratorLog(static_cast<Base*>(nullptr), static_cast<Derived*>(nullptr));
 }
 
@@ -45,7 +45,7 @@ void adlInvokeEnumMappedHook()
 {
     static_assert(std::is_base_of_v<Base, Derived> && std::is_enum_v<Enum>);
 
-    if constexpr(stdxp::is_detected_v<detail::ConverterEnumMappedHook, Base, Derived, Enum>)
+    if constexpr(boost::is_detected_v<detail::ConverterEnumMappedHook, Base, Derived, Enum>)
         hookOssiacoConverterEnumMappedLog(
             static_cast<Base*>(nullptr),
             static_cast<Derived*>(nullptr),
@@ -54,4 +54,4 @@ void adlInvokeEnumMappedHook()
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_LOGGING_HPP
+#endif // OSSIACO_CONVERTER_HOOKS_LOGGING_HPP

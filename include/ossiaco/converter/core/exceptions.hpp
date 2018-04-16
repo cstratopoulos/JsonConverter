@@ -8,8 +8,8 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_EXCEPTIONS_HPP
-#define OSSIACO_CONVERTER_EXCEPTIONS_HPP
+#ifndef OSSIACO_CONVERTER_CORE_EXCEPTIONS_HPP
+#define OSSIACO_CONVERTER_CORE_EXCEPTIONS_HPP
 
 #include <ossiaco/converter/config.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
@@ -162,10 +162,6 @@ public:
     using SerializationException::SerializationException;
 };
 
-#    define RAPIDJSON_ASSERT(x)                                                                    \
-        if (!(x))                                                                                  \
-            throw Ossiaco::converter::RapidJsonAssert(RAPIDJSON_STRINGIFY(x))
-
 #endif // OSSIACO_RAPIDJSON_ASSERT_THROW
 
 } // namespace Ossiaco::converter
@@ -205,4 +201,4 @@ string_t streamFormat(const Arg& arg, const Args&... args)
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_EXCEPTIONS_HPP
+#endif // OSSIACO_CONVERTER_CORE_EXCEPTIONS_HPP

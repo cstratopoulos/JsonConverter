@@ -8,8 +8,8 @@
 // 
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_STRING_CONVERT_HPP
-#define OSSIACO_CONVERTER_STRING_CONVERT_HPP
+#ifndef OSSIACO_CONVERTER_UTILS_STRING_CONVERT_HPP
+#define OSSIACO_CONVERTER_UTILS_STRING_CONVERT_HPP
 
 #include <ossiaco/converter/core/char_types.hpp>
 
@@ -55,4 +55,4 @@ std::string toNarrowString(const StringType& str)
 
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_STRING_CONVERT_HPP
+#endif // OSSIACO_CONVERTER_UTILS_STRING_CONVERT_HPP
