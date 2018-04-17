@@ -37,6 +37,7 @@ endif()
 # Library dependency paths/packages
 ####################################
 
+find_path(DATE_INCLUDE_DIR date/date.h)
 find_path(RAPIDJSON_INCLUDE_DIR rapidjson/rapidjson.h)
 
 find_package(Boost 1.66.0 REQUIRED)
@@ -59,6 +60,9 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/type_allocator.hpp
 
     # Converter components
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/first_class.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/custom_value.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/ranges.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/template_get_write.hpp
 
     # Core definitions/classes
