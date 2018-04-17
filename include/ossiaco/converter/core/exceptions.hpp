@@ -23,7 +23,7 @@
 
 #if OSSIACO_RAPIDJSON_ASSERT_THROW
 #    ifdef RAPIDJSON_RAPIDJSON_H_
-#        error "This header must be included before <rapidjson/rapidjson.h>" to prevent redefinition of the assert macro, check include orders"
+#        error "This header must be included before <rapidjson/rapidjson.h> to prevent redefinition of the assert macro, check include orders"
 #    endif
 #endif 
 
@@ -100,7 +100,7 @@ public:
               OSSIACO_XPLATSTR("Type"),
               derivedClassName,
               OSSIACO_XPLATSTR("is not registered for polymorphic deserialization from"),
-              printTypeName<Class>()))
+              printTypeName<Base>()))
     {}
 
 };
@@ -150,8 +150,8 @@ public:
 
 class OpenFileError : public SerializationException {
 public:
-    OpenFileError(errno_t err)
-        : SerializationException{ std::system_error{ err, std::iostream_category() }.what() }
+    OpenFileError(int err)
+        : SerializationException(std::system_error(err, std::iostream_category()).what())
     {}
 };
 

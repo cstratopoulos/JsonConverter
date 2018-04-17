@@ -36,7 +36,7 @@ using UniqueFileHandle = std::unique_ptr<std::FILE, decltype(&detail::fileDelete
 inline UniqueFileHandle uniqueHandleFOpen(const CharType* fileName, const CharType* mode)
 {
     std::FILE* rawFile;
-    errno_t err = OSSIACO_XPLAT_FOPEN_S(&rawFile, fileName, mode);
+    int err = OSSIACO_XPLAT_FOPEN_S(&rawFile, fileName, mode);
 
     if (err)
         throw OpenFileError(err);
