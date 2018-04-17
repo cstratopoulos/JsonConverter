@@ -52,7 +52,11 @@ find_package(Boost 1.66.0 REQUIRED)
 add_library(ossiaco_converter INTERFACE)
 
 target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
+    # Top level or bulk-include files
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/config.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/converter.hpp
 
     # Deserialization allocator backends
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/decorator.hpp
