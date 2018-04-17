@@ -13,6 +13,7 @@
 
 #include <ossiaco/converter/core/traits.hpp>
 
+#include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
@@ -26,6 +27,9 @@ struct SimpleTypeAllocator;
 
 template<typename>
 class MappedTypeAllocator;
+
+template<typename>
+struct EnumTypeMap;
 
 template<typename>
 class PolyDecoratorAllocator;
