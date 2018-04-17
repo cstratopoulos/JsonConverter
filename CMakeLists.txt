@@ -39,6 +39,7 @@ endif()
 
 find_path(DATE_INCLUDE_DIR date/date.h)
 find_path(RAPIDJSON_INCLUDE_DIR rapidjson/rapidjson.h)
+find_path(RANGE_V3_INCLUDE_DIR range/v3/range.hpp)
 
 find_package(Boost 1.66.0 REQUIRED)
 
@@ -90,8 +91,10 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
 target_include_directories(ossiaco_converter INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 
 target_include_directories(ossiaco_converter
-    INTERFACE ${RAPIDJSON_INCLUDE_DIR}
     INTERFACE ${Boost_INCUDE_DIRS}
+    INTERFACE ${DATE_INCLUDE_DIR}
+    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/external/Range-V3-VS2015/include/
+    INTERFACE ${RAPIDJSON_INCLUDE_DIR}
 )
 
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
