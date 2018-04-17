@@ -61,8 +61,11 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/type_allocator.hpp
 
     # Converter components
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/first_class.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/chrono_fmt_prop_converter.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/custom_value.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/dispatch.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/first_class.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/property_converter.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/ranges.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/smart_ptr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/template_get_write.hpp
@@ -71,6 +74,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     # Core definitions/classes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/char_types.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/exceptions.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/not_found.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/pointer_wrapper.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/reference_mapper.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/traits.hpp
@@ -95,7 +99,6 @@ target_include_directories(ossiaco_converter INTERFACE $<BUILD_INTERFACE:${CMAKE
 target_include_directories(ossiaco_converter
     INTERFACE ${Boost_INCUDE_DIRS}
     INTERFACE ${DATE_INCLUDE_DIR}
-    INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/external/Range-V3-VS2015/include/
     INTERFACE ${RAPIDJSON_INCLUDE_DIR}
 )
 
@@ -110,6 +113,7 @@ if(MSVC)
     target_compile_definitions(ossiaco_converter INTERFACE 
         _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
         _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
+        _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
     )
 endif()
 
