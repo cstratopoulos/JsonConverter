@@ -87,6 +87,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
 
     # Serialization/deserialization
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/deserializer.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/json_converter.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/serializer.hpp
 
     # Miscellaneous utilities
