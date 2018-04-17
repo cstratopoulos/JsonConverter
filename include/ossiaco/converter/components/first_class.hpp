@@ -33,16 +33,16 @@ template<typename Class>
 struct ConvertFirstClass<Class, std::enable_if_t<traits::supportsJsonConverter<Class>>> {
 
     template<typename Encoding>
-    static void FromJson(
+    static void fromJson(
         Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
     {
-        JsonDeserializer<Class, Encoding>::FromJson(object, jsonValue, refs);
+        JsonDeserializer<Class, Encoding>::fromJson(object, jsonValue, refs);
     }
 
     template<typename Writer>
-    static void ToJson(const Class& object, Writer& writer, ReferenceMapper& refs)
+    static void toJson(const Class& object, Writer& writer, ReferenceMapper& refs)
     {
-        JsonSerializer<Class>::template ToJson<Writer>(object, writer, refs, nullptr);
+        JsonSerializer<Class>::template toJson<Writer>(object, writer, refs, nullptr);
     }
 };
 
@@ -59,13 +59,13 @@ struct ConvertFirstClass<
 
     template<typename Encoding>
     static void
-    FromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&)
+    fromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&)
     {
         object = getValue<Class>(jsonValue);
     }
 
     template<typename Writer>
-    static void ToJson(const Class& object, Writer& writer, ReferenceMapper&)
+    static void toJson(const Class& object, Writer& writer, ReferenceMapper&)
     {
         writeValue(writer, object);
     }

@@ -27,10 +27,10 @@ class ReferenceMapper;
 template<typename Class>
 struct ConvertCustomValue : Default {
     template<typename Encoding>
-    static void	FromJson(Class&, const rapidjson::GenericValue<Encoding>&, ReferenceMapper&) = delete;
+    static void	fromJson(Class&, const rapidjson::GenericValue<Encoding>&, ReferenceMapper&) = delete;
 
     template<typename Writer>
-    static void ToJson(const Class&, Writer&, ReferenceMapper&) = delete;
+    static void toJson(const Class&, Writer&, ReferenceMapper&) = delete;
 };
 
 } // namespace Ossiaco::converter
