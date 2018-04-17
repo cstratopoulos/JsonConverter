@@ -106,6 +106,21 @@ using IsTreeMapLeaf = boost::mp11::mp_none_of<
 
 } // namespace detail
 
+template<typename Enum>
+constexpr bool providesTypeTreeBasic = detail::ProvidesTypeTreeBasic<Enum>::value;
+
+template<typename Enum>
+constexpr bool isTypeTreeLeaf = std::conjunction_v<
+    detail::ProvidesTypeTreeBasic<Enum>,
+    detail::IsTreeMapLeaf<Enum>
+>;
+
+template<typename Enum>
+constexpr bool isTypeTreeNonLeaf = std::conjunction_v<
+    detail::ProvidesTypeTreeBasic<Enum>,
+    std::negation<detail::IsTreeMapLeaf<Enum>>
+>;
+
 } // namespace Ossiaco::converter
 
 #endif // OSSIACO_CONVERTER_CORE_TYPE_TREE_HPP
