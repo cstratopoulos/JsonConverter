@@ -19,6 +19,8 @@ project(OssiacoConverter
 # Configuration macros
 #######################
 
+option(OSSIACO_CONVERTER_TESTS "whether to build the unit/integration tests" OFF)
+
 option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
 if(${OSSIACO_WCHAR_UNICODE})
     set(_ossiaco_wchar_unicode 1)
@@ -121,4 +123,6 @@ endif()
 # The unit tests
 #################
 
-add_subdirectory(tests)
+if(${OSSIACO_CONVERTER_TESTS})
+    add_subdirectory(tests)
+endif()
