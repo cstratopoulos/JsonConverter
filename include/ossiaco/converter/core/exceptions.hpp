@@ -88,7 +88,7 @@ public:
               OSSIACO_XPLATSTR("The required property"),
               propName,
               OSSIACO_XPLATSTR("was not found while deserializing"),
-              printTypeName<Class>()));
+              printTypeName<Class>()))
     {}
 };
 
