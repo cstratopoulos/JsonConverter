@@ -16,16 +16,12 @@
 #include <ossiaco/converter/utils/print_type_name.hpp>
 #include <ossiaco/converter/utils/string_convert.hpp>
 
+#include <rapidjson/error/error.h>
+
 #include <stdexcept>
 #include <type_traits>
 
 #include <cstdint>
-
-#if OSSIACO_RAPIDJSON_ASSERT_THROW
-#    ifdef RAPIDJSON_RAPIDJSON_H_
-#        error "This header must be included before <rapidjson/rapidjson.h> to prevent redefinition of the assert macro, check include orders"
-#    endif
-#endif 
 
 namespace Ossiaco::converter {
 
@@ -163,18 +159,6 @@ public:
 };
 
 #endif // OSSIACO_RAPIDJSON_ASSERT_THROW
-
-} // namespace Ossiaco::converter
-
-#include <rapidjson/error/error.h>
-
-#if OSSIACO_RAPIDJSON_ASSERT_THROW
-#    ifndef RAPIDJSON_RAPIDJSON_H_
-#        error "Expected RAPIDJSON_RAPIDJSON_H_ to be defined after including a rapidjson header, has the include guard changed"
-#    endif 
-#endif
-
-namespace Ossiaco::converter {
 
 class RapidJsonParseError : public SerializationException {
 public:
