@@ -14,6 +14,7 @@
 #include <ossiaco/converter/allocate/enum_to_type.hpp>
 #include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/hooks/logging.hpp>
+#include <ossiaco/converter/utils/customized.hpp>
 
 #include <boost/type_traits/nonesuch.hpp>
 
@@ -28,7 +29,7 @@ public:
     using ConverterEnumType = typename ConvMapTraits::SubjectEnumType;
     using ConverterEnumMap  = typename ConvMapTraits::SubjectEnumMapType;
 
-    static_assert(!std::is_base_of_v<std::false_type, ConvMapTraits>, "Use of unspecialized converter map traits");
+    static_assert(isCustomized<ConvMapTraits>);
 
     template<typename Class, typename Derived, typename Encoding>
     static bool registerDerivedClass()

@@ -77,6 +77,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/serializer.hpp
 
     # Miscellaneous utilities
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/customized.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/detect_specialization.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/file_handle.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/print_type_name.hpp

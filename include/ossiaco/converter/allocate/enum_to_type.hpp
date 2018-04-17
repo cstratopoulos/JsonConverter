@@ -13,6 +13,7 @@
 
 #include <ossiaco/converter/allocate/type_allocator.hpp>
 #include <ossiaco/converter/core/type_tree.hpp>
+#include <ossiaco/converter/utils/customized.hpp>
 
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/bind.hpp>
@@ -29,7 +30,7 @@ struct EnumTypeMap;
 
 // Traits class for access to enum type map info.
 template<typename Converter>
-struct ConverterMap : std::false_type {
+struct ConverterMap : Default {
     using SubjectEnumType    = void;
     using SubjectEnumMapType = void;
 };

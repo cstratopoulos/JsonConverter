@@ -11,12 +11,15 @@
 #ifndef OSSIACO_CONVERTER_CORE_TYPE_TREE_HPP
 #define OSSIACO_CONVERTER_CORE_TYPE_TREE_HPP
 
+#include <ossiaco/converter/utils/customized.hpp>
+#include <ossiaco/converter/core/char_types.hpp>
+
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/function.hpp>
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/map.hpp>
-#include <boost/type_traits/is_detected.hpp>
+#include <boost/type_traits/detected.hpp>
 
 #include <type_traits>
 
@@ -28,7 +31,7 @@ namespace Ossiaco::converter {
 /// \requires `Enum` is an enum.
 /// \see [providesTypeTreeBasic], [isTypeTreeLeaf], [isTypeTreeNonLeaf] for concept checking.
 template<typename Enum>
-struct TypeTreeNode : std::false_type {
+struct TypeTreeNode : Default {
     /// Suggested helper alias for defining map entries.
     template<Enum e, typename T>
     using MapEntry = boost::mp11::mp_list<std::integral_constant<Enum, e>, T>;
@@ -41,7 +44,7 @@ struct TypeTreeNode : std::false_type {
     using Map = void;
 
     /// The name of the JSON member field from which type info should be extracted.
-    static constexpr string_view_t typeFieldName() = delete;
+    static constexpr CharType* typeFieldName() = delete;
 
     /// The default value that should be used for a JSON entry which is not in `Map`.
     ///
@@ -84,7 +87,7 @@ using IsValidTreeMap = boost::mp11::mp_and<
 // Checks if TypeTreeNode<Enum> provides the basis for a valid TypeTreeNode specialization.
 template<typename Enum>
 using ProvidesTypeTreeBasic = boost::mp11::mp_and<
-    boost::mp11::mp_not<std::is_base_of<std::false_type, TypeTreeNode<Enum>>>,
+    Customized<TypeTreeNode<Enum>>,
     std::is_enum<Enum>,
     detail::IsValidTreeMap<boost::detected_t<TreeNodeMap, Enum>>,
     std::is_same<string_view_t, boost::detected_t<TreeNodeTypeField, Enum>>,
