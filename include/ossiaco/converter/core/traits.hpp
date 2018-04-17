@@ -45,11 +45,22 @@ using JsonEnumType = typename Class::JsonEnumType;
 template<typename Class>
 constexpr bool jsonEnumDetected = boost::is_detected_v<JsonEnumType, Class>;
 
+struct FinalSupportTag {};
+
+struct PolySupportTag {};
+
 template<typename Class>
 using JsonConverterSupportTagType = typename Class::JsonConverterSupportTag;
 
 template<typename Class>
 constexpr bool jsonSupportDetected = boost::is_detected_v<JsonConverterSupportTagType, Class>;
+
+// Traits class for access to enum type map info.
+template<typename Converter>
+struct ConverterMap : Default {
+    using SubjectEnumType = void;
+    using SubjectEnumMapType = void;
+};
 
 // Smart pointer stuff
 

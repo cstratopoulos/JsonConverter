@@ -28,13 +28,6 @@ namespace Ossiaco::converter {
 template<typename>
 struct EnumTypeMap;
 
-// Traits class for access to enum type map info.
-template<typename Converter>
-struct ConverterMap : Default {
-    using SubjectEnumType    = void;
-    using SubjectEnumMapType = void;
-};
-
 namespace detail {
 
 // ConvertibleTo<Class>::fn<T> is true iff T is convertible to Class.

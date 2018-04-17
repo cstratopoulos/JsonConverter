@@ -25,7 +25,7 @@ namespace Ossiaco::converter {
 template<typename Converter>
 class MappedTypeAllocator : boost::nonesuch {
 public:
-    using ConvMapTraits     = ConverterMap<Converter>;
+    using ConvMapTraits     = traits::ConverterMap<Converter>;
     using ConverterEnumType = typename ConvMapTraits::SubjectEnumType;
     using ConverterEnumMap  = typename ConvMapTraits::SubjectEnumMapType;
 
