@@ -53,6 +53,7 @@ add_library(ossiaco_converter INTERFACE)
 
 target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     # Top level or bulk-include files
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/adapt.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/config.hpp
@@ -78,6 +79,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/vocab_type.hpp
 
     # Core definitions/classes
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/buffers_streams_writers.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/char_types.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/exceptions.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/not_found.hpp

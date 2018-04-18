@@ -13,6 +13,7 @@
 
 #include <ossiaco/converter/config.hpp>
 
+#include <ossiaco/converter/adapt.hpp>
 #include <ossiaco/converter/allocate.hpp>
 #include <ossiaco/converter/components.hpp>
 #include <ossiaco/converter/serialize.hpp>
