@@ -13,6 +13,7 @@
 
 #include <ossiaco/converter/serialize/deserializer.hpp>
 #include <ossiaco/converter/serialize/json_converter.hpp>
+#include <ossiaco/converter/serialize/to_json_pretty.hpp>
 #include <ossiaco/converter/serialize/serializer.hpp>
 
 #endif // OSSIACO_CONVERTER_SERIALIZE_HPP
