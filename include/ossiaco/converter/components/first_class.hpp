@@ -24,50 +24,27 @@ namespace Ossiaco::converter {
 
 class ReferenceMapper;
 
-/// Convert a type that is "first-class" convertible: primitive convertible or macro-enabled
-template<typename Class, typename Enable = void>
-struct ConvertFirstClass;
-
-// Convert types with macro-enabled JSON conversion.
 template<typename Class>
-struct ConvertFirstClass<Class, std::enable_if_t<traits::supportsJsonConverter<Class>>> {
+struct ConvertFirstClass {
+    static_assert(traits::jsonSupportDetected<Class> || traits::primitiveConvertible<Class>);
 
     template<typename Encoding>
     static void fromJson(
         Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
     {
-        JsonDeserializer<Class, Encoding>::fromJson(object, jsonValue, refs);
+        if constexpr (traits::jsonSupportDetected<Class>)
+            JsonDeserializer<Class, Encoding>::fromJson(object, jsonValue, refs);
+        else
+            object = getValue<Class>(jsonValue);
     }
 
     template<typename Writer>
     static void toJson(const Class& object, Writer& writer, ReferenceMapper& refs)
     {
-        JsonSerializer<Class>::template toJson<Writer>(object, writer, refs, nullptr);
-    }
-};
-
-// Convert primitive types.
-template<typename Class>
-struct ConvertFirstClass<
-    Class,
-    std::enable_if_t<
-        // We explicitly forbid detection of JsonConverter<Class> to handle the following
-        // lamentable situation in which JsonConverter<X> is detected but std::string is also
-        // constructible from X, making it primitiveConvertible.
-        // struct X { operator const char*() { return "uh oh"; } JSON_CONVERTER_SUPPORTED(...) };
-        traits::primitiveConvertible<Class> && !traits::supportsJsonConverter<Class>>> {
-
-    template<typename Encoding>
-    static void
-    fromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&)
-    {
-        object = getValue<Class>(jsonValue);
-    }
-
-    template<typename Writer>
-    static void toJson(const Class& object, Writer& writer, ReferenceMapper&)
-    {
-        writeValue(writer, object);
+        if constexpr (traits::jsonSupportDetected<Class>)
+            JsonSerializer<Class>::template toJson<Writer>(object, writer, refs, nullptr);
+        else
+            writeValue(writer, object);
     }
 };
 
