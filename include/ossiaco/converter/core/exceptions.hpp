@@ -71,6 +71,7 @@ string_t streamFormat(const Arg& arg, const Args&... args);
 }
 
 class SerializationException : public std::runtime_error {
+public:
     using std::runtime_error::runtime_error;
 
     SerializationException(const std::wstring& str) : SerializationException(toNarrowString(str)) {}
