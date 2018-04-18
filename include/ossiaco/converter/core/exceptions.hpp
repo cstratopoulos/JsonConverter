@@ -146,8 +146,8 @@ public:
 
 class OpenFileError : public SerializationException {
 public:
-    OpenFileError(int err)
-        : SerializationException(std::system_error(err, std::iostream_category()).what())
+    OpenFileError(const CharType* fileName)
+        : SerializationException(detail::streamFormat(OSSIACO_XPLATSTR("Failed to open file"), fileName))
     {}
 };
 

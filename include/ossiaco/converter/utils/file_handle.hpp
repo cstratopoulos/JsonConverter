@@ -36,10 +36,11 @@ using UniqueFileHandle = std::unique_ptr<std::FILE, decltype(&detail::fileDelete
 inline UniqueFileHandle uniqueHandleFOpen(const CharType* fileName, const CharType* mode)
 {
     std::FILE* rawFile;
-    int err = OSSIACO_XPLAT_FOPEN_S(&rawFile, fileName, mode);
 
-    if (err)
-        throw OpenFileError(err);
+    rawFile = OSSIACO_XPLAT_FOPEN(fileName, mode);
+
+    if (!rawFile)
+        throw OpenFileError(fileName);
 
     return UniqueFileHandle(rawFile, &detail::fileDeleter);
 }

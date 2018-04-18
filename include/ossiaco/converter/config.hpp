@@ -29,13 +29,13 @@
 #endif
 
 #if OSSIACO_WCHAR_UNICODE && defined(BOOST_WINDOWS)
-#    define OSSIACO_XPLAT_FOPEN_S _wfopen_s
+#    define OSSIACO_XPLAT_FOPEN _wfopen
 #else
-/// fopen_s-style call approppriate for unicode setting.
+/// fopen-style call approppriate for unicode setting.
 ///
-/// On Windows the Microsoft extension _wfopen_s is required for proper handling of filesystem
+/// On Windows the Microsoft extension _wfopen is required for proper handling of filesystem
 /// paths with wchar_t names. 
-#    define OSSIACO_XPLAT_FOPEN_S fopen_s
+#    define OSSIACO_XPLAT_FOPEN fopen
 #endif
 
 #ifndef OSSIACO_RAPIDJSON_ASSERT_THROW
