@@ -131,13 +131,13 @@ struct PropertiesHelper {
         Ossiaco::converter::ReferenceMapper& refs,                                                 \
         std::function<void(Writer&)>* cb) const                                                    \
     {                                                                                              \
-        Ossiaco::converter::JsonSerializer<_type>::toJson(*this, writer, refs, cb);                \
+        Ossiaco::converter::JsonSerializer<_type>::template toJson(*this, writer, refs, cb);                \
     }                                                                                              \
     template<typename Writer>                                                                      \
     void toJson(Writer& writer) const                                                              \
     {                                                                                              \
         Ossiaco::converter::ReferenceMapper refs;                                                  \
-        toJson(writer, refs, nullptr);                                                             \
+        this->template toJson<Writer>(writer, refs, nullptr);                                                             \
     }
 
 // Provide `_type` with definitions/implementations of toJson for all writer types, using `_implMacro`
@@ -161,16 +161,31 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
     using JsonConverterSupportTag = _tag;                                                          \
     static_assert(true, "Force trailing semicolon")
 
+#if OSSIACO_MSVC_TUPLE_WORKAROUND
+#    define OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_chainedCall)                                    \
+        static constexpr auto& jsonProperties()                                                    \
+        {                                                                                          \
+            using namespace Ossiaco::converter;                                                    \
+            static constexpr auto result = PropertiesHelper<> {}                                   \
+            _chainedCall;                                                                          \
+            return result._props;                                                                  \
+        }
+#else
+// Provides a tuple of JSON properties by delegating to the chained call operator of PropertiesHelper.
+// This implementation cannot be used with MSVC due to a bug:
+// https://developercommunity.visualstudio.com/content/problem/202891/visual-studio-1560-preview-60-breaks-existing-cons.html
+// The MSVC workaround implementaiton above could be used unilaterally but for the fact that GCC does not allow
+// static variables to be defined in constexpr functions.
+#    define OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_chainedCall)                                    \
+        static constexpr auto jsonProperties()                                                     \
+        {                                                                                          \
+            using namespace Ossiaco::converter;                                                    \
+            return (PropertiesHelper<> {} _chainedCall)._props;                                    \
+        }
+#endif
+
 // Define and implement the method returning a tuple of JSON properties.
 // TODO the return type is auto& due to an MSVC constexpr bug.
-#define OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_chainedCall)                                        \
-    static constexpr auto& jsonProperties()                                                        \
-    {                                                                                              \
-        using namespace Ossiaco::converter;                                                        \
-        static constexpr auto result = PropertiesHelper<> {}                                       \
-        _chainedCall;                                                                              \
-        return result._props;                                                                      \
-    }
 
 #define OSSIACO_INTERNAL_JSON_TYPE_ENUM(_enum) using JsonEnumType = _enum;
 

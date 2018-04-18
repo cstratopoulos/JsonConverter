@@ -13,6 +13,28 @@
 
 #include <boost/config.hpp>
 
+#ifndef OSSIACO_MSVC_TUPLE_WORKAROUND
+#    if defined(_MSC_VER) && !defined(__clang__)
+#        if _MSC_VER <= 1913
+#            define OSSIACO_MSVC_TUPLE_WORKAROUND 1
+#        endif
+#    else
+#        define OSSIACO_MSVC_TUPLE_WORKAROUND 0
+#    endif
+#endif
+
+#ifndef OSSIACO_RAPIDJSON_ASSERT_THROW
+/// Controls whether RAPIDJSON_ASSERT will be redefined to enable exception throws.
+/// It is disabled by default
+#    define OSSIACO_RAPIDJSON_ASSERT_THROW 0
+#endif
+
+#if OSSIACO_RAPIDJSON_ASSERT_THROW
+#    define RAPIDJSON_ASSERT(x)                                                                    \
+        if (!(x))                                                                                  \
+            throw Ossiaco::converter::RapidJsonAssert(RAPIDJSON_STRINGIFY(x))
+#endif
+
 #ifndef OSSIACO_WCHAR_UNICODE
 /// Wether to use unicode through `char_t`. Off by default.
 ///
@@ -36,18 +58,6 @@
 /// On Windows the Microsoft extension _wfopen is required for proper handling of filesystem
 /// paths with wchar_t names. 
 #    define OSSIACO_XPLAT_FOPEN fopen
-#endif
-
-#ifndef OSSIACO_RAPIDJSON_ASSERT_THROW
-/// Controls whether RAPIDJSON_ASSERT will be redefined to enable exception throws.
-/// It is disabled by default
-#    define OSSIACO_RAPIDJSON_ASSERT_THROW 0
-#endif 
-
-#if OSSIACO_RAPIDJSON_ASSERT_THROW
-#    define RAPIDJSON_ASSERT(x)                                                                    \
-        if (!(x))                                                                                  \
-            throw Ossiaco::converter::RapidJsonAssert(RAPIDJSON_STRINGIFY(x))
 #endif
 
 #endif // OSSIACO_CONVERTER_CONFIG_HPP
