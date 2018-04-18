@@ -46,11 +46,6 @@ public:
         return std::tie(lhs._name, lhs._city) == std::tie(rhs._name, rhs._city);
     }
 
-    bool operator!=(const Person& other)
-    {
-        return !(*this == other);
-    }
-
 private:
     // Will be accessible to converter machinery.
     Person() = default;
@@ -58,6 +53,11 @@ private:
     Ossiaco::converter::string_t _name;
     Ossiaco::converter::string_t _city;
 };
+
+inline bool operator!=(const Person& lhs, const Person& rhs)
+{
+    return !(lhs == rhs);
+}
 
 } // namespace test_types
 
