@@ -13,6 +13,7 @@
 
 #include <ossiaco/converter/allocate/dispatch.hpp>
 #include <ossiaco/converter/components/dispatch.hpp>
+#include <ossiaco/converter/components/first_class.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/utils/detect_specialization.hpp>
@@ -43,7 +44,11 @@ public:
 
     static constexpr auto propertiesTuple()
     {
-
+        if constexpr(_isPolymorphic) {
+            return std::tuple_cat(BaseConverter::_properties, Class::jsonProperties());
+        } else {
+            return Class::jsonProperties();
+        }
     }
 
     static constexpr auto _properties{propertiesTuple()};
