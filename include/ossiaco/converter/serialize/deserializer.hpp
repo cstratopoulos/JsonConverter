@@ -62,7 +62,7 @@ template<typename Class, typename Encoding>
 std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(CharType* jsonStr)
 {
     rapidjson::GenericDocument<Encoding> jsonValue;
-    jsonValue.ParseInsitu<rapidjson::kParseValidateEncodingFlag>(jsonStr);
+    jsonValue.template ParseInsitu<rapidjson::kParseValidateEncodingFlag>(jsonStr);
 
     return deserializeStream(jsonValue);
 }
