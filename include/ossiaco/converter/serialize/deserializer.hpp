@@ -79,7 +79,7 @@ std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromFile(const CharTyp
     rj::AutoUTFInputStream<unsigned, rj::FileReadStream> encodedInStream(bufferInStream);
     rj::GenericDocument<Encoding> doc;
 
-    doc.ParseStream<rj::kParseValidateEncodingFlag, rj::AutoUTF<unsigned>>(encodedInStream);
+    doc.template ParseStream<rj::kParseValidateEncodingFlag, rj::AutoUTF<unsigned>>(encodedInStream);
 
     return deserializeStream(doc);
 }

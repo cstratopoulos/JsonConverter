@@ -11,6 +11,7 @@
 #ifndef OSSIACO_CONVERTER_COMPONENTS_CHRONO_FMT_PROP_CONVERTER_HPP
 #define OSSIACO_CONVERTER_COMPONENTS_CHRONO_FMT_PROP_CONVERTER_HPP
 
+#include <ossiaco/converter/components/template_get_write.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/core/not_found.hpp>
 

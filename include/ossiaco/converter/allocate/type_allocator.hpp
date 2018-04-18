@@ -27,7 +27,7 @@ public:
     template<typename Derived = Class>
     static constexpr TypeAllocator make()
     {
-        return TypeAllocator<Class, Encoding>(allocateImpl<Derived>, deserializeImpl<Derived, Encoding>);
+        return TypeAllocator<Class, Encoding>(allocateImpl<Derived>, deserializeImpl<Derived>);
     }
 
     std::unique_ptr<Class> allocate() const { return _allocator(); }
@@ -51,7 +51,7 @@ private:
         return std::unique_ptr<Class>(new Derived());
     }
 
-    template<typename Derived, typename Encoding>
+    template<typename Derived>
     static void deserializeImpl(
         Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
     {

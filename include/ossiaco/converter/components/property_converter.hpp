@@ -39,7 +39,7 @@ public:
     {}
 
     template<typename Encoding>
-    void fromJson(Class&, const rapidjson::GenericValue<Encoding>&, ReferenceMapper&) const
+    void fromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs) const
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd())
             ConvHandler::fromJson(object.*_member, findItr->value, refs);
@@ -48,7 +48,7 @@ public:
     }
 
     template<typename Writer>
-    void toJson(const Class&, Writer&, ReferenceMapper&)
+    void toJson(const Class& object, Writer& writer, ReferenceMapper& refs)
     {
         writer.String(_name);
         ConvHandler::toJson(object.*_member, writer, refs);

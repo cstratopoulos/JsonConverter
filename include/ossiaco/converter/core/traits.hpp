@@ -12,6 +12,7 @@
 #define OSSIACO_CONVERTER_CORE_TRAITS_HPP
 
 #include <ossiaco/converter/core/char_types.hpp>
+#include <ossiaco/converter/utils/customized.hpp>
 
 #include <boost/type_traits/is_detected.hpp>
 

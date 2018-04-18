@@ -38,7 +38,7 @@ public:
 
     using BaseConverter = std::conditional_t<_isPolymorphic, JsonConverter<SubjectBaseType>, void>;
 
-    template<typename Derived = T, typename Encoding = utf_t>
+    template<typename Derived = Class, typename Encoding = utf_t>
     static bool ensureRegisteredWithBase();
 
     static constexpr auto propertiesTuple()
@@ -93,7 +93,7 @@ bool JsonConverter<Class>::ensureRegisteredWithBase()
 template<typename Class>
 bool jsonPolyImpl()
 {
-    return JsonConverter<Class>::ensureRegisteredWithBase<>();
+    return JsonConverter<Class>::ensureRegisteredWithBase();
 }
 
 } // namespace Ossiaco::converter
