@@ -15,6 +15,7 @@
 #include <ossiaco/converter/utils/customized.hpp>
 
 #include <boost/type_traits/is_detected.hpp>
+#include <boost/type_traits/remove_cv_ref.hpp>
 
 #include <type_traits>
 
@@ -29,7 +30,7 @@ constexpr bool primitiveConvertible =
 // Json converter exposed aliases
 
 template<typename Class>
-using JsonPropertiesType = decltype(Class::jsonProperties());
+using JsonPropertiesType = boost::remove_cv_ref_t<decltype(Class::jsonProperties())>;
 
 template<typename Class>
 constexpr bool jsonPropertiesDetected = boost::is_detected_v<JsonPropertiesType, Class>;
