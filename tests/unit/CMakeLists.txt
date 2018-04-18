@@ -15,6 +15,7 @@ target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 add_executable(converter_tests 
     test_main.cpp
     test_utils.hpp
+    types/person.hpp
     types/point_3d.hpp
     final_primitive.cpp
 )

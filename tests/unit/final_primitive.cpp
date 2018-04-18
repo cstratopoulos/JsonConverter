@@ -1,4 +1,4 @@
-// Ossiaco JSON Converter Library
+﻿// Ossiaco JSON Converter Library
 //
 // Copyright (C) 2018 Ossiaco
 //
@@ -12,6 +12,7 @@
 // only primitive-convertible members
 
 #include "test_utils.hpp"
+#include "types/person.hpp"
 #include "types/point_3d.hpp"
 
 #include <ossiaco/converter/adapt.hpp>
@@ -35,4 +36,16 @@ TEST_CASE("Converting 3D points", "[final]")
         makeSimpleStringTest("Some arbitrary vector", [] {
             return tt::Point3D{-1.5, 1000.12345, -99.87654321};
         }));
+}
+
+TEST_CASE("Converting Person (name/city of residence)" "[final]")
+{
+    runTestCases(
+        makeSimpleStringTest(
+            "A Person with all ASCII characters",
+            [] { return tt::Person(OSSIACO_XPLATSTR("Sam"), OSSIACO_XPLATSTR("Texas")); }),
+        makeSimpleStringTest("A Person with accented city name", [] {
+            return tt::Person(OSSIACO_XPLATSTR("Christos"), OSSIACO_XPLATSTR("Montréal"));
+        })
+    );
 }
