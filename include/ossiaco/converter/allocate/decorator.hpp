@@ -17,15 +17,14 @@
 #include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/hooks/logging.hpp>
 #include <ossiaco/converter/utils/print_type_name.hpp>
-
-#include <boost/type_traits/nonesuch.hpp>
+#include <ossiaco/converter/utils/inconstructible.hpp>
 
 #include <map>
 
 namespace Ossiaco::converter {
 
 template<typename Converter>
-class PolyDecoratorAllocator : boost::nonesuch {
+class PolyDecoratorAllocator : Inconstructible {
 public:
     template<typename Class, typename Derived, typename Encoding>
     static bool registerDerivedClass();

@@ -15,15 +15,14 @@
 #include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/hooks/logging.hpp>
 #include <ossiaco/converter/utils/customized.hpp>
-
-#include <boost/type_traits/nonesuch.hpp>
+#include <ossiaco/converter/utils/inconstructible.hpp>
 
 #include <type_traits>
 
 namespace Ossiaco::converter {
 
 template<typename Converter>
-class MappedTypeAllocator : boost::nonesuch {
+class MappedTypeAllocator : Inconstructible {
 public:
     using ConvMapTraits     = traits::ConverterMap<Converter>;
     using ConverterEnumType = typename ConvMapTraits::SubjectEnumType;

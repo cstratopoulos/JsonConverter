@@ -14,6 +14,7 @@
 #include <ossiaco/converter/allocate/type_allocator.hpp>
 #include <ossiaco/converter/core/type_tree.hpp>
 #include <ossiaco/converter/utils/customized.hpp>
+#include <ossiaco/converter/utils/inconstructible.hpp>
 
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/bind.hpp>
@@ -177,7 +178,7 @@ using ResolveAllocImplType = decltype(
 // A mapping of Enum to allocators for class types.
 // See static_assert statements for requirements on Enum.
 template<typename Enum>
-struct EnumTypeMap : boost::nonesuch {
+struct EnumTypeMap : Inconstructible {
     using MapImpl  = detail::AllocMapWrapper<Enum>;
     using TreeNode = TypeTreeNode<Enum>;
 

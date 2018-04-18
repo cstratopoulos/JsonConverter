@@ -12,12 +12,11 @@
 #define OSSIACO_CONVERTER_ALLOCATE_SIMPLE_HPP
 
 #include <ossiaco/converter/allocate/type_allocator.hpp>
-
-#include <boost/type_traits/nonesuch.hpp>
+#include <ossiaco/converter/utils/inconstructible.hpp>
 
 namespace Ossiaco::converter {
 
-struct SimpleTypeAllocator : boost::nonesuch {
+struct SimpleTypeAllocator : Inconstructible {
     template<typename Class, typename Encoding>
     static constexpr auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>&)
     {

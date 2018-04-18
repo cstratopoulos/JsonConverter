@@ -11,6 +11,8 @@
 #ifndef OSSIACO_CONVERTER_SERIALIZE_SERIALIZER_HPP
 #define OSSIACO_CONVERTER_SERIALIZE_SERIALIZER_HPP
 
+#include <ossiaco/converter/utils/inconstructible.hpp>
+
 #include <boost/mp11/tuple.hpp>
 #include <boost/type_traits/is_detected.hpp>
 
@@ -25,7 +27,7 @@ template<typename>
 class JsonConverter;
 
 template<typename Class>
-class JsonSerializer : boost::nonesuch {
+class JsonSerializer : Inconstructible {
 public:
     template<typename Writer>
     static void toJson(const Class&, Writer&, ReferenceMapper&, std::function<void(Writer&)>* cb);

@@ -15,9 +15,9 @@
 #include <ossiaco/converter/core/exceptions.hpp>
 #include <ossiaco/converter/core/reference_mapper.hpp>
 #include <ossiaco/converter/utils/file_handle.hpp>
+#include <ossiaco/converter/utils/inconstructible.hpp>
 
 #include <boost/mp11/tuple.hpp>
-#include <boost/type_traits/nonesuch.hpp>
 #include <rapidjson/document.h>
 #include <rapidjson/encodedstream.h>
 #include <rapidjson/filereadstream.h>
@@ -33,7 +33,7 @@ template<typename>
 class JsonConverter;
 
 template<typename Class, typename Encoding = utf_t>
-class JsonDeserializer : boost::nonesuch {
+class JsonDeserializer : Inconstructible {
 public:
     static std::shared_ptr<Class> fromString(string_view_t);
     static std::shared_ptr<Class> fromString(CharType*);
