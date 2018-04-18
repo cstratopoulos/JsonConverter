@@ -62,8 +62,8 @@ template<typename Encoding>
 void ConvertSmartPtr<SmartPtr>::fromJson(
     SmartPtr& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
 {
-    if (auto idItr = jsonValue.FindMember(_T("@id")); idItr == jsonValue.MemberEnd()) {
-        auto refItr = jsonValue.FindMember(_T("@ref"));
+    if (auto idItr = jsonValue.FindMember(OSSIACO_XPLATSTR("@id")); idItr == jsonValue.MemberEnd()) {
+        auto refItr = jsonValue.FindMember(OSSIACO_XPLATSTR("@ref"));
 
         if (refItr == jsonValue.MemberEnd()) {
             // If there is no id it must be a ref
@@ -92,14 +92,14 @@ void ConvertSmartPtr<SmartPtr>::toJson(
 
         if (id) {
             writer.StartObject();
-            writer.String(_T("@ref"));
+            writer.String(OSSIACO_XPLATSTR("@ref"));
             writer.Int(id);
             writer.EndObject();
         } else {
             id = refs.add(key);
 
             std::function<void(Writer&)> cb = [id](Writer& w) {
-                w.String(_T("@id"));
+                w.String(OSSIACO_XPLATSTR("@id"));
                 w.Int(id);
             };
 
