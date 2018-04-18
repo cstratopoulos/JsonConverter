@@ -132,5 +132,6 @@ endif()
 #################
 
 if(${OSSIACO_CONVERTER_TESTS})
-    add_subdirectory(tests)
+    add_subdirectory(tests/unit)
+    add_subdirectory(tests/integration)
 endif()
