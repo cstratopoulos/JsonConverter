@@ -55,7 +55,7 @@ public:
 
     template<typename Encoding>
     void
-    FromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&)
+    fromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&)
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd()) {
             istringstream_t in(getValue<string_t>(findItr->value));
@@ -67,7 +67,7 @@ public:
     }
 
     template<typename Writer>
-    void ToJson(const Class& object, Writer& writer, ReferenceMapper&)
+    void toJson(const Class& object, Writer& writer, ReferenceMapper&)
     {
         writer.String(_name);
         writer.String(date::format(_format, object.*_member));
