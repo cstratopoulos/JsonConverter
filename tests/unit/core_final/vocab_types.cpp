@@ -10,12 +10,17 @@
 
 #include "../test_utils.hpp"
 #include "../types/optional_fields.hpp"
+#include "../types/sprint_record.hpp"
+
+#include <boost/mp11/algorithm.hpp>
+#include <boost/mp11/integral.hpp>
 
 #include <catch.hpp>
 
 namespace tt = test_types;
 
-TEST_CASE("A type with optional UDT and primitive convertible fields", "[ConvertVocabType][optional]")
+TEST_CASE(
+    "A type with optional UDT and primitive convertible fields", "[ConvertVocabType][optional]")
 {
     runTestCases(
         makeSimpleStringTest(
@@ -34,7 +39,8 @@ TEST_CASE("A type with optional UDT and primitive convertible fields", "[Convert
             return tt::OptionalFields{OSSIACO_XPLATSTR("Dog"), OSSIACO_XPLATSTR("London"), {}};
         }));
 
-    SECTION("An omitted optional field") {
+    SECTION("An omitted optional field")
+    {
         namespace Oc = Ossiaco::converter;
 
         // The std::optional field "light" is missing.
@@ -44,6 +50,48 @@ TEST_CASE("A type with optional UDT and primitive convertible fields", "[Convert
 "name": "Terry",
 "city": "Paris"
 })--");
-        CHECK_THROWS_AS(Oc::JsonDeserializer<tt::OptionalFields>::fromString(jsonString), Oc::RequiredPropertyMissing<tt::OptionalFields>);
+        CAPTURE(jsonString);
+        CHECK_THROWS_AS(
+            Oc::JsonDeserializer<tt::OptionalFields>::fromString(jsonString),
+            Oc::RequiredPropertyMissing<tt::OptionalFields>);
     }
+}
+
+TEST_CASE(
+    "Converting sprint records with duration and DOB",
+    "[date][chrono][ConvertVocabType][ChronoPropertyConverter]")
+{
+    using namespace boost::mp11;
+
+    using namespace std::literals::chrono_literals;
+    using namespace date::literals;
+
+    namespace Oc = Ossiaco::converter;
+
+    mp_for_each<mp_list<mp_false, mp_true>>([](auto Bool) {
+        static constexpr bool pretty = decltype(Bool)::value;
+
+        const auto testName = [=](std::string_view sprinter) {
+            std::ostringstream result;
+            result << "Converting " << sprinter << "'s 100m record "
+                   << (pretty ? "(pretty)" : "(terse)");
+
+            return result.str();
+        };
+
+        const auto usain    = testName("Usain Bolt");
+        const auto florence = testName("Florence Griffith-Joyner");
+
+        runTestCases(
+            makeSimpleStringTest(
+                usain,
+                [] {
+                    return tt::SprintRecord<pretty>(
+                        OSSIACO_XPLATSTR("Usain Bolt"), 1986_y / date::aug / 21, 9580ms);
+                }),
+            makeSimpleStringTest(florence, [] {
+                return tt::SprintRecord<pretty>(
+                    OSSIACO_XPLATSTR("Florence Griffith-Joyner"), 1959_y / date::dec / 21, 10490ms);
+            }));
+    });
 }

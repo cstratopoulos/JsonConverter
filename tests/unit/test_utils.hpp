@@ -236,7 +236,7 @@ void BasicTestCase<Base, Func, Comparison, Conversion>::run()
 
         THEN("We should be able to hydrate/rehydrate it correctly") {
             std::shared_ptr<ObjType> newObj = _converter.testConvert(obj);
-            REQUIRE(newObj);
+            REQUIRE(newObj != nullptr);
 
             _comparator.compareObjects(obj, *newObj);
 
