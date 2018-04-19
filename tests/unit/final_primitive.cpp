@@ -12,6 +12,7 @@
 // only primitive-convertible members
 
 #include "test_utils.hpp"
+#include "types/light.hpp"
 #include "types/person.hpp"
 #include "types/point_3d.hpp"
 
@@ -38,7 +39,7 @@ TEST_CASE("Converting 3D points", "[final]")
         }));
 }
 
-TEST_CASE("Converting Person (name/city of residence)"
+TEST_CASE("Converting Person (name/city of residence string)"
           "[final]")
 {
     runTestCases(
@@ -50,5 +51,19 @@ TEST_CASE("Converting Person (name/city of residence)"
             [] { return tt::Person(OSSIACO_XPLATSTR("Christos"), OSSIACO_XPLATSTR("Montréal")); }),
         makeSimpleStringTest("A Person with a Japanese name", [] {
             return tt::Person(OSSIACO_XPLATSTR("あいこ"), OSSIACO_XPLATSTR("東京都"));
+        }));
+}
+
+TEST_CASE("Converting Light (bool/enum members)", "[final]")
+{
+    runTestCases(
+        makeSimpleStringTest("A default-constructed Light (white/off)", [] { return tt::Light{}; }),
+        makeSimpleStringTest(
+            "A red Light turned on",
+            [] {
+                return tt::Light{tt::Light::Color::red, true};
+            }),
+        makeSimpleStringTest("A light with an invalid enum value", [] {
+            return tt::Light{static_cast<tt::Light::Color>(25), true};
         }));
 }
