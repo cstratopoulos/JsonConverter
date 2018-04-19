@@ -17,10 +17,23 @@
 #include <ossiaco/converter/core/buffers_streams_writers.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/serialize.hpp>
+#include <ossiaco/converter/utils/detect_specialization.hpp>
 
 #include <tuple>
 
 namespace Ossiaco::converter {
+
+template<typename Class, typename Property>
+constexpr auto makeJsonProperty(Property Class::* member, const CharType* name)
+{
+    return PropertyConverter<Class, Property>(member, name);
+}
+
+template<typename Class, typename Property>
+constexpr auto makeJsonProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
+{
+    return ChronoPropertyConverter<Class, Property>(std::move(chronoPair), name);
+}
 
 template<typename Class, typename Property>
 constexpr auto optionalJsonProperty(Property Class::* member, const CharType* name)
@@ -86,6 +99,19 @@ struct PropertiesHelper {
     constexpr auto operator()(ChronoPropertyConverter<Class, Property, notFound>&& propConv)
     {
         return expand(std::make_tuple(std::move(propConv)));
+    }
+
+    /// Add a tuple of properties via function pointer.
+    ///
+    /// This overload can be convenient e.g., for inheriting properties from a CRTP base
+    /// which is not itself used for polymorphic conversion.
+    /// \requires `ReturnType` is a [std::tuple].
+    template<typename ReturnType>
+    constexpr auto operator()(ReturnType(*func)())
+    {
+        static_assert(isSpecialization<ReturnType, std::tuple>);
+
+        return expand(func());
     }
 };
 
