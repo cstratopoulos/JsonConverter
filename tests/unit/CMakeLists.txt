@@ -24,6 +24,7 @@ target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/test_utils.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/boost_uuid.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/light.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/nested_ranges.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/person.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/point_3d.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/udt_ranges.hpp

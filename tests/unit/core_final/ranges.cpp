@@ -9,6 +9,7 @@
 // http://opensource.org/licenses/MIT
 
 #include "../test_utils.hpp"
+#include "../types/nested_ranges.hpp"
 #include "../types/udt_ranges.hpp"
 
 #include <catch.hpp>
@@ -25,4 +26,13 @@ TEST_CASE("Linear ranges of user-defined types", "[ConvertLinearRange]")
                                  {Color::white, false},
                                  {Color::blue, true}}};
     }));
+}
+
+TEST_CASE("Linear and Map ranges with nested ranges", "[ConvertLinearRange][ConvertKeyValueRange]")
+{
+    runTestCases(
+        makeSimpleStringTest("A default constructed NumberMap", [] { return tt::NumberMap(); }),
+        makeSimpleStringTest("A NumberMap with some primes", [] {
+            return tt::NumberMap(std::set<unsigned>({2, 3, 5, 11, 13}));
+        }));
 }
