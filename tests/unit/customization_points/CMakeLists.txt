@@ -21,3 +21,8 @@ add_executable(customization_point_tests
 target_link_libraries(customization_point_tests
     PUBLIC converter_test_utils
 )
+
+add_test(
+    NAME customization_points
+    COMMAND customization_point_tests
+)

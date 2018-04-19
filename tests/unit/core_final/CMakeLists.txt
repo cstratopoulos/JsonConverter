@@ -22,3 +22,8 @@ add_executable(core_final_tests
 target_link_libraries(core_final_tests
     PUBLIC converter_test_utils
 )
+
+add_test(
+    NAME core_final
+    COMMAND core_final_tests
+)

@@ -8,5 +8,7 @@
 //
 // http://opensource.org/licenses/MIT
 
+// Customization point tests main
+
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
