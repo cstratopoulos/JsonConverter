@@ -120,6 +120,10 @@ target_compile_definitions(ossiaco_converter INTERFACE
     OSSIACO_WCHAR_UNICODE=${_ossiaco_wchar_unicode}
 )
 
+target_compile_definitions(ossiaco_converter INTERFACE
+    RAPIDJSON_HAS_STDSTRING
+)
+
 if(MSVC)
     target_compile_definitions(ossiaco_converter INTERFACE 
         _CRT_SECURE_NO_WARNINGS
