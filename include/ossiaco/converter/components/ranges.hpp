@@ -14,6 +14,7 @@
 #include <ossiaco/converter/core/traits.hpp>
 
 #include <range/v3/action/push_back.hpp>
+#include <range/v3/back.hpp>
 #include <range/v3/range_concepts.hpp>
 #include <range/v3/range_traits.hpp>
 #include <range/v3/view/map.hpp>
@@ -42,7 +43,7 @@ struct ConvertLinearRange {
     {
         for (const auto& arrayEntry : jsonValue.GetArray()) {
             ranges::action::push_back(container, PropertyType());
-            PropertyConverter::fromJson(container.back(), arrayEntry, references);
+            PropertyConverter::fromJson(ranges::back(container), arrayEntry, references);
         }
     }
 
