@@ -78,7 +78,7 @@ struct ConvertKeyValueRange {
         ReferenceMapper& references)
     {
         for (auto iter = jsonValue.MemberBegin(); iter != jsonValue.MemberEnd(); ++iter) {
-            MappedType value();
+            MappedType value{};
 
             MappedTypeConverter::fromJson(value, iter->value, references);
             kvMap[iter->name.GetString()] = std::move(value);
