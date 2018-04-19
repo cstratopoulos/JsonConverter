@@ -107,9 +107,16 @@ struct ConverterDeductor {
         detail::QuotedDeducedConverter<Class>, Class>;
 };
 
-// The component converter that shall be used to convert Class
+// The component converter that shall be used to convert Class.
 template<typename Class>
 using DeducedConverterType = typename ConverterDeductor<Class>::Type;
+
+// Helper variable template for debugging converter component dispatch.
+template<typename Class, template<typename> typename ConverterComponent>
+constexpr bool expectedConverterComponent = std::is_same_v<
+    DeducedConverterType<Class>,
+    ConverterComponent<Class>
+>;
 
 } // namespace Ossiaco::converter
 
