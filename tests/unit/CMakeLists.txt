@@ -12,16 +12,25 @@ set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/catch)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
+add_library(converter_test_utils INTERFACE)
+
+target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/light.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/person.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/point_3d.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_utils.hpp
+>)
+
+target_link_libraries(converter_test_utils
+    INTERFACE ossiaco_converter
+    INTERFACE Catch
+)
+
 add_executable(converter_tests 
     test_main.cpp
-    test_utils.hpp
-    types/light.hpp
-    types/person.hpp
-    types/point_3d.hpp
     final_primitive.cpp
 )
 
 target_link_libraries(converter_tests 
-    PUBLIC ossiaco_converter
-    PUBLIC Catch
+    PUBLIC converter_test_utils
 )
