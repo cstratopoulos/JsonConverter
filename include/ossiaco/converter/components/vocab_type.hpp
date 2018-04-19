@@ -18,12 +18,14 @@
 #include <rapidjson/document.h>
 
 #include <chrono>
+#include <optional>
 
 #include <cstdint>
 
-// TODO add std::optional
-
 namespace Ossiaco::converter {
+
+template<typename>
+struct ConverterDeductor;
 
 template<typename>
 class JsonConverter;
@@ -38,6 +40,38 @@ struct ConvertVocabType : Default {
 
     template<typename Writer>
     static void toJson(const Class&, Writer&, ReferenceMapper&) = delete;
+};
+
+/// Convert a [std::optional], which is serialized to/from a null JSON value if empty.
+///
+/// Note an [std::optional] property is NOT the same as making a property optional through
+/// [PropertyConverter]. If `"field"` is an [std::optional] JSON property then it must be
+/// deserialized from a JSON object which contains the member `"field"` whose value is either
+/// null or convertible to `std::optional::value_type`.
+template<typename Property>
+struct ConvertVocabType<std::optional<Property>> {
+    using PropertyConverter = typename ConverterDeductor<Property>::Type;
+
+    template<typename Encoding>
+    static void fromJson(std::optional<Property>& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
+    {
+        if (jsonValue.IsNull()) {
+            object.reset();
+        } else {
+            object.emplace();
+            PropertyConverter::fromJson(*object, jsonValue, refs);
+        }
+    }
+
+    template<typename Writer>
+    static void toJson(const std::optional<Property>& object, Writer& writer, ReferenceMapper& refs)
+    {
+        if (!object) {
+            writer.Null();
+        } else {
+            PropertyConverter::toJson(*object, writer, refs);
+        }
+    }
 };
 
 /// Convert a [std::chrono::duration] interpreted as `Rep` count.

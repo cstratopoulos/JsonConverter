@@ -17,6 +17,7 @@ add_executable(core_final_tests
     main.cpp
     primitive.cpp
     ranges.cpp
+    vocab_types.cpp
 )
 
 target_link_libraries(core_final_tests
