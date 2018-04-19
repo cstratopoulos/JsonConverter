@@ -24,7 +24,7 @@
 
 namespace tt = test_types;
 
-TEST_CASE("Converting 3D points", "[final]") 
+TEST_CASE("Converting 3D points", "[final]")
 {
     runTestCases(
         makeSimpleStringTest("The origin", [] { return tt::Point3D{}; }),
@@ -38,14 +38,17 @@ TEST_CASE("Converting 3D points", "[final]")
         }));
 }
 
-TEST_CASE("Converting Person (name/city of residence)" "[final]")
+TEST_CASE("Converting Person (name/city of residence)"
+          "[final]")
 {
     runTestCases(
         makeSimpleStringTest(
             "A Person with all ASCII characters",
             [] { return tt::Person(OSSIACO_XPLATSTR("Sam"), OSSIACO_XPLATSTR("Texas")); }),
-        makeSimpleStringTest("A Person with accented city name", [] {
-            return tt::Person(OSSIACO_XPLATSTR("Christos"), OSSIACO_XPLATSTR("Montréal"));
-        })
-    );
+        makeSimpleStringTest(
+            "A Person with accented city name",
+            [] { return tt::Person(OSSIACO_XPLATSTR("Christos"), OSSIACO_XPLATSTR("Montréal")); }),
+        makeSimpleStringTest("A Person with a Japanese name", [] {
+            return tt::Person(OSSIACO_XPLATSTR("あいこ"), OSSIACO_XPLATSTR("東京都"));
+        }));
 }
