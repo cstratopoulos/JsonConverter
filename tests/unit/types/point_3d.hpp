@@ -30,12 +30,17 @@ struct Point3D {
     double _z{ 0.0 };
 };
 
-bool operator==(const Point3D& p1, const Point3D& p2)
+inline bool operator==(const Point3D& p1, const Point3D& p2)
 {
     return std::tie(p1._x, p1._y, p1._z) == std::tie(p2._x, p2._y, p2._z);
 }
 
-bool operator!=(const Point3D& p1, const Point3D& p2) { return !(p1 == p2); }
+inline bool operator!=(const Point3D& p1, const Point3D& p2) { return !(p1 == p2); }
+
+inline bool operator<(const Point3D& p1, const Point3D& p2)
+{
+    return std::tie(p1._x, p1._y, p1._z) < std::tie(p2._x, p2._y, p2._z);
+}
 
 } // namespace test_types
 
