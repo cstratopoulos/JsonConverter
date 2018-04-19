@@ -17,10 +17,34 @@
 
 #include <boost/container/flat_map.hpp>
 
+#include <list>
+#include <map>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 namespace test_types {
+
+
+struct MapOfMaps {
+    using string_t = Ossiaco::converter::string_t;
+
+    OSSIACO_CONVERTER_FINAL_SUPPORTED(
+        MapOfMaps,
+        (&MapOfMaps::_mapMap, OSSIACO_XPLATSTR("mapMap")));
+
+    std::unordered_map<string_t, std::map<string_t, std::list<string_t>>> _mapMap;
+};
+
+inline bool operator==(const MapOfMaps& lhs, const MapOfMaps& rhs)
+{
+    return lhs._mapMap == rhs._mapMap;
+}
+
+inline bool operator!=(const MapOfMaps& lhs, const MapOfMaps& rhs)
+{
+    return !(lhs == rhs);
+}
 
 class NumberMap {
 public:
