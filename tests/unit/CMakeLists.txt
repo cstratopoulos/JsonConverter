@@ -8,13 +8,20 @@
 # 
 # http://opensource.org/licenses/MIT
 
+#######################################
+# Pull in Catch as an interface target
+#######################################
 set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/catch)
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
+####################################################
+# Define a library of headers shared by unit tests
+####################################################
 add_library(converter_test_utils INTERFACE)
 
 target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/boost_uuid.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/light.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/person.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/point_3d.hpp
@@ -26,11 +33,5 @@ target_link_libraries(converter_test_utils
     INTERFACE Catch
 )
 
-add_executable(converter_tests 
-    test_main.cpp
-    final_primitive.cpp
-)
-
-target_link_libraries(converter_tests 
-    PUBLIC converter_test_utils
-)
+add_subdirectory(core_final)
+add_subdirectory(customization_points)

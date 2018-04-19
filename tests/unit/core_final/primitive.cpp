@@ -8,13 +8,12 @@
 //
 // http://opensource.org/licenses/MIT
 
-// Testing structs/classes with OSSIACO_CONVERTER_FINAL_SUPPORTED conversion support and
-// only primitive-convertible members
+// Testing types with only primitive convertible members
 
-#include "test_utils.hpp"
-#include "types/light.hpp"
-#include "types/person.hpp"
-#include "types/point_3d.hpp"
+#include "../test_utils.hpp"
+#include "../types/light.hpp"
+#include "../types/person.hpp"
+#include "../types/point_3d.hpp"
 
 #include <ossiaco/converter/adapt.hpp>
 #include <ossiaco/converter/allocate/simple.hpp>
@@ -25,7 +24,7 @@
 
 namespace tt = test_types;
 
-TEST_CASE("Converting 3D points", "[final]")
+TEST_CASE("Converting 3D points", "[double]")
 {
     runTestCases(
         makeSimpleStringTest("The origin", [] { return tt::Point3D{}; }),
@@ -40,7 +39,7 @@ TEST_CASE("Converting 3D points", "[final]")
 }
 
 TEST_CASE("Converting Person (name/city of residence string)"
-          "[final]")
+          "[string][unicode]")
 {
     runTestCases(
         makeSimpleStringTest(
@@ -54,7 +53,7 @@ TEST_CASE("Converting Person (name/city of residence string)"
         }));
 }
 
-TEST_CASE("Converting Light (bool/enum members)", "[final]")
+TEST_CASE("Converting Light (bool/enum members)", "[bool][enum]")
 {
     runTestCases(
         makeSimpleStringTest("A default-constructed Light (white/off)", [] { return tt::Light{}; }),

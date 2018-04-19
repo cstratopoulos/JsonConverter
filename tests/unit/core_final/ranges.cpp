@@ -8,5 +8,3 @@
 //
 // http://opensource.org/licenses/MIT
 
-#define CATCH_CONFIG_MAIN
-#include <catch.hpp>
