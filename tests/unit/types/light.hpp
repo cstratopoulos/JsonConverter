@@ -36,11 +36,6 @@ inline bool operator==(const Light& lhs, const Light& rhs)
     return std::tie(lhs._color, lhs._on) == std::tie(rhs._color, rhs._on);
 }
 
-inline bool operator!=(const Light& lhs, const Light& rhs)
-{
-    return !(lhs == rhs);
-}
-
 } // namespace test_types
 
 #endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_LIGHT_HPP

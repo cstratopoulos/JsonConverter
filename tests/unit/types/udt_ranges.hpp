@@ -41,11 +41,6 @@ inline bool operator==(const PointsLights& lhs, const PointsLights& rhs)
     return std::tie(lhs._points, lhs._lights) == std::tie(rhs._points, rhs._lights);
 }
 
-inline bool operator!=(const PointsLights& lhs, const PointsLights& rhs)
-{
-    return !(lhs == rhs);
-}
-
 } // namespace test_types
 
 #endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_UDT_RANGES_HPP

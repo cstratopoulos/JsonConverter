@@ -74,11 +74,6 @@ public:
             std::tie(rhs._runnerName, rhs._dateOfBirth, rhs._100mTime);
     }
 
-    friend bool operator!=(const SprintRecord& lhs, const SprintRecord& rhs)
-    {
-        return !(lhs == rhs);
-    }
-
 private:
     string_t _runnerName;
 

@@ -41,11 +41,6 @@ inline bool operator==(const MapOfMaps& lhs, const MapOfMaps& rhs)
     return lhs._mapMap == rhs._mapMap;
 }
 
-inline bool operator!=(const MapOfMaps& lhs, const MapOfMaps& rhs)
-{
-    return !(lhs == rhs);
-}
-
 class NumberMap {
 public:
     NumberMap()                 = default;
@@ -95,8 +90,6 @@ private:
     // A vector whose ith entry is either empty or an i-length vector of i's
     std::vector<std::vector<unsigned>> _vecNums;
 };
-
-inline bool operator!=(const NumberMap& lhs, const NumberMap& rhs) { return !(lhs == rhs); }
 
 } // namespace test_types
 

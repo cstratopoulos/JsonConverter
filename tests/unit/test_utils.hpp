@@ -21,7 +21,7 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/tuple.hpp>
 #include <boost/type_traits/remove_cv_ref.hpp>
-#include <range/v3/utility/concepts.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 
 #include <catch.hpp>
 
@@ -39,6 +39,14 @@ namespace fs = std::filesystem;
 #else
 #    error "Filesystem implementation needed for unit tests"
 #endif
+
+template<typename Class>
+using EqualityOperatorType = decltype(
+    std::declval<const Class&>() == std::declval<const Class&>()
+    );
+
+template<typename Class>
+constexpr bool equalityOperatorDetected = boost::is_detected_exact_v<bool, EqualityOperatorType, Class>;
 
 // Class providing interface to check correct rehydration of objects, either by
 // equality comparison or equality comparison of selected getters
@@ -168,8 +176,8 @@ std::shared_ptr<Base> FileObjectConversion::testConvert(const Derived & obj) con
 template<typename Class>
 class ObjectComparison<Class> {
 public:
-    static_assert(ranges::EqualityComparable<Class>(),
-        "Object comparison with no member function pointers requires EqualityComparable");
+    static_assert(equalityOperatorDetected<Class>,
+        "Object comparison with no member function pointers requires operator==");
 
     template<typename Derived>
     static void compareObjects(const Derived& origObj, const Derived& newObj)
@@ -184,8 +192,8 @@ class ObjectComparison<Class, Arg, Args...> {
 public:
     using TupleType = std::tuple<Arg, Args...>;
 
-    static_assert(!ranges::EqualityComparable<Class>(),
-        "Object comparison with member function pointers is not allowed for EqualityComparable");
+    static_assert(!equalityOperatorDetected<Class>,
+        "Object comparison with member function pointers is not allowed for classes with operator==");
 
     static_assert(boost::mp11::mp_all_of<TupleType, std::is_member_function_pointer>());
 

@@ -63,12 +63,6 @@ bool operator==(const UuidKey& lhs, const UuidKey& rhs)
     return lhs._key == rhs._key;
 }
 
-bool operator!=(const UuidKey& lhs, const UuidKey& rhs)
-{
-    return !(lhs == rhs);
-}
-
-
 } // namespace test_types
 
 #endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_BOOST_UUID_HPP

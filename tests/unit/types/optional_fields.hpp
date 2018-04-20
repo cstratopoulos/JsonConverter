@@ -42,11 +42,6 @@ inline bool operator==(const OptionalFields& lhs, const OptionalFields& rhs)
     return std::tie(lhs._name, lhs._city, lhs._light) == std::tie(rhs._name, rhs._city, rhs._light);
 }
 
-inline bool operator!=(const OptionalFields& lhs, const OptionalFields& rhs)
-{
-    return !(lhs == rhs);
-}
-
 } // namespace test_types
 
 #endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_OPTIONAL_FIELDS_HPP

@@ -54,11 +54,6 @@ private:
     Ossiaco::converter::string_t _city;
 };
 
-inline bool operator!=(const Person& lhs, const Person& rhs)
-{
-    return !(lhs == rhs);
-}
-
 } // namespace test_types
 
 #endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_PERSON_HPP
