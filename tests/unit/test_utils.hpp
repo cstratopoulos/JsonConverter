@@ -238,10 +238,11 @@ void BasicTestCase<Base, Func, Comparison, Conversion>::run()
 {
     GIVEN(std::string(_desc))
     {
+        namespace Oc = Ossiaco::converter;
         auto obj = _ctorFunc();
 
         using ObjType = decltype(obj);
-        using ObjConverter = Ossiaco::converter::JsonConverter<ObjType>;
+        using ObjConverter = Oc::JsonConverter<ObjType>;
 
         THEN("We should be able to hydrate/rehydrate it correctly") {
             std::shared_ptr<ObjType> newObj = _converter.testConvert(obj);
@@ -252,12 +253,13 @@ void BasicTestCase<Base, Func, Comparison, Conversion>::run()
             if constexpr (!std::is_same_v<ObjType, Base>) {
                 AND_THEN("Polymorphic objects should be registered") {
                     static_assert(ObjConverter::_isPolymorphic);
-                    REQUIRE(Ossiaco::converter::jsonPolyImpl<ObjType>());
+                    REQUIRE(Oc::jsonPolyImpl<ObjType>());
 
                     AND_THEN("We should be able to polymorphically rehydrate it correctly") {
                         std::shared_ptr<Base> newObjBase = _converter.template testConvert<Base>(obj);
 
                         ObjType* downCastPtr = dynamic_cast<ObjType*>(newObjBase.get());
+                        INFO("Rehydrated as " << Oc::toNarrowString(Oc::printTypeName<Base>()));
                         REQUIRE(downCastPtr);
                         _comparator.compareObjects(obj, *downCastPtr);
                     }
