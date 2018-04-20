@@ -73,14 +73,11 @@ auto PolyDecoratorAllocator<Converter>::resolveTypeAllocator(
     if (auto typeMember = jsonValue.FindMember(OSSIACO_XPLATSTR("@type")); typeMember != jsonValue.MemberEnd())
         name = typeMember->value.GetString();
 
-    if constexpr (std::is_abstract_v<Class>) {
-        if (name == nullptr) {
+    if (name == nullptr || printTypeName<Class>() == name) {
+        if constexpr(std::is_abstract_v<Class>)
             throw AbstractTypeAllocation<Class>();
-        }
-    } else {
-        if (name == nullptr || printTypeName<Class>() == name) {
+        else
             return TypeAllocator<Class, Encoding>::template make<>();
-        }
     }
 
     const auto& mappings = safeGetMapping<Class, Encoding>();
