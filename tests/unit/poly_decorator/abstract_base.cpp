@@ -25,6 +25,16 @@ auto makeShapeTest(std::string_view desc, Func&& func)
         StringObjectConversion{});
 }
 
+TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAllocator]")
+{
+    runTestCases(
+        makeShapeTest("A default constructed Circle", [] { return tt::Circle(); }),
+        makeShapeTest("A unit circle", [] { return tt::Circle(tt::Point3D{}, 1.0); }),
+        makeShapeTest("A line segment", [] {
+            return tt::Segment(tt::Point3D{0.0, 26.0, -13.0}, tt::Point3D{1.0, 939293.4, 332.2353});
+        }));
+}
+
 struct OopsShape : tt::Shape {
     ~OopsShape() override {}
 
@@ -36,21 +46,12 @@ struct OopsShape : tt::Shape {
     int _someInt{};
 };
 
-TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAllocator]")
-{
-    runTestCases(
-        makeShapeTest("A default constructed Circle", [] { return tt::Circle(); }),
-        makeShapeTest("A unit circle", [] { return tt::Circle(tt::Point3D{}, 1.0); }),
-        makeShapeTest("A line segment", [] {
-            return tt::Segment(tt::Point3D{0.0, 26.0, -13.0}, tt::Point3D{1.0, 939293.4, 332.2353});
-        }));
-}
 
-TEST_CASE("Type decorator allocation errors", "[PolyDecoratorAllocator]")
+SCENARIO("Raising allocation errors", "[PolyDecoratorAllocator]")
 {
     namespace Oc = Ossiaco::converter;
 
-    SECTION("Trying to allocate an abstract type")
+    GIVEN("A JSON string describing an abstract type")
     {
         const auto jsonString = OSSIACO_XPLATSTR(
             R"--(
@@ -58,43 +59,56 @@ TEST_CASE("Type decorator allocation errors", "[PolyDecoratorAllocator]")
 "@type": "test_types::Shape"
 }
 )--");
-        CAPTURE(jsonString);
-        CHECK_THROWS_AS(
-            Oc::JsonDeserializer<tt::Shape>::fromString(jsonString),
-            Oc::AbstractTypeAllocation<tt::Shape>);
+
+        THEN("Trying to deserialize it throws an abstract allocation error")
+        {
+            CAPTURE(jsonString);
+            CHECK_THROWS_AS(
+                Oc::JsonDeserializer<tt::Shape>::fromString(jsonString),
+                Oc::AbstractTypeAllocation<tt::Shape>);
+        }
     }
 
-    SECTION("Unregistered type errors")
+    GIVEN("A JSON string for a class which does not exist")
     {
-        SECTION("Trying to deserialize from a class which is not derived from base (and does not exist!)")
-        {
-            const auto jsonString = OSSIACO_XPLATSTR(
-                R"--(
+        const auto jsonString = OSSIACO_XPLATSTR(
+            R"--(
 {
 "@type": "some_namespace::SomeClass",
 "field": "value"
 }
 )--");
+        THEN("Trying to deserialize it through an abstract base throws unregistered type error")
+        {
             CAPTURE(jsonString);
 
             CHECK_THROWS_AS(
                 Oc::JsonDeserializer<tt::Shape>::fromString(jsonString),
                 Oc::UnregisteredType<tt::Shape>);
         }
+    }
 
-        SECTION("Trying to deserialize from a genuine inheritor which has not been registered")
+    GIVEN("A JSON string for a derived class that is not registered through a base")
+    {
+        OopsShape oops{};
+        const auto jsonString = Oc::toJsonStringPretty(oops);
+        CAPTURE(jsonString);
+
+        THEN("Trying to deserialize it through its base throws unregistered type error")
         {
-            OopsShape oops{};
-            const auto jsonString = Oc::toJsonStringPretty(oops);
-            CAPTURE(jsonString);
-
             CHECK_THROWS_AS(
                 Oc::JsonDeserializer<tt::Shape>::fromString(jsonString),
                 Oc::UnregisteredType<tt::Shape>);
 
-            CHECK(Oc::jsonPolyImpl<OopsShape>());
+            AND_WHEN("We register it through its base")
+            {
+                REQUIRE(Oc::jsonPolyImpl<OopsShape>());
 
-            CHECK_NOTHROW(Oc::JsonDeserializer<tt::Shape>::fromString(jsonString));
+                THEN("Polymorphic deserialization throws no error")
+                {
+                    CHECK_NOTHROW(Oc::JsonDeserializer<tt::Shape>::fromString(jsonString));
+                }
+            }
         }
     }
 }
