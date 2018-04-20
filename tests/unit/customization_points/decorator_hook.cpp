@@ -16,6 +16,7 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
+#include <boost/mp11/function.hpp>
 
 #include <catch.hpp>
 
@@ -25,7 +26,7 @@ namespace Oc = Ossiaco::converter;
 
 namespace mp11 = boost::mp11;
 
-static unsigned registeredCount = 0;
+static std::size_t registeredCount = 0;
 
 namespace test_types {
 
@@ -43,14 +44,25 @@ void hookOssiacoConverterDecoratorLog(test_types::Shape*, Derived*)
 template<typename Derived>
 using ShapeHookDetected = mp11::mp_bool<Oc::decoratorHookDetected<test_types::Shape, Derived>>;
 
-/*
+template<typename Derived>
+constexpr std::size_t inheritanceDepth()
+{
+    if constexpr(Oc::traits::jsonBaseDetected<Derived>)
+        return 1 + inheritanceDepth<typename Derived::JsonBase>();
+    else
+        return 0;
+}
+
+template<typename Derived>
+using InheritanceDepthType = mp11::mp_int<inheritanceDepth<Derived>()>;
+
 TEST_CASE(
     "Checking invocation of ADL hook for poly decorator registration",
     "[hooks][PolyDecoratorAllocator]")
 {
     namespace tt = test_types;
 
-    using DerivedList = mp11::mp_list<tt::Circle, tt::DrawableCircle, tt::Segment>;
+    using DerivedList = mp11::mp_list<tt::Circle, tt::DrawableCircle, tt::Segment, tt::Circle, tt::DrawableCircle>;
 
     static_assert(mp11::mp_all_of<DerivedList, ShapeHookDetected>());
     SUCCEED("static_assert passed: All derived classes detected hook for registration with shape");
@@ -61,6 +73,14 @@ TEST_CASE(
         REQUIRE(Oc::jsonPolyImpl<DerivedShape>());
     });
 
-    CHECK(registeredCount == mp11::mp_size<DerivedList>());
+    static constexpr std::size_t expectedCount = mp11::mp_apply<
+        mp11::mp_plus,
+        mp11::mp_transform<
+            InheritanceDepthType,
+            mp11::mp_unique<DerivedList>
+        >
+    >();
+
+    CHECK(registeredCount == expectedCount);
 }
-*/
+
