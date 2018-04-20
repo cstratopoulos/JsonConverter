@@ -37,10 +37,12 @@ string_t printTypeName()
             name += 5; // 'enum ' (5 chars)
 #endif // BOOST_WINDOWS
 
+        std::string demangled = boost::core::demangle(name);
+
         if constexpr(std::is_same_v<string_t, std::string>)
-            return name;
+            return demangled;
         else
-            return toPlatString(std::string(name));
+            return toPlatString(demangled);
     }();
 
     return result;
