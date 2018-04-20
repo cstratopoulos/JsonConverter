@@ -40,7 +40,7 @@ public:
     template<typename Class, typename Writer>
     static void putDecorator(const Class&, Writer&);
 
-    template<typename Class, typename Encoding>
+    template<typename Encoding>
     static auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>&);
 
 private:
@@ -73,7 +73,7 @@ void PolyDecoratorAllocator<Converter>::putDecorator(const Class&, Writer& write
 }
 
 template<typename Converter>
-template<typename Class, typename Encoding>
+template<typename Encoding>
 auto PolyDecoratorAllocator<Converter>::resolveTypeAllocator(
     const rapidjson::GenericValue<Encoding>& jsonValue)
 {
@@ -81,18 +81,18 @@ auto PolyDecoratorAllocator<Converter>::resolveTypeAllocator(
     if (auto typeMember = jsonValue.FindMember(OSSIACO_XPLATSTR("@type")); typeMember != jsonValue.MemberEnd())
         name = typeMember->value.GetString();
 
-    if (name == nullptr || printTypeName<Class>() == name) {
-        if constexpr(std::is_abstract_v<Class>)
-            throw AbstractTypeAllocation<Class>();
+    if (name == nullptr || printTypeName<SubjectType>() == name) {
+        if constexpr(std::is_abstract_v<SubjectType>)
+            throw AbstractTypeAllocation<SubjectType>();
         else
-            return TypeAllocator<Class, Encoding>::template make<>();
+            return TypeAllocator<SubjectType, Encoding>::template make<>();
     }
 
-    const auto& mappings = safeGetMapping<Class, Encoding>();
+    const auto& mappings = safeGetMapping<SubjectType, Encoding>();
     if (auto itr = mappings.find(name); itr != mappings.end())
         return itr->second;
 
-    throw UnregisteredType<Class>(name);
+    throw UnregisteredType<SubjectType>(name);
 }
 
 } // namespace Ossiaco::converter

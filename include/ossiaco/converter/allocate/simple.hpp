@@ -16,8 +16,9 @@
 
 namespace Ossiaco::converter {
 
+template<typename Class>
 struct SimpleTypeAllocator : Inconstructible {
-    template<typename Class, typename Encoding>
+    template<typename Encoding>
     static constexpr auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>&)
     {
         return TypeAllocator<Class, Encoding>::template make<>();

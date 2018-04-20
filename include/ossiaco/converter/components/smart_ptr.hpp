@@ -72,7 +72,7 @@ void ConvertSmartPtr<SmartPtr>::fromJson(
 
         object = (refs.template get<PropertyType>((refItr->value).GetInt()));
     } else {
-        auto resolver = JsonConverter<PropertyType>::template resolveTypeAllocator<PropertyType, Encoding>(jsonValue);
+        auto resolver = JsonConverter<PropertyType>::template resolveTypeAllocator<Encoding>(jsonValue);
 
         object = refs.add((idItr->value).GetInt(), resolver.allocate());
         resolver.deserialize(*detail::getPtr(object), jsonValue, refs);

@@ -45,10 +45,10 @@ public:
         return Converter::template ensureRegisteredWithBase<Derived, Encoding>();
     }
 
-    template<typename Class, typename Encoding>
+    template<typename Encoding>
     static auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>& jsonValue)
     {
-        return ConverterEnumMap::template resolveAllocator<Class, Encoding>(jsonValue);
+        return ConverterEnumMap::template resolveAllocator<SubjectType, Encoding>(jsonValue);
     }
 };
 

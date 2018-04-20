@@ -23,6 +23,7 @@
 
 namespace Ossiaco::converter {
 
+template<typename>
 struct SimpleTypeAllocator;
 
 template<typename>
@@ -49,10 +50,10 @@ template<typename T>
 using AllocMap = mp11::mp_list<
     mp11::mp_list<EnumDetected<T>,            mp11::mp_quote<MappedTypeAllocator>>,
     mp11::mp_list<std::is_polymorphic<T>,     mp11::mp_quote<PolyDecoratorAllocator>>,
-    mp11::mp_list<mp11::mp_true,              SimpleTypeAllocator>
+    mp11::mp_list<mp11::mp_true,              mp11::mp_quote<SimpleTypeAllocator>>
 >;
 
-// The allocator backend for `T`; called `Raw` because it is a quoted metafunction in 2/3 cases
+// The allocator backend for `T`; called `Raw` because it is a quoted metafunction
 template<typename T>
 using AllocTypeRaw = mp11::mp_second<
     mp11::mp_at<
@@ -67,8 +68,8 @@ using AllocTypeRaw = mp11::mp_second<
 // are CRTP bases.
 template<typename T>
 using AllocType = mp11::mp_eval_if_c<
-    std::is_same_v<AllocTypeRaw<T>, SimpleTypeAllocator>,
-    SimpleTypeAllocator,
+    std::is_same_v<AllocTypeRaw<T>, mp11::mp_quote<SimpleTypeAllocator>>,
+    SimpleTypeAllocator<T>,
     mp11::mp_invoke, AllocTypeRaw<T>, JsonConverter<T>
 >;
 

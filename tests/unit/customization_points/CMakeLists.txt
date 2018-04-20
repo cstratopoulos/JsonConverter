@@ -16,6 +16,7 @@
 add_executable(customization_point_tests
     main.cpp
     custom_value.cpp
+    decorator_hook.cpp
 )
 
 target_link_libraries(customization_point_tests

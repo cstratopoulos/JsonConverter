@@ -101,7 +101,7 @@ std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::deserializeStream(
         throw RapidJsonParseError(rapidjson::ParseResult(jsonValue.GetParseError(), jsonValue.GetErrorOffset()));
 
     ReferenceMapper refs;
-    auto resolver = JsonConverter<Class>::template resolveTypeAllocator<Class, Encoding>(jsonValue);
+    auto resolver = JsonConverter<Class>::template resolveTypeAllocator<Encoding>(jsonValue);
 
     std::unique_ptr<Class> tmp(resolver.allocate());
     std::shared_ptr<Class> result;

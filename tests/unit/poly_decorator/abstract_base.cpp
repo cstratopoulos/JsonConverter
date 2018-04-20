@@ -8,6 +8,8 @@
 //
 // http://opensource.org/licenses/MIT
 
+// Type decorator conversion with an abstract interface base
+
 #include "../test_utils.hpp"
 #include "../types/shape.hpp"
 
