@@ -176,12 +176,13 @@ std::shared_ptr<Base> FileObjectConversion::testConvert(const Derived & obj) con
 template<typename Class>
 class ObjectComparison<Class> {
 public:
-    static_assert(equalityOperatorDetected<Class>,
-        "Object comparison with no member function pointers requires operator==");
-
     template<typename Derived>
     static void compareObjects(const Derived& origObj, const Derived& newObj)
     {
+        static_assert(
+            equalityOperatorDetected<Derived>,
+            "Object comparison with no member function pointers requires operator==");
+
         static_assert(std::is_base_of_v<Class, Derived>);
         CHECK(origObj == newObj);
     }
