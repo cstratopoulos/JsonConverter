@@ -104,6 +104,7 @@ public:
 
 template<typename Class>
 class AbstractTypeAllocation : public SerializationException {
+public:
     AbstractTypeAllocation()
         : SerializationException(detail::streamFormat(
               OSSIACO_XPLATSTR("Attempted to allocate abstract type"), printTypeName<Class>()))
