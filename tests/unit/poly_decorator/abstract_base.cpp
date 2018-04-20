@@ -15,13 +15,13 @@
 
 namespace tt = test_types;
 
-template<typename Func>
+template<typename Base = tt::Shape, typename Func>
 auto makeShapeTest(std::string_view desc, Func&& func)
 {
-    return makeBasicTestCase<tt::Shape>(
+    return makeBasicTestCase<Base>(
         desc,
         std::forward<Func>(func),
-        makeObjectComparison<tt::Shape>(),
+        makeObjectComparison<Base>(),
         StringObjectConversion{});
 }
 
@@ -35,13 +35,23 @@ TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAlloca
         }));
 }
 
+TEST_CASE("Converting through direct and indirect bases", "[PolyDecoratorAllocator]")
+{
+    const tt::DrawableCircle drawCirc(tt::Point3D{ 1.0, 2.0, 3.0 }, 4.0);
+
+    runTestCases(
+        makeShapeTest<tt::Shape>("DrawableCircle through Shape", [=] { return drawCirc; }),
+        makeShapeTest<tt::Circle>("DrawableCircle through Circle", [=] { return drawCirc; }));
+}
+
 struct OopsShape : tt::Shape {
     ~OopsShape() override {}
 
     tt::Point3D center() const override { return {}; }
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
-        OopsShape, test_types::Shape, (&OopsShape::_someInt, OSSIACO_XPLATSTR("someInt")));
+        OopsShape, test_types::Shape, 
+        (&OopsShape::_someInt, OSSIACO_XPLATSTR("someInt")));
 
     int _someInt{};
 };

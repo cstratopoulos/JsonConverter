@@ -59,6 +59,21 @@ private:
     double _radius{};
 };
 
+class DrawableCircle : public Circle {
+public:
+    using Circle::Circle;
+
+    std::string draw() const { return "Draw a circle!"; }
+
+    OSSIACO_CONVERTER_POLY_SUPPORTED(
+        DrawableCircle, Circle, ());
+
+    bool operator==(const DrawableCircle& other)
+    {
+        return static_cast<const Circle&>(*this) == static_cast<const Circle&>(other);
+    }
+};
+
 class Segment : public Shape {
 public:
     Segment(Point3D p1, Point3D p2) : _p1(p1), _p2(p2) {}
