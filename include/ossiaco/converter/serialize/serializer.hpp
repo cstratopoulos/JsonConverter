@@ -36,9 +36,9 @@ public:
 namespace detail {
 
 // Helper trait to detect if converter uses type decorator serialization
-template<typename Converter, typename Class, typename Writer>
+template<typename Subject, typename Writer>
 using PutDecoratorType = decltype(
-    Converter::putDecorator(std::declval<const Class&>(), std::declval<Writer&>())
+    JsonConverter<Subject>::putDecorator(std::declval<const Subject&>(), std::declval<Writer&>)
     );
 
 } // namespace detail
@@ -48,17 +48,15 @@ template<typename Writer>
 void JsonSerializer<Class>::toJson(
     const Class& object, Writer& writer, ReferenceMapper& refs, std::function<void(Writer&)>* cb)
 {
-    using ConverterType = JsonConverter<Class>;
-
     writer.StartObject();
 
-    if constexpr(boost::is_detected_v<detail::PutDecoratorType, ConverterType, Class, Writer>)
-        ConverterType::putDecorator(object, writer);
+    if constexpr(boost::is_detected_v<detail::PutDecoratorType, Class, Writer>)
+        JsonConverter<Class>::putDecorator(object, writer);
 
     if (cb)
         (*cb)(writer);
 
-    boost::mp11::tuple_for_each(ConverterType::_properties, [&](auto prop) {
+    boost::mp11::tuple_for_each(JsonConverter<Class>::_properties, [&](auto prop) {
         prop.toJson(object, writer, refs);
     });
 

@@ -37,8 +37,8 @@ public:
     template<typename Derived, typename Encoding>
     static bool registerDerivedClass();
 
-    template<typename Class, typename Writer>
-    static void putDecorator(const Class&, Writer&);
+    template<typename Writer>
+    static void putDecorator(const SubjectType&, Writer&);
 
     template<typename Encoding>
     static auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>&);
@@ -65,11 +65,11 @@ bool PolyDecoratorAllocator<Converter>::registerDerivedClass()
 }
 
 template<typename Converter>
-template<typename Class, typename Writer>
-void PolyDecoratorAllocator<Converter>::putDecorator(const Class&, Writer& writer)
+template<typename Writer>
+void PolyDecoratorAllocator<Converter>::putDecorator(const SubjectType&, Writer& writer)
 {
     writer.String(OSSIACO_XPLATSTR("@type"));
-    writer.String(printTypeName<Class>());
+    writer.String(printTypeName<SubjectType>());
 }
 
 template<typename Converter>
