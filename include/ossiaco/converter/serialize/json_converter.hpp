@@ -61,7 +61,7 @@ private:
     static_assert(isSpecialization<PropsType, std::tuple>);
 
     static_assert(
-        std::tuple_size_v<PropsType> || std::is_abstract_v<Class>,
+        std::tuple_size_v<decltype(_properties)> || std::is_abstract_v<Class>,
         "JSON properties for a non-abstract class must be a nonempty tuple provided either directly or inherited");
 };
 
