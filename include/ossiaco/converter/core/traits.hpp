@@ -57,10 +57,12 @@ using JsonConverterSupportTagType = typename Class::JsonConverterSupportTag;
 template<typename Class>
 constexpr bool jsonSupportDetected = boost::is_detected_v<JsonConverterSupportTagType, Class>;
 
-// Traits class for access to enum type map info.
+// Traits class for access to JsonConverter info.
 template<typename Converter>
-struct ConverterMap : Default {
-    using SubjectEnumType = void;
+struct ConverterProperties : Default {
+    using SubjectType        = void;
+    using SubjectBaseType    = void;
+    using SubjectEnumType    = void;
     using SubjectEnumMapType = void;
 };
 

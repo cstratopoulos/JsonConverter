@@ -24,7 +24,7 @@ namespace Ossiaco::converter {
 template<typename Converter>
 class MappedTypeAllocator : Inconstructible {
 public:
-    using ConvMapTraits     = traits::ConverterMap<Converter>;
+    using ConvMapTraits     = traits::ConverterProperties<Converter>;
     using ConverterEnumType = typename ConvMapTraits::SubjectEnumType;
     using ConverterEnumMap  = typename ConvMapTraits::SubjectEnumMapType;
 
