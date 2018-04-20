@@ -58,9 +58,9 @@ bool PolyDecoratorAllocator<Converter>::registerDerivedClass()
 
 template<typename Converter>
 template<typename Class, typename Writer>
-void PolyDecoratorAllocator<Converter>::putDecorator(const Class&, Writer&)
+void PolyDecoratorAllocator<Converter>::putDecorator(const Class&, Writer& writer)
 {
-    writer.String(OSSIACO_XPLATSTR(_T("@type")));
+    writer.String(OSSIACO_XPLATSTR("@type"));
     writer.String(printTypeName<Class>());
 }
 
@@ -70,7 +70,7 @@ auto PolyDecoratorAllocator<Converter>::resolveTypeAllocator(
     const rapidjson::GenericValue<Encoding>& jsonValue)
 {
     const CharType* name = nullptr;
-    if (auto typeMember = jsonValue.FindMember(_T("@type")); typeMember != jsonValue.MemberEnd())
+    if (auto typeMember = jsonValue.FindMember(OSSIACO_XPLATSTR("@type")); typeMember != jsonValue.MemberEnd())
         name = typeMember->value.GetString();
 
     if constexpr (std::is_abstract_v<ClassType>) {
