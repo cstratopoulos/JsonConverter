@@ -68,7 +68,9 @@ private:
 namespace traits {
 
 template<typename Class>
-struct ConverterMap<JsonConverter<Class>> {
+struct ConverterProperties<JsonConverter<Class>> {
+    using SubjectType     = Class;
+    using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;
     using SubjectEnumType = boost::detected_or_t<void, traits::JsonEnumType, Class>;
 
     using SubjectEnumMapType = boost::mp11::mp_eval_if_c<
