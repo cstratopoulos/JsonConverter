@@ -24,7 +24,7 @@
 
 namespace tt = test_types;
 
-TEST_CASE("Converting 3D points", "[double]")
+TEST_CASE("Converting 3D points", "[double][SimpleTypeAllocator]")
 {
     runTestCases(
         makeSimpleStringTest("The origin", [] { return tt::Point3D{}; }),
@@ -39,7 +39,7 @@ TEST_CASE("Converting 3D points", "[double]")
 }
 
 TEST_CASE("Converting Person (name/city of residence string)"
-          "[string][unicode]")
+          "[string][unicode][SimpleTypeAllocator]")
 {
     runTestCases(
         makeSimpleStringTest(
@@ -53,7 +53,7 @@ TEST_CASE("Converting Person (name/city of residence string)"
         }));
 }
 
-TEST_CASE("Converting Light (bool/enum members)", "[bool][enum]")
+TEST_CASE("Converting Light (bool/enum members)", "[bool][enum][SimpleTypeAllocator]")
 {
     runTestCases(
         makeSimpleStringTest("A default-constructed Light (white/off)", [] { return tt::Light{}; }),

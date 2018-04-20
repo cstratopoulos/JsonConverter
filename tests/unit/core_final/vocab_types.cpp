@@ -20,7 +20,7 @@
 namespace tt = test_types;
 
 TEST_CASE(
-    "A type with optional UDT and primitive convertible fields", "[ConvertVocabType][optional]")
+    "A type with optional UDT and primitive convertible fields", "[ConvertVocabType][optional][SimpleTypeAllocator]")
 {
     runTestCases(
         makeSimpleStringTest(
@@ -59,7 +59,7 @@ TEST_CASE(
 
 TEST_CASE(
     "Converting sprint records with duration and DOB",
-    "[date][chrono][ConvertVocabType][ChronoPropertyConverter]")
+    "[date][chrono][ConvertVocabType][ChronoPropertyConverter][SimpleTypeAllocator]")
 {
     using namespace boost::mp11;
 

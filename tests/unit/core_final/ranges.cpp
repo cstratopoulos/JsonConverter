@@ -16,7 +16,7 @@
 
 namespace tt = test_types;
 
-TEST_CASE("Linear ranges of user-defined types", "[ConvertLinearRange]")
+TEST_CASE("Linear ranges of user-defined types", "[ConvertLinearRange][SimpleTypeAllocator]")
 {
     using Color = tt::Light::Color;
     runTestCases(makeSimpleStringTest("Some silly struct with Points and Lights", [] {
@@ -28,7 +28,7 @@ TEST_CASE("Linear ranges of user-defined types", "[ConvertLinearRange]")
     }));
 }
 
-TEST_CASE("Linear and Map ranges with nested ranges", "[ConvertLinearRange][ConvertKeyValueRange]")
+TEST_CASE("Linear and Map ranges with nested ranges", "[ConvertLinearRange][ConvertKeyValueRange][SimpleTypeAllocator]")
 {
     runTestCases(
         makeSimpleStringTest("A default constructed NumberMap", [] { return tt::NumberMap(); }),
