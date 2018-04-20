@@ -44,10 +44,10 @@ public:
     static auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>&);
 
 private:
-    template<typename Class, typename Encoding>
+    template<typename Encoding>
     static auto& safeGetMapping()
     {
-        static std::map<string_t, TypeAllocator<Class, Encoding>> mappings;
+        static std::map<string_t, TypeAllocator<SubjectType, Encoding>> mappings;
         return mappings;
     }
 };
@@ -58,7 +58,7 @@ bool PolyDecoratorAllocator<Converter>::registerDerivedClass()
 {
     adlInvokeDecoratorHook<SubjectType, Derived>();
 
-    safeGetMapping<SubjectType, Encoding>().emplace(
+    safeGetMapping<Encoding>().emplace(
         printTypeName<Derived>(), TypeAllocator<SubjectType, Encoding>::template make<Derived>());
 
     return Converter::template ensureRegisteredWithBase<Derived, Encoding>();
@@ -88,7 +88,7 @@ auto PolyDecoratorAllocator<Converter>::resolveTypeAllocator(
             return TypeAllocator<SubjectType, Encoding>::template make<>();
     }
 
-    const auto& mappings = safeGetMapping<SubjectType, Encoding>();
+    const auto& mappings = safeGetMapping<Encoding>();
     if (auto itr = mappings.find(name); itr != mappings.end())
         return itr->second;
 
