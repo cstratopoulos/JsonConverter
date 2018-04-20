@@ -16,24 +16,31 @@
 #include <ossiaco/converter/hooks/logging.hpp>
 #include <ossiaco/converter/utils/customized.hpp>
 #include <ossiaco/converter/utils/inconstructible.hpp>
+#include <ossiaco/converter/utils/detect_specialization.hpp>
 
 #include <type_traits>
 
 namespace Ossiaco::converter {
 
+template<typename>
+class JsonConverter;
+
 template<typename Converter>
 class MappedTypeAllocator : Inconstructible {
 public:
-    using ConvMapTraits     = traits::ConverterProperties<Converter>;
-    using ConverterEnumType = typename ConvMapTraits::SubjectEnumType;
-    using ConverterEnumMap  = typename ConvMapTraits::SubjectEnumMapType;
+    using ConverterProperties     = traits::ConverterProperties<Converter>;
 
-    static_assert(isCustomized<ConvMapTraits>);
+    using SubjectType       = typename ConverterProperties::SubjectType;
+    using ConverterEnumType = typename ConverterProperties::SubjectEnumType;
+    using ConverterEnumMap  = typename ConverterProperties::SubjectEnumMapType;
 
-    template<typename Class, typename Derived, typename Encoding>
+    static_assert(isCustomized<ConverterProperties>);
+    static_assert(isSpecialization<Converter, JsonConverter>);
+
+    template<typename Derived, typename Encoding>
     static bool registerDerivedClass()
     {
-        adlInvokeEnumMappedHook<Class, Derived, ConverterEnumType>();
+        adlInvokeEnumMappedHook<SubjectType, Derived, ConverterEnumType>();
 
         return Converter::template ensureRegisteredWithBase<Derived, Encoding>();
     }

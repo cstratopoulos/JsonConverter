@@ -34,7 +34,7 @@ public:
     using ConverterProperties = traits::ConverterProperties<Converter>;
     using SubjectType         = typename ConverterProperties::SubjectType;
 
-    template<typename Class, typename Derived, typename Encoding>
+    template<typename Derived, typename Encoding>
     static bool registerDerivedClass();
 
     template<typename Class, typename Writer>
@@ -53,13 +53,13 @@ private:
 };
 
 template<typename Converter>
-template<typename Class, typename Derived, typename Encoding>
+template<typename Derived, typename Encoding>
 bool PolyDecoratorAllocator<Converter>::registerDerivedClass()
 {
-    adlInvokeDecoratorHook<Class, Derived>();
+    adlInvokeDecoratorHook<SubjectType, Derived>();
 
-    safeGetMapping<Class, Encoding>().emplace(
-        printTypeName<Derived>(), TypeAllocator<Class, Encoding>::template make<Derived>());
+    safeGetMapping<SubjectType, Encoding>().emplace(
+        printTypeName<Derived>(), TypeAllocator<SubjectType, Encoding>::template make<Derived>());
 
     return Converter::template ensureRegisteredWithBase<Derived, Encoding>();
 }
