@@ -50,7 +50,7 @@ bool PolyDecoratorAllocator<Converter>::registerDerivedClass()
 {
     adlInvokeDecoratorHook<Class, Derived>();
 
-    safeGetMapping<Class, Derived>().emplace(
+    safeGetMapping<Class, Encoding>().emplace(
         printTypeName<Derived>(), TypeAllocator<Class, Encoding>::template make<Derived>());
 
     return Converter::template ensureRegisteredWithBase<Derived, Encoding>();
