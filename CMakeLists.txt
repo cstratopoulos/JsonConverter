@@ -43,7 +43,7 @@ find_path(DATE_INCLUDE_DIR date/date.h)
 find_path(RAPIDJSON_INCLUDE_DIR rapidjson/rapidjson.h)
 find_path(RANGE_V3_INCLUDE_DIR range/v3/range.hpp)
 
-find_package(Boost 1.66.0 REQUIRED)
+find_package(Boost 1.67.0 REQUIRED)
 
 ###############################
 # The converter library target
