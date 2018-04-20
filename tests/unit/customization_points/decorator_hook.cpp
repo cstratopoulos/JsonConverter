@@ -73,6 +73,8 @@ TEST_CASE(
         REQUIRE(Oc::jsonPolyImpl<DerivedShape>());
     });
 
+    // Given a hierarchy Base_0, Base_1, ..., Base_(n-1), Derived, registration of Derived into Base0 should happen precisely once
+    // for each Base_k from 0 to n-1.
     static constexpr std::size_t expectedCount = mp11::mp_apply<
         mp11::mp_plus,
         mp11::mp_transform<
