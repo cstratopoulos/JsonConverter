@@ -11,7 +11,7 @@
 #include "../test_utils.hpp"
 #include "../types/boost_uuid.hpp"
 
-#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/string_generator.hpp>
 
 #include <catch.hpp>
 
@@ -27,7 +27,8 @@ TEST_CASE("Using ConvertCustomValue to convert boost UUIDs", "[ConvertCustomValu
 
     runTestCases(
         makeSimpleStringTest("A Key with a nil UUID", [] { return tt::UuidKey{}; }),
-        makeSimpleStringTest("A Key with a random UUID", [] {
-            return tt::UuidKey{boost::uuids::random_generator()()};
+        makeSimpleStringTest("A Key with a string UUID", [] {
+            return tt::UuidKey{boost::uuids::string_generator()(
+                OSSIACO_XPLATSTR("01234567-89ab-cdef-0123-456789abcdef"))};
         }));
 }
