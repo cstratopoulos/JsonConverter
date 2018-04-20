@@ -32,11 +32,19 @@ using ConverterEnumMappedHook = decltype(hookOssiacoConverterEnumMappedLog(
 } // namespace detail
 
 template<typename Base, typename Derived>
+constexpr bool decoratorHookDetected =
+    boost::is_detected_v<detail::ConverterDecoratorHook, Base, Derived>;
+
+template<typename Base, typename Derived, typename Enum>
+constexpr bool enumMappedHookDetected =
+    boost::is_detected_v<detail::ConverterEnumMappedHook, Base, Derived, Enum>;
+
+template<typename Base, typename Derived>
 void adlInvokeDecoratorHook()
 {
     static_assert(std::is_base_of_v<Base, Derived>);
 
-    if constexpr(boost::is_detected_v<detail::ConverterDecoratorHook, Base, Derived>)
+    if constexpr(decoratorHookDetected<Base, Derived>)
         hookOssiacoConverterDecoratorLog(static_cast<Base*>(nullptr), static_cast<Derived*>(nullptr));
 }
 
@@ -45,7 +53,7 @@ void adlInvokeEnumMappedHook()
 {
     static_assert(std::is_base_of_v<Base, Derived> && std::is_enum_v<Enum>);
 
-    if constexpr(boost::is_detected_v<detail::ConverterEnumMappedHook, Base, Derived, Enum>)
+    if constexpr(enumMappedHookDetected<Base, Derived, Enum>)
         hookOssiacoConverterEnumMappedLog(
             static_cast<Base*>(nullptr),
             static_cast<Derived*>(nullptr),
