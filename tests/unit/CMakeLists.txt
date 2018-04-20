@@ -28,6 +28,7 @@ target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/types/optional_fields.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/person.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/point_3d.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/shape.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/sprint_record.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/udt_ranges.hpp
 >)
@@ -39,3 +40,4 @@ target_link_libraries(converter_test_utils
 
 add_subdirectory(core_final)
 add_subdirectory(customization_points)
+add_subdirectory(poly_decorator)
