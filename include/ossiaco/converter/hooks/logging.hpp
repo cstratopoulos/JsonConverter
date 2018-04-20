@@ -49,7 +49,7 @@ void adlInvokeEnumMappedHook()
         hookOssiacoConverterEnumMappedLog(
             static_cast<Base*>(nullptr),
             static_cast<Derived*>(nullptr),
-            static_cast<EnumType*>(nullptr));
+            static_cast<Enum*>(nullptr));
 }
 
 } // namespace Ossiaco::converter
