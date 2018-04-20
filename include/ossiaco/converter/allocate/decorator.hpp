@@ -23,9 +23,17 @@
 
 namespace Ossiaco::converter {
 
+template<typename>
+class JsonConverter;
+
 template<typename Converter>
 class PolyDecoratorAllocator : Inconstructible {
 public:
+    static_assert(isSpecialization<Converter, JsonConverter>);
+
+    using ConverterProperties = traits::ConverterProperties<Converter>;
+    using SubjectType         = typename ConverterProperties::SubjectType;
+
     template<typename Class, typename Derived, typename Encoding>
     static bool registerDerivedClass();
 
