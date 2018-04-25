@@ -26,6 +26,11 @@ TEST_CASE(
                 });
             }),
         makeSimpleStringTest(
+            "A loop vertex",
+            [] {
+                return tt::Digraph({{OSSIACO_XPLATSTR("self"), OSSIACO_XPLATSTR("self")}});
+            }),
+        makeSimpleStringTest(
             "A bidirectional edge",
             [] {
                 return tt::Digraph({
