@@ -72,15 +72,18 @@ public:
         auto sourceNode = std::make_shared<Node>(Node{ edge.first, {} });
         auto sinkNode   = std::make_shared<Node>(Node{edge.second, {}});
 
-        if (ranges::find_if(_nodes, [&sourceNode](const auto& nodePtr) { return nodePtr->_ident == sourceNode->_ident; }) == _nodes.end())
-            _nodes.push_back(sourceNode);
-
-        if (ranges::find_if(_nodes, [&sinkNode](const auto& nodePtr) { return nodePtr->_ident == sinkNode->_ident; }) == _nodes.end())
-            _nodes.push_back(sinkNode);
+        for (auto nodeRef : { std::ref(sourceNode), std::ref(sinkNode) }) {
+            std::shared_ptr<Node>& node = nodeRef.get();
+            auto find = ranges::find_if(_nodes, [&node](const auto& nodePtr) { return nodePtr->_ident == node->_ident; });
+            if (find == _nodes.end())
+                _nodes.push_back(node);
+            else
+                node = *find;
+        }
 
         auto& sinks = sourceNode->_sinks;
-
-        if (ranges::find_if(sinks, [&sinkNode](const auto& sinkPtr) { return (sinkPtr.lock())->_ident == sinkNode->_ident; }) == sinks.end())
+        auto sinkItr = ranges::find_if(sinks, [&sinkNode](const auto& nbrPtr) { return (nbrPtr.lock())->_ident == sinkNode->_ident; });
+        if (sinkItr == sinks.end())
             sinks.push_back(sinkNode);
     }
 
