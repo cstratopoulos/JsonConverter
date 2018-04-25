@@ -13,13 +13,25 @@
 
 #include <ossiaco/converter/core/traits.hpp>
 
+#include <boost/type_traits/is_detected.hpp>
 #include <range/v3/action/push_back.hpp>
-#include <range/v3/back.hpp>
 #include <range/v3/range_concepts.hpp>
 #include <range/v3/range_traits.hpp>
 #include <range/v3/view/map.hpp>
 
 namespace Ossiaco::converter {
+
+namespace detail {
+
+// N.B.: range_value_t is deprecated in favor of range_value_type_t but we use this for
+// compatibility with the range-v3-vs2015 fork which still has the old trait
+template<typename Rng>
+using RangeValueType = ranges::range_value_t<Rng>;
+
+template<typename Rng>
+void pushBackInsert(Rng& rng, RangeValueType<Rng>&& val);
+
+} // namespace detail
 
 template<typename>
 struct ConverterDeductor;
@@ -30,10 +42,8 @@ template<typename Container>
 struct ConvertLinearRange {
     static_assert(ranges::InputRange<Container>::value);
 
-    // N.B.: range_value_t is deprecated in favor of range_value_type_t but we use this for
-    // compatibility with the range-v3-vs2015 fork which still has the old trait
-    using PropertyType      = ranges::range_value_t<Container>;
-    using PropertyConverter = typename ConverterDeductor<PropertyType>::Type;
+    using PropertyType      = detail::RangeValueType<Container>;
+    using PropTypeConverter = typename ConverterDeductor<PropertyType>::Type;
 
     template<typename Encoding>
     static void fromJson(
@@ -42,8 +52,10 @@ struct ConvertLinearRange {
         ReferenceMapper& references)
     {
         for (const auto& arrayEntry : jsonValue.GetArray()) {
-            ranges::action::push_back(container, PropertyType());
-            PropertyConverter::fromJson(ranges::back(container), arrayEntry, references);
+            PropertyType elem{};
+            PropTypeConverter::fromJson(elem, arrayEntry, references);
+
+            ranges::action::push_back(container, std::move(elem));
         }
     }
 
@@ -53,7 +65,7 @@ struct ConvertLinearRange {
         writer.StartArray();
 
         for (const PropertyType& containerElem : container)
-            PropertyConverter::toJson(containerElem, writer, references);
+            PropTypeConverter::toJson(containerElem, writer, references);
 
         writer.EndArray();
     }
@@ -63,7 +75,7 @@ template<typename KeyValMap>
 struct ConvertKeyValueRange {
     static_assert(ranges::view::keys_fn::Concept<KeyValMap>::value);
 
-    using ValueType           = ranges::range_value_t<KeyValMap>;
+    using ValueType           = detail::RangeValueType<KeyValMap>;
     using KeyType             = decltype(std::declval<ValueType>().first);
     using MappedType          = decltype(std::declval<ValueType>().second);
     using MappedTypeConverter = typename ConverterDeductor<MappedType>::Type;
