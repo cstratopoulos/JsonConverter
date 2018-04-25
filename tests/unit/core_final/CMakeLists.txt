@@ -17,6 +17,7 @@ add_executable(core_final_tests
     main.cpp
     primitive.cpp
     ranges.cpp
+    smart_ptr.cpp
     vocab_types.cpp
 )
 
