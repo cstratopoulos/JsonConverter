@@ -103,7 +103,7 @@ void ConvertSmartPtr<SmartPtr>::toJson(
                 w.Int(id);
             };
 
-            managedPtr->ToJson(writer, refs, &cb);
+            managedPtr->toJson(writer, refs, &cb);
         }
     } else {
         writer.Null();
