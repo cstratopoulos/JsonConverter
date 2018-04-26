@@ -32,10 +32,11 @@ namespace test_types {
 
 // The expected use of this hook is to log registration events but instead we just
 // mutate a static variable so we verify it's been called the right number of times.
-template<typename Derived>
-void hookOssiacoConverterDecoratorLog(test_types::Shape*, Derived*)
+template<typename Base, typename Derived>
+void hookOssiacoConverterDecoratorLog(Base*, Derived*)
 {
-    std::cout << "Registering " << boost::core::demangle(typeid(Derived).name()) << " into Shape\n";
+    std::cout << "Registering " << boost::core::demangle(typeid(Derived).name()) << " into "
+        << boost::core::demangle(typeid(Base).name()) << "\n";
     ++registeredCount;
 }
 
