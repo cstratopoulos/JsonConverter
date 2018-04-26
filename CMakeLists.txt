@@ -21,13 +21,6 @@ project(OssiacoConverter
 
 option(OSSIACO_CONVERTER_TESTS "whether to build the unit/integration tests" OFF)
 
-option(OSSIACO_RAPIDJSON_ASSERT_THROW "whether to redefine RAPIDJSON_ASSERT to throw exceptions on assertion failure" OFF)
-if(${OSSIACO_RAPIDJSON_ASSERT_THROW})
-    set(_ossiaco_rapidjson_assert_throw 1)
-else()
-    set(_ossiaco_rapidjson_assert_throw 0)
-endif()
-
 option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
 if(${OSSIACO_WCHAR_UNICODE})
     set(_ossiaco_wchar_unicode 1)
@@ -116,7 +109,6 @@ target_include_directories(ossiaco_converter
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
 
 target_compile_definitions(ossiaco_converter INTERFACE
-    OSSIACO_RAPIDJSON_ASSERT_THROW=${_ossiaco_rapidjson_assert_throw}
     OSSIACO_WCHAR_UNICODE=${_ossiaco_wchar_unicode}
 )
 

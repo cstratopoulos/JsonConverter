@@ -23,18 +23,6 @@
 #    endif
 #endif
 
-#ifndef OSSIACO_RAPIDJSON_ASSERT_THROW
-/// Controls whether RAPIDJSON_ASSERT will be redefined to enable exception throws.
-/// It is disabled by default
-#    define OSSIACO_RAPIDJSON_ASSERT_THROW 0
-#endif
-
-#if OSSIACO_RAPIDJSON_ASSERT_THROW
-#    define RAPIDJSON_ASSERT(x)                                                                    \
-        if (!(x))                                                                                  \
-            throw Ossiaco::converter::RapidJsonAssert(RAPIDJSON_STRINGIFY(x))
-#endif
-
 #ifndef OSSIACO_WCHAR_UNICODE
 /// Wether to use unicode through `char_t`. Off by default.
 ///
