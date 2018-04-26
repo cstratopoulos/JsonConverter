@@ -15,6 +15,7 @@
 #include <ossiaco/converter/utils/customized.hpp>
 
 #include <boost/type_traits/is_detected.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 #include <boost/type_traits/remove_cv_ref.hpp>
 
 #include <type_traits>
@@ -56,6 +57,9 @@ using JsonConverterSupportTagType = typename Class::JsonConverterSupportTag;
 
 template<typename Class>
 constexpr bool jsonSupportDetected = boost::is_detected_v<JsonConverterSupportTagType, Class>;
+
+template<typename Class, typename Tag>
+constexpr bool isExpectedJsonSupportTag = boost::is_detected_exact_v<Tag, JsonConverterSupportTagType, Class>;
 
 // Traits class for access to JsonConverter info.
 template<typename Converter>

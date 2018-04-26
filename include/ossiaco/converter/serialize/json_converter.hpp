@@ -31,15 +31,14 @@ class JsonConverter;
 
 namespace detail {
 
-template<typename Tag, typename Class>
-using TagEnable =
-    std::enable_if_t<boost::is_detected_exact_v<Tag, traits::JsonConverterSupportTagType, Class>>;
+template<typename Class, typename Tag>
+using TagEnable = std::enable_if_t<traits::isExpectedJsonSupportTag<Class, Tag>>;
 
 template<typename Class, typename Enable>
 class JsonConverter;
 
 template<typename Class>
-class JsonConverter<Class, TagEnable<traits::FinalSupportTag, Class>> : public SimpleTypeAllocator<Class> {
+class JsonConverter<Class, TagEnable<Class, traits::FinalSupportTag>> : public SimpleTypeAllocator<Class> {
 public:
     using SubjectType = Class;
 
@@ -52,7 +51,7 @@ private:
 };
 
 template<typename Class>
-class JsonConverter<Class, TagEnable<traits::PolySupportTag, Class>> : public DeducedAllocBackend<Class> {
+class JsonConverter<Class, TagEnable<Class, traits::PolySupportTag>> : public DeducedAllocBackend<Class> {
 public:
     using SubjectType = Class;
     using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;
