@@ -35,8 +35,12 @@ struct EnumTypeMap;
 template<typename>
 class PolyDecoratorAllocator;
 
-template<typename>
+namespace detail {
+
+template<typename, typename Enable = void>
 class JsonConverter;
+
+}
 
 namespace detail {
 
@@ -70,7 +74,7 @@ template<typename T>
 using AllocType = mp11::mp_eval_if_c<
     std::is_same_v<AllocTypeRaw<T>, mp11::mp_quote<SimpleTypeAllocator>>,
     SimpleTypeAllocator<T>,
-    mp11::mp_invoke, AllocTypeRaw<T>, JsonConverter<T>
+    mp11::mp_invoke, AllocTypeRaw<T>, detail::JsonConverter<T, void>
 >;
 
 } // namespace detail

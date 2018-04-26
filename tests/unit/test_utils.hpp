@@ -269,7 +269,7 @@ void BasicTestCase<Base, Func, Comparison, Conversion>::run()
 
             if constexpr (!std::is_same_v<ObjType, Base>) {
                 AND_THEN("Polymorphic objects should be registered") {
-                    static_assert(ObjConverter::_isPolymorphic);
+                    static_assert(ObjConverter::isPolymorphic());
                     REQUIRE(Oc::jsonPolyImpl<ObjType>());
 
                     AND_THEN("We should be able to polymorphically rehydrate it correctly") {

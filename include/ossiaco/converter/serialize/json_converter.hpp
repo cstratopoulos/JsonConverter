@@ -19,56 +19,91 @@
 #include <ossiaco/converter/utils/detect_specialization.hpp>
 
 #include <boost/type_traits/detected.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 #include <boost/type_traits/detected_or.hpp>
 
 #include <type_traits>
 
 namespace Ossiaco::converter {
 
-/// Management of JSON serialization/deserialization for `Class`.
-// TODO possibly refactor this into frontends based on final vs poly support to replace some if constexpr
-// and detection idiom with tag dispatch
+template<typename>
+class JsonConverter;
+
+namespace detail {
+
+template<typename Tag, typename Class>
+using TagEnable =
+    std::enable_if_t<boost::is_detected_exact_v<Tag, traits::JsonConverterSupportTagType, Class>>;
+
+template<typename Class, typename Enable>
+class JsonConverter;
+
 template<typename Class>
-class JsonConverter : public DeducedAllocBackend<Class> {
+class JsonConverter<Class, TagEnable<traits::FinalSupportTag, Class>> : public SimpleTypeAllocator<Class> {
 public:
-    using SubjectType     = Class;
+    using SubjectType = Class;
+
+    static constexpr auto propertiesTuple() { return Class::jsonProperties(); }
+
+    static constexpr auto _properties{propertiesTuple()};
+
+private:
+    static_assert(std::tuple_size_v<decltype(_properties)>, "JSON properties for a final supported class must be nonempty tuple");
+};
+
+template<typename Class>
+class JsonConverter<Class, TagEnable<traits::PolySupportTag, Class>> : public DeducedAllocBackend<Class> {
+public:
+    using SubjectType = Class;
     using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;
     using SubjectEnumType = boost::detected_or_t<void, traits::JsonEnumType, Class>;
 
-    static constexpr bool _isPolymorphic = !std::is_void_v<SubjectBaseType>;
+    static constexpr bool _isPolyRoot = std::is_void_v<SubjectBaseType>;
 
-    using BaseConverter = std::conditional_t<_isPolymorphic, JsonConverter<SubjectBaseType>, void>;
+    using BaseConverter = std::conditional_t<_isPolyRoot, void, JsonConverter<SubjectBaseType>>;
 
     template<typename Derived = Class, typename Encoding = utf_t>
-    static bool ensureRegisteredWithBase();
+    static bool ensureRegisteredWithBase()
+    {
+        if constexpr(_isPolyRoot)
+            return true;
+        else
+            return JsonConverter<typename Class::JsonBase>::template registerDerivedClass<Derived, Encoding>();
+    }
 
     static constexpr auto propertiesTuple()
     {
-        if constexpr(_isPolymorphic) {
-            return std::tuple_cat(BaseConverter::_properties, Class::jsonProperties());
-        } else {
+        if constexpr(_isPolyRoot)
             return Class::jsonProperties();
-        }
+        else
+            return std::tuple_cat(BaseConverter::_properties, Class::jsonProperties());
     }
 
     static constexpr auto _properties{propertiesTuple()};
 
 private:
-    using PropsType = boost::detected_t<traits::JsonPropertiesType, Class>;
+    static_assert(std::tuple_size_v<decltype(_properties)> || std::is_abstract_v<Class>,
+        "JSON properties for a non-abstract class must be a nonempty tuple either directly or inherited");
+};
 
+} // namespace detail
+
+template<typename Class>
+class JsonConverter : public detail::JsonConverter<Class> {
+public:
     static_assert(traits::jsonSupportDetected<Class>);
 
-    static_assert(isSpecialization<PropsType, std::tuple>);
-
-    static_assert(
-        std::tuple_size_v<decltype(_properties)> || std::is_abstract_v<Class>,
-        "JSON properties for a non-abstract class must be a nonempty tuple provided either directly or inherited");
+    static constexpr bool isPolymorphic()
+    {
+        return std::is_same_v<typename Class::JsonConverterSupportTag, traits::PolySupportTag>;
+    }
 };
+
 
 namespace traits {
 
 template<typename Class>
-struct ConverterProperties<JsonConverter<Class>> {
+struct ConverterProperties<detail::JsonConverter<Class, void>> {
     using SubjectType     = Class;
     using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;
     using SubjectEnumType = boost::detected_or_t<void, traits::JsonEnumType, Class>;
@@ -80,24 +115,18 @@ struct ConverterProperties<JsonConverter<Class>> {
     >;
 };
 
-} // namespace traits
-
 template<typename Class>
-template<typename Derived, typename Encoding>
-bool JsonConverter<Class>::ensureRegisteredWithBase()
-{
-    if constexpr(_isPolymorphic) {
-        using RegistrarSubject = typename Class::JsonBase;
+struct ConverterProperties<JsonConverter<Class>> : ConverterProperties<detail::JsonConverter<Class, void>> {};
 
-        return JsonConverter<RegistrarSubject>::template registerDerivedClass<Derived, Encoding>();
-    } else {
-        return true;
-    }
-}
+} // namespace traits
 
 template<typename Class>
 bool jsonPolyImpl()
 {
+    static_assert(
+        JsonConverter<Class>::isPolymorphic(),
+        "Polymorphic registration is only valid for classes that support polymorphic JSON conversion");
+
     return JsonConverter<Class>::ensureRegisteredWithBase();
 }
 

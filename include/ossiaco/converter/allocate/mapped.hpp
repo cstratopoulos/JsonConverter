@@ -35,7 +35,6 @@ public:
     using ConverterEnumMap  = typename ConverterProperties::SubjectEnumMapType;
 
     static_assert(isCustomized<ConverterProperties>);
-    static_assert(isSpecialization<Converter, JsonConverter>);
 
     template<typename Derived, typename Encoding>
     static bool registerDerivedClass()

@@ -51,8 +51,6 @@ private:
 template<typename Converter>
 class PolyDecoratorAllocator : Inconstructible {
 public:
-    static_assert(isSpecialization<Converter, JsonConverter>);
-
     using ConverterProperties = traits::ConverterProperties<Converter>;
     using SubjectType         = typename ConverterProperties::SubjectType;
 
