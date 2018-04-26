@@ -26,6 +26,28 @@ namespace Ossiaco::converter {
 template<typename>
 class JsonConverter;
 
+namespace detail {
+
+template<typename Subject, typename Encoding>
+class DecoratorAllocMapping : Inconstructible {
+public:
+    using AllocatorType = TypeAllocator<Subject, Encoding>;
+
+    template<typename Derived>
+    static void registerDerivedClass();
+
+    static AllocatorType allocatorByName(const CharType* name);
+
+private:
+    static auto& getMapping()
+    {
+        static std::map<string_t, TypeAllocator<Subject, Encoding>> mapping;
+        return mapping;
+    }
+};
+
+} // namespace detail
+
 template<typename Converter>
 class PolyDecoratorAllocator : Inconstructible {
 public:
@@ -42,24 +64,13 @@ public:
 
     template<typename Encoding>
     static auto resolveTypeAllocator(const rapidjson::GenericValue<Encoding>&);
-
-private:
-    template<typename Encoding>
-    static auto& safeGetMapping()
-    {
-        static std::map<string_t, TypeAllocator<SubjectType, Encoding>> mappings;
-        return mappings;
-    }
 };
 
 template<typename Converter>
 template<typename Derived, typename Encoding>
 bool PolyDecoratorAllocator<Converter>::registerDerivedClass()
 {
-    adlInvokeDecoratorHook<SubjectType, Derived>();
-
-    safeGetMapping<Encoding>().emplace(
-        printTypeName<Derived>(), TypeAllocator<SubjectType, Encoding>::template make<Derived>());
+    detail::DecoratorAllocMapping<SubjectType, Encoding>::template registerDerivedClass<Derived>();
 
     return Converter::template ensureRegisteredWithBase<Derived, Encoding>();
 }
@@ -88,12 +99,36 @@ auto PolyDecoratorAllocator<Converter>::resolveTypeAllocator(
             return TypeAllocator<SubjectType, Encoding>::template make<>();
     }
 
-    const auto& mappings = safeGetMapping<Encoding>();
-    if (auto itr = mappings.find(name); itr != mappings.end())
+    return detail::DecoratorAllocMapping<SubjectType, Encoding>::allocatorByName(name);
+}
+
+namespace detail {
+
+template<typename Subject, typename Encoding>
+template<typename Derived>
+void DecoratorAllocMapping<Subject, Encoding>::registerDerivedClass()
+{
+    static bool registered = false;
+
+    if (!registered) {
+        adlInvokeDecoratorHook<Subject, Derived>();
+
+        getMapping().emplace(printTypeName<Derived>(), AllocatorType::template make<Derived>());
+
+        registered = true;
+    }
+}
+
+template<typename Subject, typename Encoding>
+typename DecoratorAllocMapping<Subject, Encoding>::AllocatorType DecoratorAllocMapping<Subject, Encoding>::allocatorByName(const CharType * name)
+{
+    if (auto itr = getMapping().find(name); itr != getMapping().end())
         return itr->second;
 
-    throw UnregisteredType<SubjectType>(name);
+    throw UnregisteredType<Subject>(name);
 }
+
+} // namespace detail
 
 } // namespace Ossiaco::converter
 

@@ -89,9 +89,7 @@ bool JsonConverter<Class>::ensureRegisteredWithBase()
     if constexpr(_isPolymorphic) {
         using RegistrarSubject = typename Class::JsonBase;
 
-        static const bool result = JsonConverter<RegistrarSubject>::template registerDerivedClass<Derived, Encoding>();
-
-        return result;
+        return JsonConverter<RegistrarSubject>::template registerDerivedClass<Derived, Encoding>();
     } else {
         return true;
     }
