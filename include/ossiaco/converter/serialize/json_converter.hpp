@@ -51,7 +51,7 @@ private:
 };
 
 template<typename Class>
-class JsonConverter<Class, TagEnable<Class, traits::PolySupportTag>> : public DeducedAllocBackend<Class> {
+class JsonConverter<Class, TagEnable<Class, traits::PolySupportTag>> : public PolyAllocBackend<Class> {
 public:
     using SubjectType = Class;
     using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;

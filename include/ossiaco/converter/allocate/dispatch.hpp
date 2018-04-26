@@ -40,10 +40,6 @@ namespace detail {
 template<typename, typename Enable = void>
 class JsonConverter;
 
-}
-
-namespace detail {
-
 namespace mp11 = boost::mp11;
 
 template<typename T>
@@ -53,34 +49,29 @@ using EnumDetected = boost::is_detected<traits::JsonEnumType>;
 template<typename T>
 using AllocMap = mp11::mp_list<
     mp11::mp_list<EnumDetected<T>,            mp11::mp_quote<MappedTypeAllocator>>,
-    mp11::mp_list<std::is_polymorphic<T>,     mp11::mp_quote<PolyDecoratorAllocator>>,
-    mp11::mp_list<mp11::mp_true,              mp11::mp_quote<SimpleTypeAllocator>>
+    mp11::mp_list<std::is_polymorphic<T>,     mp11::mp_quote<PolyDecoratorAllocator>>
 >;
 
-// The allocator backend for `T`; called `Raw` because it is a quoted metafunction
 template<typename T>
-using AllocTypeRaw = mp11::mp_second<
-    mp11::mp_at<
-        AllocMap<T>,
-        mp11::mp_find_if<AllocMap<T>, mp11::mp_front>>
->;
+struct AllocTypeChecked {
+    static_assert(mp11::mp_or<EnumDetected<T>, std::is_polymorphic<T>>::value,
+        "Class does not provide expected traits for polymorphic allocator backend deduction");
 
-// The actual allocation backend for `T`.
-// For `SimpleTypeAllocator` this is just `SimpleTypeAllocator`.
-// For the other cases it is `AllocTypeRaw<T>::fn<JsonConverter<T>>`, i.e.,
-// the allocator type templated on `JsonConverter<T>` since the polymorphic allocation backends
-// are CRTP bases.
-template<typename T>
-using AllocType = mp11::mp_eval_if_c<
-    std::is_same_v<AllocTypeRaw<T>, mp11::mp_quote<SimpleTypeAllocator>>,
-    SimpleTypeAllocator<T>,
-    mp11::mp_invoke, AllocTypeRaw<T>, detail::JsonConverter<T, void>
->;
+    static_assert(traits::isExpectedJsonSupportTag<T, traits::PolySupportTag>);
+
+    using QuotedType = mp11::mp_second<
+        mp11::mp_at<
+            AllocMap<T>,
+            mp11::mp_find_if<AllocMap<T>, mp11::mp_front>>
+    >;
+
+    using Type = mp11::mp_invoke<QuotedType, detail::JsonConverter<T, void>>;
+};
 
 } // namespace detail
 
 template<typename Class>
-using DeducedAllocBackend = detail::AllocType<Class>;
+using PolyAllocBackend = typename detail::AllocTypeChecked<Class>::Type;
 
 } // namespace Ossiaco::converter
 
