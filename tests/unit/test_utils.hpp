@@ -40,6 +40,23 @@ namespace fs = std::filesystem;
 #    error "Filesystem implementation needed for unit tests"
 #endif
 
+inline void jsonCompare(Ossiaco::converter::string_view_t json1, Ossiaco::converter::string_view_t json2)
+{
+    namespace Oc = Ossiaco::converter;
+    namespace rj = rapidjson;
+
+    CAPTURE(json1);
+    CAPTURE(json2);
+
+    rj::GenericDocument<Oc::utf_t> doc1;
+    rj::GenericDocument<Oc::utf_t> doc2;
+
+    doc1.Parse(Oc::string_t(json1));
+    doc2.Parse(Oc::string_t(json2));
+
+    CHECK(doc1 == doc2);
+}
+
 template<typename Class>
 using EqualityOperatorType = decltype(
     std::declval<const Class&>() == std::declval<const Class&>()

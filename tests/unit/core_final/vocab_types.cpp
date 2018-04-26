@@ -22,6 +22,15 @@ namespace tt = test_types;
 TEST_CASE(
     "A type with optional UDT and primitive convertible fields", "[ConvertVocabType][optional][SimpleTypeAllocator]")
 {
+    SECTION("JSON string appearance") {
+        tt::OptionalFields snoopy{OSSIACO_XPLATSTR("Snoopy"), {}, {}};
+        jsonCompare(Ossiaco::converter::toJsonStringPretty(snoopy), OSSIACO_XPLATSTR(R"--({
+"name": "Snoopy",
+"city": null,
+"light": null
+})--"));
+    }
+
     runTestCases(
         makeSimpleStringTest(
             "All optional fields present",
