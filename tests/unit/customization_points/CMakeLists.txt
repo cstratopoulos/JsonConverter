@@ -15,6 +15,7 @@
 
 add_executable(customization_point_tests
     main.cpp
+    assert_throw.cpp
     custom_value.cpp
     decorator_hook.cpp
 )
