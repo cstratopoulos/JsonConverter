@@ -25,41 +25,43 @@
 
 namespace Ossiaco::converter {
 
-// Base class for exceptions that can occur in the JSON conversion process
+/// Base class for exceptions that can occur during JSON conversion.
 class SerializationException;
 
-// A required JSON property was not found when deserializing Class.
+/// A required JSON property was not found when deserializing `Class`.
 template<typename Class>
 class RequiredPropertyMissing;
 
-// Attempted @type-decorator polymorphic deserialization of a class not registered as an
-// inheritor of Base
+/// Attempted decorator deserialization of a class not registered as an inheritor of `Base`.
 template<typename Base>
 class UnregisteredType;
 
-// Attempted to allocate abstract type Class.
+/// Deserialization attempted to allocate abstract type `Class`.
 template<typename Class>
 class AbstractTypeAllocation;
 
-// Expected an '@ref' element when deserializing Class
+/// Expected a `@ref` element when deserializing `Class`.
 template<typename Class>
 class RefMissing;
 
-// The reference ID was not found in the JSON.
+/// The reference ID was not found in the JSON.
 class InvalidReferenceId;
 
-// Expected some sort of type field to map Enum to an instance of Class
+/// Expected some sort of type field to map `Enum` to an instance of `Class`.
 template<typename Class, typename Enum>
 class TypeFieldMissing;
 
-// Wraps a file I/O error.
+/// Wraps a file I/O error.
 class OpenFileError;
 
-// If OSSIACO_RAPIDJSON_ASSERT_THROW is defined, this class represents an occurrence of
-// RAPIDJSON_ASSERT which has been turned into an an exception throw.
+/// A class for constructing exceptions from failed RapidJSON assertions.
+///
+/// No code in the library will ever throw this exception directly. Rather, users may opt to 
+/// customise the macro `RAPIDJSON_ASSERT` (e.g., using `BOOST_ASSERT`) to throw [RapidJsonAssert]
+/// whenever a `RAPIDJSON_ASSERT` fails.
 class RapidJsonAssert;
 
-// An exception which wraps a rapidjson::ParseResult.
+/// An exception which wraps a [rapidjson::ParseResult].
 class RapidJsonParseError;
 
 namespace detail {
@@ -68,7 +70,7 @@ namespace detail {
 template<typename Arg, typename... Args>
 string_t streamFormat(const Arg& arg, const Args&... args);
 
-}
+} // namespace detail
 
 class SerializationException : public std::runtime_error {
 public:
@@ -153,14 +155,19 @@ public:
     {}
 };
 
-#if OSSIACO_RAPIDJSON_ASSERT_THROW
-
 class RapidJsonAssert : public SerializationException {
 public:
     using SerializationException::SerializationException;
-};
 
-#endif // OSSIACO_RAPIDJSON_ASSERT_THROW
+    RapidJsonAssert(const char* expr, const char* function, const char* file, long line)
+        : SerializationException([=] {
+        std::ostringstream msg;
+        msg << file << ":" << line << ": " << function << ": RapidJSON assertion '" << expr << "' failed.";
+
+        return msg.str();
+    }())
+    {}
+};
 
 class RapidJsonParseError : public SerializationException {
 public:
