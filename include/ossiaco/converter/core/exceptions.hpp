@@ -161,7 +161,7 @@ public:
               OSSIACO_XPLATSTR("The value"),
               e,
               OSSIACO_XPLATSTR("is not mapped in the type tree for"),
-              printTypeName<Enum>()));
+            printTypeName<Enum>()))
     {}
 };
 
