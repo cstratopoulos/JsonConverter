@@ -159,7 +159,7 @@ public:
     InvalidEnumValue(Enum e)
         : SerializationException(detail::streamFormat(
               OSSIACO_XPLATSTR("The value"),
-              e,
+              static_cast<std::underlying_type_t<Enum>>(e),
               OSSIACO_XPLATSTR("is not mapped in the type tree for"),
             printTypeName<Enum>()))
     {}
