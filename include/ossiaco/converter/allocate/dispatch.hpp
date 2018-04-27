@@ -43,13 +43,13 @@ class JsonConverter;
 namespace mp11 = boost::mp11;
 
 template<typename T>
-using EnumDetected = boost::is_detected<traits::JsonEnumType>;
+using EnumDetected = mp11::mp_bool<traits::jsonEnumDetected<T>>;
 
 // Type list performing allocator backend dispatch
 template<typename T>
 using AllocMap = mp11::mp_list<
-    mp11::mp_list<EnumDetected<T>,            mp11::mp_quote<MappedTypeAllocator>>,
-    mp11::mp_list<std::is_polymorphic<T>,     mp11::mp_quote<PolyDecoratorAllocator>>
+    mp11::mp_list<EnumDetected<T>,        mp11::mp_quote<MappedTypeAllocator>>,
+    mp11::mp_list<std::is_polymorphic<T>, mp11::mp_quote<PolyDecoratorAllocator>>
 >;
 
 template<typename T>
