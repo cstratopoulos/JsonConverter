@@ -48,10 +48,10 @@ auto typeMapFind(const Map& m, Enum e)
 {
     static_assert(std::is_enum_v<Enum>);
 
-    auto findItr = _map.find(e);
-    if (findItr == _map.end()) {
+    auto findItr = m.find(e);
+    if (findItr == m.end()) {
         if constexpr (boost::is_detected_exact_v<Enum, TreeNodeDefaultVal, Enum>)
-            return _map.find(TypeTreeNode<Enum>::defaultVal())->second;
+            return m.find(TypeTreeNode<Enum>::defaultVal())->second;
         else
             throw InvalidEnumValue<Enum>();
     }
@@ -88,9 +88,9 @@ template<typename Class, typename Encoding, typename ValType>
 TypeAllocator<Class, Encoding> leafAllocCallable(const rapidjson::GenericValue<Encoding>& jsonVal)
 {
     if constexpr(typeAllocCompatible<ValType, Class>)
-        return EnumMap<ValType>::template resolveAllocator<Class, Encoding>(jsonVal);
+        return EnumTypeMap<ValType>::template resolveAllocator<Class, Encoding>(jsonVal);
     else
-        return TypeAllocator<Class, Encoding>::make<>();
+        return TypeAllocator<Class, Encoding>::make();
 }
 
 template<typename Class, typename Encoding, typename ValType>
@@ -101,7 +101,7 @@ TypeAllocator<Class, Encoding> nonLeafAllocCallable(const rapidjson::GenericValu
     if constexpr(std::is_convertible_v<ValType*, Class*>)
         return AllocType::template make<ValType>();
     else
-        return AllocType::make<>();
+        return AllocType::make();
 }
 
 } // namespace free_callables
