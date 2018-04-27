@@ -33,10 +33,10 @@ endif()
 ####################################
 
 find_path(DATE_INCLUDE_DIR date/date.h)
-find_path(RAPIDJSON_INCLUDE_DIR rapidjson/rapidjson.h)
 find_path(RANGE_V3_INCLUDE_DIR range/v3/range.hpp)
 
 find_package(Boost 1.67.0 REQUIRED)
+find_package(RapidJSON 1.1.0 REQUIRED)
 
 ###############################
 # The converter library target
@@ -103,7 +103,7 @@ target_include_directories(ossiaco_converter INTERFACE $<BUILD_INTERFACE:${CMAKE
 target_include_directories(ossiaco_converter
     INTERFACE ${Boost_INCUDE_DIRS}
     INTERFACE ${DATE_INCLUDE_DIR}
-    INTERFACE ${RAPIDJSON_INCLUDE_DIR}
+    INTERFACE ${RAPIDJSON_INCLUDE_DIRS}
 )
 
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
