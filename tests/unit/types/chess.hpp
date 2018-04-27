@@ -29,6 +29,10 @@ struct IChessPiece {
         king,
     };
 
+    IChessPiece(Color c, Type t, bool active)
+        : _color(c), _type(t), _active(active)
+    {}
+
     IChessPiece() = default;
     IChessPiece(const IChessPiece&) = default;
     IChessPiece(IChessPiece&&) = default;
@@ -40,25 +44,29 @@ struct IChessPiece {
 
     virtual void move() = 0;
 
+    bool operator==(const IChessPiece& other) const
+    {
+        return std::tie(_color, _type, _active) == std::tie(other._color, other._type, other._active);
+    }
+
     OSSIACO_CONVERTER_BASE_MAPPED_SUPPORTED(
         IChessPiece, IChessPiece::Type,
         (&IChessPiece::_color,  OSSIACO_XPLATSTR("color"))
         (&IChessPiece::_type,   OSSIACO_XPLATSTR("type"))
         (&IChessPiece::_active, OSSIACO_XPLATSTR("active")));
 
-    Color _color;
-    Type _type;
-    bool _active;
+    Color _color{Color::black};
+    Type _type{Type::pawn};
+    bool _active{true};
 };
 
 template<IChessPiece::Type pieceType>
 class ChessPiece : public IChessPiece {
 public:
-    ChessPiece(IChessPiece::Color color)
-        : IChessPiece{ color, pieceType, true }
+    explicit ChessPiece(IChessPiece::Color color = IChessPiece::Color::black)
+        : IChessPiece(color, pieceType, true)
     {}
 
-    ChessPiece() = default;
     ChessPiece(const ChessPiece&) = default;
     ChessPiece(ChessPiece&&) = default;
 
