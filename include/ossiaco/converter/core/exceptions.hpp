@@ -51,6 +51,9 @@ class InvalidReferenceId;
 template<typename Class, typename Enum>
 class TypeFieldMissing;
 
+template<typename Enum>
+class InvalidEnumValue;
+
 /// Wraps a file I/O error.
 class OpenFileError;
 
@@ -145,6 +148,20 @@ public:
               printTypeName<Enum>(),
               OSSIACO_XPLATSTR("to an instance of"),
               printTypeName<Class>()))
+    {}
+};
+
+template<typename Enum>
+class InvalidEnumValue : public SerializationException {
+public:
+    static_assert(std::is_enum_v<Enum>);
+
+    InvalidEnumValue(Enum e)
+        : SerializationException(detail::streamFormat(
+              OSSIACO_XPLATSTR("The value"),
+              e,
+              OSSIACO_XPLATSTR("is not mapped in the type tree for"),
+              printTypeName<Enum>()));
     {}
 };
 
