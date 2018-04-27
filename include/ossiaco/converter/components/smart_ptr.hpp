@@ -88,17 +88,17 @@ void ConvertSmartPtr<SmartPtr>::toJson(
 
     if (managedPtr) {
         auto key   = reinterpret_cast<uintptr_t>(managedPtr);
-        int32_t id = refs.at(key);
+        std::optional<int32_t> id = refs.at(key);
 
         if (id) {
             writer.StartObject();
             writer.String(OSSIACO_XPLATSTR("@ref"));
-            writer.Int(id);
+            writer.Int(*id);
             writer.EndObject();
         } else {
             id = refs.add(key);
 
-            std::function<void(Writer&)> cb = [id](Writer& w) {
+            std::function<void(Writer&)> cb = [id = *id](Writer& w) {
                 w.String(OSSIACO_XPLATSTR("@id"));
                 w.Int(id);
             };

@@ -18,6 +18,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 
 #include <cstdint>
@@ -35,11 +36,12 @@ public:
 
     ~ReferenceMapper() = default;
 
-    int32_t at(uintptr_t key)
+    std::optional<int32_t> at(uintptr_t key)
     {
-        auto iterator = _map.find(key);
+        if (auto iterator = _map.find(key); iterator != _map.end())
+            return iterator->second;
 
-        return iterator == _map.end() ? 0 : iterator->second;
+        return {};
     }
 
     int32_t add(uintptr_t key)
