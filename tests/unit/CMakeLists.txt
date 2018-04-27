@@ -22,6 +22,7 @@ add_library(converter_test_utils INTERFACE)
 
 target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/test_utils.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/chess.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/digraph.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/boost_uuid.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/light.hpp
@@ -41,4 +42,5 @@ target_link_libraries(converter_test_utils
 
 add_subdirectory(core_final)
 add_subdirectory(customization_points)
+add_subdirectory(enum_mapped)
 add_subdirectory(poly_decorator)
