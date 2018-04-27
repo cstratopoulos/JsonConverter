@@ -53,7 +53,7 @@ auto typeMapFind(const Map& m, Enum e)
         if constexpr (boost::is_detected_exact_v<Enum, TreeNodeDefaultVal, Enum>)
             return m.find(TypeTreeNode<Enum>::defaultVal())->second;
         else
-            throw InvalidEnumValue<Enum>();
+            throw InvalidEnumValue<Enum>(e);
     }
 
     return findItr->second;
