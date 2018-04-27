@@ -73,6 +73,13 @@ struct AllocTypeChecked {
 template<typename Class>
 using PolyAllocBackend = typename detail::AllocTypeChecked<Class>::Type;
 
+// Helper variable template for debugging allocator backend dispatch.
+template<typename Class, template<typename> typename Backend>
+constexpr bool expectedAllocBackend = std::is_same_v<
+    PolyAllocBackend<Class>,
+    Backend<detail::JsonConverter<Class, void>>
+>;
+
 } // namespace Ossiaco::converter
 
 #endif // OSSIACO_CONVERTER_ALLOCATE_DISPATCH_HPP

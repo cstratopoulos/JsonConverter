@@ -17,6 +17,8 @@
 
 namespace tt = test_types;
 
+namespace mp11 = boost::mp11;
+
 template<typename Base = tt::Shape, typename Func>
 auto makeShapeTest(std::string_view desc, Func&& func)
 {
@@ -25,6 +27,18 @@ auto makeShapeTest(std::string_view desc, Func&& func)
         std::forward<Func>(func),
         makeObjectComparison<Base>(),
         StringObjectConversion{});
+}
+
+template<typename Class>
+using PolyExpected = mp11::mp_bool<
+    Ossiaco::converter::expectedAllocBackend<Class, Ossiaco::converter::PolyDecoratorAllocator>>;
+
+TEST_CASE("Expected alloc backend template", "[PolyDecoratorAllocator]")
+{
+    using types = mp11::mp_list<tt::Shape, tt::Segment, tt::DrawableCircle>;
+
+    static_assert(mp11::mp_all_of<types, PolyExpected>());
+    SUCCEED("Allocator backend variable template static assert succeeded");
 }
 
 TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAllocator]")
