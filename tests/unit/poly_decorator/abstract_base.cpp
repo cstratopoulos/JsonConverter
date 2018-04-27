@@ -29,6 +29,20 @@ auto makeShapeTest(std::string_view desc, Func&& func)
 
 TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAllocator]")
 {
+    SECTION("JSON string appearance") {
+        tt::Circle unit(tt::Point3D{ 0.0, 0.0, 0.0 }, 1.0);
+        jsonCompare(Ossiaco::converter::toJsonStringPretty(unit), OSSIACO_XPLATSTR(R"--({
+"@type": "test_types::Circle",
+"center":
+    {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+    },
+"radius": 1.0
+})--"));
+    }
+
     runTestCases(
         makeShapeTest("A default constructed Circle", [] { return tt::Circle(); }),
         makeShapeTest("A unit circle", [] { return tt::Circle(tt::Point3D{}, 1.0); }),
@@ -46,6 +60,7 @@ TEST_CASE("Converting through direct and indirect bases", "[PolyDecoratorAllocat
         makeShapeTest<tt::Circle>("DrawableCircle through Circle", [=] { return drawCirc; }));
 }
 
+// Used below as an inheritor of Shape which the user forgot to register.
 struct OopsShape : tt::Shape {
     ~OopsShape() override {}
 
