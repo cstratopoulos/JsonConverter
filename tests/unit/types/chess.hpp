@@ -19,7 +19,7 @@
 namespace test_types {
 
 struct IChessPiece {
-    enum class Color : bool { black, white };
+    enum class Color { black, white };
     enum class Type {
         pawn,
         knight,
