@@ -20,6 +20,7 @@
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/map.hpp>
 #include <boost/type_traits/detected.hpp>
+#include <boost/type_traits/is_detected_convertible.hpp>
 
 #include <type_traits>
 
@@ -48,7 +49,8 @@ struct TypeTreeNode : Default {
 
     /// The default value that should be used for a JSON entry which is not in `Map`.
     ///
-    /// `Map` must contain `MapEntry<defaultVal(), T>` for some `T`.
+    /// `Map` must contain `MapEntry<defaultVal(), T>` for some `T` to enable deserialization
+    /// when passed an unexpected enum value. If not provided, [InvalidEnumValue] is thrown.
     static constexpr Enum defaultVal() = delete;
 };
 
@@ -90,8 +92,7 @@ using ProvidesTypeTreeBasic = boost::mp11::mp_and<
     Customized<TypeTreeNode<Enum>>,
     std::is_enum<Enum>,
     detail::IsValidTreeMap<boost::detected_t<TreeNodeMap, Enum>>,
-    std::is_same<string_view_t, boost::detected_t<TreeNodeTypeField, Enum>>,
-    std::is_same<Enum, boost::detected_t<TreeNodeDefaultVal, Enum>>
+    boost::is_detected_convertible<string_view_t, TreeNodeTypeField, Enum>
 >;
 
 // Checks if a TypeTreeNode MapType is a leaf: none of its mapped values are enums.
