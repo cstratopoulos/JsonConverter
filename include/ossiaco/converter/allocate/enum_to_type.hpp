@@ -20,6 +20,7 @@
 #include <boost/mp11/bind.hpp>
 #include <boost/mp11/map.hpp>
 #include <boost/type_traits/detected.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 
 #include <map>
 #include <type_traits>
@@ -42,20 +43,28 @@ constexpr bool typeAllocCompatible = boost::mp11::mp_all_of_q<
         std::add_pointer_t, TreeMappedClasses<Enum>>,
     ConvertibleTo<Class*>>::value;
 
+template<typename Map, typename Enum>
+auto typeMapFind(const Map& m, Enum e)
+{
+    static_assert(std::is_enum_v<Enum>);
+
+    auto findItr = _map.find(e);
+    if (findItr == _map.end()) {
+        if constexpr (boost::is_detected_exact_v<Enum, TreeNodeDefaultVal, Enum>)
+            return _map.find(TypeTreeNode<Enum>::defaultVal())->second;
+        else
+            throw InvalidEnumValue<Enum>();
+    }
+
+    return findItr->second;
+}
+
 template<typename Class, typename Encoding, typename Enum>
 struct LeafTypeAllocMap {
     using AllocType = TypeAllocator<Class, Encoding>;
     using MapType   = std::map<Enum, AllocType>;
 
-    AllocType find(Enum eType) const
-    {
-        auto findItr = _map.find(eType);
-
-        if (findItr == _map.end())
-            return _map.find(TypeTreeNode<Enum>::defaultVal())->second;
-
-        return findItr->second;
-    }
+    AllocType find(Enum eType) const { typeMapFind(_map, eType); }
 
     const MapType _map{[] {
         using namespace boost::mp11;
@@ -118,15 +127,7 @@ struct NonLeafTypeAllocMap {
         return &free_callables::nonLeafAllocCallable<Class, Encoding, ValType>;
     }
 
-    AllocCallable find(Enum eType) const
-    {
-        auto findItr = _map.find(eType);
-
-        if (findItr == _map.end())
-            return _map.find(TypeTreeNode<Enum>::defaultVal())->second;
-
-        return findItr->second;
-    }
+    AllocCallable find(Enum eType) const { typeMapFind(_map, eType); }
 
     const MapType _map{[] {
         MapType result;
@@ -184,20 +185,14 @@ struct EnumTypeMap : Inconstructible {
 
     static_assert(isTypeTreeLeaf<Enum> || isTypeTreeNonLeaf<Enum>);
 
-    static_assert(
-        boost::mp11::mp_map_contains<
-            typename TreeNode::Map,
-            std::integral_constant<Enum, TreeNode::defaultVal()>>::value,
-        "The TypeTreeNode must map the provided default/unknown/invalid enum");
-
     template<typename Class, typename Encoding>
     static TypeAllocator<Class, Encoding>
     resolveAllocator(const rapidjson::GenericValue<Encoding>& jsonValue)
     {
         static_assert(
-            std::is_same_v<
+            boost::is_detected_exact_v<
                 TypeAllocator<Class, Encoding>,
-                boost::detected_t<detail::ResolveAllocImplType, Enum, Class, Encoding>>);
+                detail::ResolveAllocImplType, Enum, Class, Encoding>);
 
         string_view_t typeField = TreeNode::typeFieldName();
 
