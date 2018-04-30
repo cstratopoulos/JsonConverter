@@ -64,7 +64,7 @@ struct LeafTypeAllocMap {
     using AllocType = TypeAllocator<Class, Encoding>;
     using MapType   = std::map<Enum, AllocType>;
 
-    AllocType find(Enum eType) const { typeMapFind(_map, eType); }
+    AllocType find(Enum eType) const { return typeMapFind(_map, eType); }
 
     const MapType _map{[] {
         using namespace boost::mp11;
@@ -73,9 +73,15 @@ struct LeafTypeAllocMap {
 
         mp_for_each<typename TypeTreeNode<Enum>::Map>([&result](auto keyValList) {
             using KVPairType = decltype(keyValList);
+            using ValType = mp_second<KVPairType>;
 
             result.emplace(
-                mp_first<KVPairType>::value, AllocType::template make<mp_second<KVPairType>>());
+                mp_first<KVPairType>::value,
+                AllocType::template make<
+                    std::conditional_t<
+                        std::is_convertible_v<ValType*, Class*>, 
+                        ValType, Class>
+                >());
         });
 
         return result;
@@ -127,7 +133,7 @@ struct NonLeafTypeAllocMap {
         return &free_callables::nonLeafAllocCallable<Class, Encoding, ValType>;
     }
 
-    AllocCallable find(Enum eType) const { typeMapFind(_map, eType); }
+    AllocCallable find(Enum eType) const { return typeMapFind(_map, eType); }
 
     const MapType _map{[] {
         MapType result;
