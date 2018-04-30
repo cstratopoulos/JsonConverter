@@ -28,7 +28,7 @@ class JsonConverter;
 template<typename Converter>
 class MappedTypeAllocator : Inconstructible {
 public:
-    using ConverterProperties     = traits::ConverterProperties<Converter>;
+    using ConverterProperties = traits::ConverterProperties<Converter>;
 
     using SubjectType       = typename ConverterProperties::SubjectType;
     using ConverterEnumType = typename ConverterProperties::SubjectEnumType;
