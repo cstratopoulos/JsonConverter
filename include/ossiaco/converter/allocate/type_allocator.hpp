@@ -27,6 +27,7 @@ public:
     template<typename Derived = Class>
     static constexpr TypeAllocator make()
     {
+        static_assert(std::is_base_of_v<Class, Derived>);
         return TypeAllocator<Class, Encoding>(allocateImpl<Derived>, deserializeImpl<Derived>);
     }
 
