@@ -15,6 +15,7 @@
 add_executable(enum_mapped_tests
     main.cpp
     single_level.cpp
+    two_level.cpp
 )
 
 target_link_libraries(enum_mapped_tests

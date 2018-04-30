@@ -8,23 +8,24 @@
 //
 // http://opensource.org/licenses/MIT
 
-#ifndef OSSIACO_CONVERTER_TESTS_UNIT_TYPES_MESSAGES_HPP
-#define OSSIACO_CONVERTER_TESTS_UNIT_TYPES_MESSAGES_HPP
+#ifndef OSSIACO_CONVERTER_TESTS_UNIT_TYPES_MESSAGES2_HPP
+#define OSSIACO_CONVERTER_TESTS_UNIT_TYPES_MESSAGES2_HPP
 
 #include <ossiaco/converter/adapt.hpp>
 #include <ossiaco/converter/allocate/mapped.hpp>
 
-namespace test_types {
+namespace test_types::v2 {
 
 class Message {
 public:
     enum class Type {
         unknown,
         chat,
-        log
+        log,
+        command
     };
 
-    using string_t      = Ossiaco::converter::string_t;
+    using string_t = Ossiaco::converter::string_t;
     using string_view_t = Ossiaco::converter::string_view_t;
     using TimePointType = date::sys_time<std::chrono::milliseconds>;
 
@@ -53,27 +54,27 @@ public:
     bool operator==(const Message& other) const
     {
         return std::tie(_text, _timeStamp, _type) ==
-               std::tie(other._text, other._timeStamp, other._type);
+            std::tie(other._text, other._timeStamp, other._type);
     }
 
     OSSIACO_CONVERTER_BASE_MAPPED_SUPPORTED(
         Message, Type,
-        (&Message::_text,      OSSIACO_XPLATSTR("text"))
+        (&Message::_text, OSSIACO_XPLATSTR("text"))
         (&Message::_timeStamp, OSSIACO_XPLATSTR("timeStamp"))
-        (&Message::_type,      OSSIACO_XPLATSTR("type")));
+        (&Message::_type, OSSIACO_XPLATSTR("type")));
 
 private:
     string_t _text{};
-    TimePointType _timeStamp{nowFloor()};
-    Type _type{Type::unknown};
+    TimePointType _timeStamp{ nowFloor() };
+    Type _type{ Type::unknown };
 };
 
 class ChatMessage : public Message {
 public:
     explicit ChatMessage(
         string_view_t sender = {},
-        string_view_t text   = {},
-        TimePointType stamp  = Message::nowFloor())
+        string_view_t text = {},
+        TimePointType stamp = Message::nowFloor())
         : Message(text, stamp, Type::chat), _sender(sender)
     {}
 
@@ -90,11 +91,11 @@ public:
     bool operator==(const ChatMessage& other) const
     {
         return (static_cast<const Message&>(*this) == static_cast<const Message&>(other)) &&
-               (_sender == other._sender);
+            (_sender == other._sender);
     }
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
-        ChatMessage, Message, 
+        ChatMessage, Message,
         (&ChatMessage::_sender, OSSIACO_XPLATSTR("sender")));
 
 private:
@@ -111,9 +112,9 @@ public:
         fatal
     };
 
-    LogMessage(
-        Level level         = Level::info,
-        string_view_t text  = {},
+    explicit LogMessage(
+        Level level = Level::info,
+        string_view_t text = {},
         TimePointType stamp = Message::nowFloor())
         : Message(text, stamp, Type::log), _level(level)
     {}
@@ -131,7 +132,7 @@ public:
     bool operator==(const LogMessage& other) const
     {
         return (static_cast<const Message&>(*this) == static_cast<const Message&>(other)) &&
-               (_level == other._level);
+            (_level == other._level);
     }
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
@@ -139,30 +140,96 @@ public:
         (&LogMessage::_level, OSSIACO_XPLATSTR("level")));
 
 private:
-    Level _level{Level::info};
+    Level _level{ Level::info };
 };
 
-} // namespace test_types
+enum class OpType {
+    get,
+    post,
+    put,
+    delete_
+};
+
+template<OpType operation>
+class CommandMessage : public Message {
+public:
+    explicit CommandMessage(
+        string_view_t target = {},
+        string_view_t path   = {},
+        TimePointType stamp  = Message::nowFloor())
+        : Message(path, stamp, Type::command), _target(target)
+    {}
+
+    CommandMessage(const CommandMessage&) = default;
+    CommandMessage(CommandMessage&&) = default;
+
+    CommandMessage& operator=(const CommandMessage&) = default;
+    CommandMessage& operator=(CommandMessage&&) = default;
+
+    ~CommandMessage() = default;
+
+    OpType op() const { return _op; }
+    const string_t& target() const { return _target; }
+
+    void exec() const { /* execute some command */ }
+
+    bool operator==(const CommandMessage& other) const
+    {
+        return (static_cast<const Message&>(*this) == static_cast<const Message&>(other)) &&
+            (std::tie(_op, _target) == std::tie(other._op, other._target));
+    }
+
+    OSSIACO_CONVERTER_POLY_SUPPORTED(
+        CommandMessage, Message,
+        (&CommandMessage::_op,     OSSIACO_XPLATSTR("op"))
+        (&CommandMessage::_target, OSSIACO_XPLATSTR("target")));
+
+private:
+    OpType _op{operation};
+    string_t _target{};
+};
+
+} // namespace test_types::v2
 
 namespace Ossiaco::converter {
 
+namespace ttv2 = test_types::v2;
+
 template<>
-struct TypeTreeNode<test_types::Message::Type> {
-    using MType = test_types::Message::Type;
+struct TypeTreeNode<ttv2::Message::Type> {
+    using MType = ttv2::Message::Type;
 
     template<MType m, typename T>
     using MapEntry = boost::mp11::mp_list<std::integral_constant<MType, m>, T>;
 
     using Map = boost::mp11::mp_list<
-        MapEntry<MType::unknown, test_types::Message>,
-        MapEntry<MType::chat,    test_types::ChatMessage>,
-        MapEntry<MType::log,     test_types::LogMessage>
+        MapEntry<MType::unknown, ttv2::Message>,
+        MapEntry<MType::chat,    ttv2::ChatMessage>,
+        MapEntry<MType::log,     ttv2::LogMessage>,
+        MapEntry<MType::command, ttv2::OpType>
     >;
 
     static constexpr auto typeFieldName() { return OSSIACO_XPLATSTR("type"); }
     static constexpr auto defaultVal() { return MType::unknown; }
 };
 
+template<>
+struct TypeTreeNode<ttv2::OpType> {
+    using Op = ttv2::OpType;
+
+    template<Op op>
+    using MapEntry = boost::mp11::mp_list<std::integral_constant<Op, op>, ttv2::CommandMessage<op>>;
+
+    using Map = boost::mp11::mp_list<
+        MapEntry<Op::get>,
+        MapEntry<Op::post>,
+        MapEntry<Op::put>,
+        MapEntry<Op::delete_>
+    >;
+
+    static constexpr auto typeFieldName() { return OSSIACO_XPLATSTR("op"); }
+};
+
 } // namespace Ossiaco::converter
 
-#endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_MESSAGES_HPP
+#endif // OSSIACO_CONVERTER_TESTS_UNIT_TYPES_MESSAGES2_HPP
