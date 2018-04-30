@@ -114,9 +114,11 @@ struct ConvertVocabType<date::sys_time<Duration>> {
     template<typename Writer>
     static void toJson(const TimePoint& object, Writer& writer, ReferenceMapper&)
     {
-        using MsTimePoint = date::sys_time<std::chrono::milliseconds>;
-
-        writeValue(writer, MsTimePoint(object).time_since_epoch().count());
+        writeValue(
+            writer,
+            std::chrono::time_point_cast<std::chrono::milliseconds>(object)
+                .time_since_epoch()
+                .count());
     }
 };
 
