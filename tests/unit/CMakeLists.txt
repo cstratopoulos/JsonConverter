@@ -26,6 +26,7 @@ target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/types/digraph.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/boost_uuid.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/light.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/messages.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/nested_ranges.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/optional_fields.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/person.hpp

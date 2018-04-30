@@ -63,8 +63,8 @@ struct IChessPiece {
 template<IChessPiece::Type pieceType>
 class ChessPiece : public IChessPiece {
 public:
-    explicit ChessPiece(IChessPiece::Color color = IChessPiece::Color::black)
-        : IChessPiece(color, pieceType, true)
+    explicit ChessPiece(IChessPiece::Color color = IChessPiece::Color::black, bool active = true)
+        : IChessPiece(color, pieceType, active)
     {}
 
     ChessPiece(const ChessPiece&) = default;

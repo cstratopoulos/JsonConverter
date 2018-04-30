@@ -9,6 +9,7 @@
 // http://opensource.org/licenses/MIT
 
 #include "../test_utils.hpp"
+#include "../types/messages.hpp"
 #include "../types/chess.hpp"
 
 #include <catch.hpp>
@@ -18,8 +19,18 @@ namespace Oc = Ossiaco::converter;
 
 namespace mp11 = boost::mp11;
 
-template<typename ChessPieceType>
-using ExpectedBackend = mp11::mp_bool<Oc::expectedAllocBackend<ChessPieceType, Oc::MappedTypeAllocator>>;
+template<typename T>
+using ExpectedBackend = mp11::mp_bool<Oc::expectedAllocBackend<T, Oc::MappedTypeAllocator>>;
+
+template<typename Func>
+auto makeMsgTest(std::string_view desc, Func&& func)
+{
+    return makeBasicTestCase<tt::Message>(
+        desc,
+        std::forward<Func>(func),
+        makeObjectComparison<tt::Message>(),
+        StringObjectConversion{});
+}
 
 template<typename Func>
 auto makeChessTest(std::string_view desc, Func&& func)
@@ -31,32 +42,134 @@ auto makeChessTest(std::string_view desc, Func&& func)
         StringObjectConversion{});
 }
 
-TEST_CASE("Allocator dispatch checks", "[MappedTypeAllocator]")
+TEST_CASE("Message allocator dispatch checks", "[MappedTypeAllocator]")
+{
+    static_assert(
+        mp11::mp_all_of<
+            mp11::mp_transform<mp11::mp_second, typename Oc::TypeTreeNode<tt::Message::Type>::Map>,
+            ExpectedBackend>::value);
+
+    static_assert(Oc::isTypeTreeLeaf<tt::Message::Type>);
+
+    SUCCEED("Mapped type allocator static asserts passed");
+}
+
+TEST_CASE("Chess piece allocator dispatch checks", "[MappedTypeAllocator]")
 {
     static_assert(Oc::expectedAllocBackend<tt::IChessPiece, Oc::MappedTypeAllocator>);
 
-    static_assert(
-        mp11::mp_all_of<
-            mp11::mp_transform<
-                mp11::mp_second, typename Oc::TypeTreeNode<tt::IChessPiece::Type>::Map>,
-            ExpectedBackend
-        >::value);
+    static_assert(mp11::mp_all_of<
+                      mp11::mp_transform<
+                          mp11::mp_second,
+                          typename Oc::TypeTreeNode<tt::IChessPiece::Type>::Map>,
+                      ExpectedBackend>::value);
 
     static_assert(Oc::isTypeTreeLeaf<tt::IChessPiece::Type>);
 
     SUCCEED("Mapped type allocator static asserts passed");
 }
 
-TEST_CASE("Converting chess pieces", "[MappedTypeAllocator]")
+TEST_CASE("Converting a class with default value", "[MappedTypeAllocator]")
 {
-    using Piece = tt::IChessPiece::Type;
+
+    runTestCases(
+        makeMsgTest(
+            "A chat message",
+            [] { return tt::ChatMessage(OSSIACO_XPLATSTR("user"), OSSIACO_XPLATSTR("hello!")); }),
+        makeMsgTest(
+            "A log message",
+            [] {
+                return tt::LogMessage(
+                    tt::LogMessage::Level::fatal, OSSIACO_XPLATSTR("a fatal error!!!!!"));
+            }),
+        makeMsgTest("A default/base message", [] {
+            return tt::Message(OSSIACO_XPLATSTR("A simple message"));
+        }));
+
+    SECTION("Log message with invalid JSON enum value") {
+        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+"text": "Error happened",
+"timeStamp": 1234567,
+"type": -1,
+"level": 3
+})--");
+        CAPTURE(jsonStr);
+
+        SECTION("Polymorphic deserialization") {
+            std::shared_ptr<tt::Message> message;
+
+            REQUIRE_NOTHROW([&] {
+                message = Oc::JsonDeserializer<tt::Message>::fromString(jsonStr);
+            }());
+
+            REQUIRE(message);
+            CHECK_FALSE(dynamic_cast<const tt::ChatMessage*>(message.get()));
+        }
+
+        SECTION("Self-type deserialization") {
+            std::shared_ptr<tt::LogMessage> message;
+
+            REQUIRE_NOTHROW([&] {
+                message = Oc::JsonDeserializer<tt::LogMessage>::fromString(jsonStr);
+            }());
+
+            CHECK(message);
+        }
+    }
+}
+
+TEST_CASE("Converting a class with no default and an abstract base", "[MappedTypeAllocator]")
+{
+    using PT = tt::IChessPiece::Type;
+
     SECTION("JSON string appearance") {
-        tt::ChessPiece<Piece::pawn> pawn{};
-        const auto jsonStr = Oc::toJsonStringPretty(pawn);
-        jsonCompare(jsonStr, OSSIACO_XPLATSTR(R"--({
+        tt::ChessPiece<PT::bishop> bishop(tt::IChessPiece::Color::black);
+
+        const auto jsonStr = Oc::toJsonStringPretty(bishop);
+
+        jsonCompare(
+            jsonStr,
+            OSSIACO_XPLATSTR(R"--({
 "color": 0,
-"type": 0,
+"type": 3,
 "active": true
-})--"));
+})--")
+);
+    }
+
+    runTestCases(
+        makeChessTest("A pawn", [] { return tt::ChessPiece<PT::pawn>{}; }),
+        makeChessTest("A queen", [] { return tt::ChessPiece<PT::queen>{}; }),
+        makeChessTest("A captured rook", [] { return tt::ChessPiece<PT::rook>(tt::IChessPiece::Color::white, false); })
+    );
+
+    SECTION("JSON with an invalid value") {
+        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+"color": 1,
+"type": 1234,
+"active": true
+})--");
+        CAPTURE(jsonStr);
+
+        CHECK_THROWS_AS(Oc::JsonDeserializer<tt::IChessPiece>::fromString(jsonStr),
+            Oc::InvalidEnumValue<tt::IChessPiece::Type>);
+
+        CHECK_THROWS_AS(Oc::JsonDeserializer<tt::ChessPiece<PT::rook>>::fromString(jsonStr),
+            Oc::InvalidEnumValue<tt::IChessPiece::Type>);
+    }
+
+    SECTION("JSON with no type field") {
+        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+"color": 0,
+"active": false
+})--");
+
+        CAPTURE(jsonStr);
+
+        using TypeFieldMissing = Oc::TypeFieldMissing<tt::IChessPiece, PT>;
+
+        CHECK_THROWS_AS(
+            Oc::JsonDeserializer<tt::IChessPiece>::fromString(jsonStr),
+            TypeFieldMissing);
     }
 }
