@@ -8,6 +8,8 @@
 //
 // http://opensource.org/licenses/MIT
 
+// Polymorphic conversion of enum-mapped types in a simple hierarchy with only a single level of type mapping
+
 #include "../test_utils.hpp"
 #include "../types/messages.hpp"
 #include "../types/chess.hpp"
@@ -42,7 +44,7 @@ auto makeChessTest(std::string_view desc, Func&& func)
         StringObjectConversion{});
 }
 
-TEST_CASE("Message allocator dispatch checks", "[MappedTypeAllocator]")
+TEST_CASE("Message allocator dispatch/trait checks", "[MappedTypeAllocator]")
 {
     static_assert(
         mp11::mp_all_of<
