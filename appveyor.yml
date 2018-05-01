@@ -23,7 +23,7 @@ environment:
   VCPKG_DEFAULT_TRIPLET: x64-windows
 
 install:
-  - vcpkg install boost-assert boost-config boost-container booost-core boost-mp11 boost-ptr-container boost-type-traits boost-uuid range-v3-vs2015 rapidjson
+  - vcpkg install boost-assert boost-config boost-container boost-core boost-mp11 boost-ptr-container boost-type-traits boost-uuid range-v3-vs2015 rapidjson
   
 
 build_script:
