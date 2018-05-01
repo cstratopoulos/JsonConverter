@@ -23,10 +23,14 @@ environment:
   VCPKG_DEFAULT_TRIPLET: x64-windows
 
 install:
+  - cd c:/tools/vcpkg/
+  - git pull origin
+  - git checkout 316a3cb2
   - vcpkg install boost-assert boost-config boost-container boost-core boost-mp11 boost-ptr-container boost-type-traits boost-uuid range-v3-vs2015 rapidjson
   
 
 build_script:
+  - cd c:/projects/converter
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - mkdir build\ && cd build\
   - cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
