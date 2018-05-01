@@ -1,0 +1,36 @@
+# Ossiaco JSON Converter Library
+# 
+# Copyright (C) 2018 Ossiaco
+# 
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+# 
+# http://opensource.org/licenses/MIT
+
+version: '{build}'
+
+shallow_clone: true
+
+platform:
+  - x64
+
+configuration:
+  - Debug
+  - Release
+
+environment:
+  VCPKG_DEFAULT_TRIPLET: x64-windows
+
+install:
+  - vcpkg install boost-assert boost-config boost-container booost-core boost-mp11 boost-ptr-container boost-type-traits boost-uuid range-v3-vs2015 rapidjson
+  
+
+build_script:
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - mkdir build\ && cd build\
+  - cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
+  - cmake --build .
+
+test_script:
+  - ctest --output-on-failure
