@@ -26,6 +26,7 @@ install:
   - cd c:/tools/vcpkg/
   - git pull origin
   - git checkout 316a3cb2
+  - .\bootstrap-vcpkg.bat
   - vcpkg install boost-assert boost-config boost-container boost-core boost-mp11 boost-ptr-container boost-type-traits boost-uuid range-v3-vs2015 rapidjson
   
 
