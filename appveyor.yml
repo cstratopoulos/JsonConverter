@@ -30,15 +30,15 @@ cache:
   - c:/project/deps/boost_1_67_0
 
 install:
-  - mkdir c:/project/deps/
-  - cd c:/project/deps/
+  - mkdir c:\project\deps\
+  - cd c:\project\deps\
   - appveyor DownloadFile https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.7z
   - 7z x boost_1_67_0.7z > nul
   - vcpkg install range-v3 rapidjson date
   
 build_script:
   - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-  - cd c:/projects/converter
+  - cd c:\projects\converter
   - mkdir build\ && cd build\
   - cmake --warn-uninitialized -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=c:/project/deps/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
   - cmake --build . -- /m
