@@ -36,7 +36,7 @@ build_script:
   - cd c:/projects/converter
   - mkdir build\ && cd build\
   - cmake --warn-uninitialized -G"Visual Studio 15 2017 Win64" -DBOOST_ROOT=c:/libraries/boost_1_67_0 -DBOOST_INCLUDEDIR=c:/libraries/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
-  - cmake --build .
+  - cmake --build . -- /m
 
 test_script:
-  - ctest --output-on-failure
+  - ctest -C %CONFIGURATION% --output-on-failure
