@@ -27,7 +27,6 @@ environment:
 
 cache:
   - c:/tools/vcpkg/installed
-  - c:/project/deps/boost_1_67_0
 
 install:
   - if not exist "c:\project\deps\" mkdir c:\project\deps\
