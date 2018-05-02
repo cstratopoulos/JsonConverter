@@ -28,10 +28,8 @@ install:
   - 7z x boost_1_67_0.7z > nul
   - vcpkg install range-v3 rapidjson
   
-before_build:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
-
 build_script:
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
   - cd c:/projects/converter
   - mkdir build\ && cd build\
   - cmake -G"Visual Studio 15 2017 Win64" -DBOOST_ROOT=c:/libraries/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
