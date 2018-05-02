@@ -27,12 +27,13 @@ environment:
 
 cache:
   - c:/tools/vcpkg/installed
+  - c:/project/deps/boost_1_67_0
 
 install:
   - if not exist "c:\project\deps\" mkdir c:\project\deps\
   - cd c:\project\deps\
-  - appveyor DownloadFile https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.7z
-  - 7z x boost_1_67_0.7z > nul
+  - if not exist "boost_1_67_0" appveyor DownloadFile https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.7z
+  - if not exist "boost_1_67_0" 7z x boost_1_67_0.7z > nul
   - vcpkg install range-v3 rapidjson date
   
 build_script:
