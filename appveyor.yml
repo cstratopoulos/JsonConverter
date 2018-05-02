@@ -18,9 +18,7 @@ os:
 platform:
   - x64
 
-configuration:
-  - Debug
-  - Release
+configuration: Debug
 
 environment:
   VCPKG_DEFAULT_TRIPLET: x64-windows
