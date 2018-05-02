@@ -18,7 +18,9 @@ os:
 platform:
   - x64
 
-configuration: Debug
+configuration: 
+  - Debug
+  - Release
 
 environment:
   VCPKG_DEFAULT_TRIPLET: x64-windows
@@ -46,4 +48,4 @@ build:
   verbosity: minimal
 
 test_script:
-  - ctest
+  - ctest --ouput-on-failure -C %CONFIGURATION%
