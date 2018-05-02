@@ -30,7 +30,7 @@ cache:
   - c:/project/deps/boost_1_67_0
 
 install:
-  - mkdir c:\project\deps\
+  - if not exist "c:\project\deps\" mkdir c:\project\deps\
   - cd c:\project\deps\
   - appveyor DownloadFile https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.7z
   - 7z x boost_1_67_0.7z > nul
@@ -45,4 +45,3 @@ build_script:
 
 test_script:
   - call ctest -C %CONFIGURATION% --output-on-failure
-  
