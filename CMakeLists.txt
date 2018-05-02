@@ -32,8 +32,8 @@ endif()
 # Library dependency paths/packages
 ####################################
 
-find_path(DATE_INCLUDE_DIR date/date.h)
-find_path(RANGE_V3_INCLUDE_DIR range/v3/range.hpp)
+find_path(DATE_INCLUDE_DIRS date/date.h)
+find_path(RANGE_V3_INCLUDE_DIRS range/v3/range.hpp)
 find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
 
 find_package(Boost 1.67.0 REQUIRED)
@@ -103,9 +103,10 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
 target_include_directories(ossiaco_converter INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 
 target_include_directories(ossiaco_converter
-    INTERFACE ${Boost_INCUDE_DIRS}
-    INTERFACE ${DATE_INCLUDE_DIR}
+    INTERFACE ${Boost_INCLUDE_DIRS}
+    INTERFACE ${DATE_INCLUDE_DIRS}
     INTERFACE ${RAPIDJSON_INCLUDE_DIRS}
+    INTERFACE ${RANGE_V3_INCLUDE_DIRS}
 )
 
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
