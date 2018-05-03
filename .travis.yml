@@ -23,12 +23,12 @@ matrix:
   include:
     # Comment these out for now to allow easy initial troubleshooting
     # Clang 4.0
-    #- env: COMPILER=clang++-4.0 ENABLE_MEMCHECK=true
-    #  addons: { apt: { packages: ["clang-4.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+    - env: COMPILER=clang++-4.0 ENABLE_MEMCHECK=true
+      addons: { apt: { packages: ["clang-4.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
 
     # Clang 5.0
-    #- env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
-    #  addons: &defaults { apt: { packages: ["clang-5.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+    - env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
+      addons: { apt: { packages: ["clang-5.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
     
     # GCC 7
     - env: COMPILER=g++-7 ENABLE_MEMCHECK
