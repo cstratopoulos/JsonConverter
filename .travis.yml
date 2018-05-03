@@ -24,39 +24,25 @@ matrix:
     # Comment these out for now to allow easy initial troubleshooting
     # Clang 4.0
     - env: COMPILER=clang++-4.0 ENABLE_MEMCHECK=true
-      addons: { apt: { packages: ["clang-4.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+      addons: { apt: { packages: ["clang-4.0", "libc++-dev", "libc++abi-dev", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
 
     # Clang 5.0
     - env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
-      addons: { apt: { packages: ["clang-5.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+      addons: { apt: { packages: ["clang-5.0", "libc++-dev", "libc++abi-dev", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
     
     # GCC 7
     - env: COMPILER=g++-7 ENABLE_MEMCHECK=true
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
 install:
-  - export CXX=${COMPILER}; ${CXX} -v
+  - export CXX=${COMPILER}
 
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
   - |
     if [[ "${CXX%%+*}" == "clang" ]]; then
-      if [[ "${CXX}" == "clang++-4.0" ]]; then LLVM_VERSION="4.0.1";
-      elif [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
-      fi
-      LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-      LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-      LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-      mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
-      travis_retry wget -O - ${LLVM_URL} | tar --strip-components=1 -xJ -C llvm || exit 1
-      travis_retry wget -O - ${LIBCXX_URL} | tar --strip-components=1 -xJ -C llvm/projects/libcxx || exit 1
-      travis_retry wget -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C llvm/projects/libcxxabi || exit 1
-      (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/llvm/install) || exit 1
-      (cd llvm/build/projects/libcxx && make install -j2) || exit 1
-      (cd llvm/build/projects/libcxxabi && make install -j2) || exit 1
-      export CXXFLAGS="-isystem ${DEPS_DIR}/llvm/install/include/c++/v1 -stdlib=libc++"
-      export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
-      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
+      export CXXFLAGS="-stdlib=libc++"
+      export LDFLAGS="-lc++abi"
     fi
 
   - |
