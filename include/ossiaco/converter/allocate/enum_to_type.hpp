@@ -121,16 +121,12 @@ struct NonLeafTypeAllocMap {
     using MapType       = std::map<Enum, AllocCallable>;
 
     template<typename ValType>
-    static AllocCallable makeMapVal(std::enable_if_t<std::is_enum_v<ValType>>* = nullptr)
+    static AllocCallable makeMapVal()
     {
-
-        return &free_callables::leafAllocCallable<Class, Encoding, ValType>;
-    }
-
-    template<typename ValType>
-    static AllocCallable makeMapVal(std::enable_if_t<!std::is_enum_v<ValType>>* = nullptr)
-    {
-        return &free_callables::nonLeafAllocCallable<Class, Encoding, ValType>;
+        if constexpr(std::is_enum_v<ValType>)
+            return &free_callables::leafAllocCallable<Class, Encoding, ValType>;
+        else
+            return &free_callables::nonLeafAllocCallable<Class, Encoding, ValType>;
     }
 
     AllocCallable find(Enum eType) const { return typeMapFind(_map, eType); }
@@ -143,8 +139,7 @@ struct NonLeafTypeAllocMap {
         mp_for_each<typename TypeTreeNode<Enum>::Map>([&result](auto keyVal) {
             using KVPairType = decltype(keyVal);
 
-            result[mp_first<KVPairType>::value] =
-                NonLeafTypeAllocMap<Class, Encoding, Enum>::makeMapVal<mp_second<KVPairType>>();
+            result[mp_first<KVPairType>::value] = makeMapVal<mp_second<KVPairType>>();
         });
 
         return result;
