@@ -65,7 +65,7 @@ install:
 script:
   - cd "${TRAVIS_BUILD_DIR}"
   - mkdir build && cd build
-  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DCMAKE_TOOLCHAIN_FILE="${HOME}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake" -DOSSIACO_CONVERTER_TESTS=ON ../  
+  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_TESTS=ON ../  
   - make -j4
   - ctest --output-on-failure
   - |
