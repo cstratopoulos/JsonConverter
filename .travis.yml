@@ -35,7 +35,29 @@ matrix:
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
 install:
+  - export CXX=${COMPILER}; ${CXX} -v
+
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
+
+  - |
+    if [[ "${CXX%%+*}" == "clang" ]]; then
+      if [[ "${CXX}" == "clang++-4.0" ]]; then LLVM_VERSION="4.0.1";
+      elif [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
+      fi
+      LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+      LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+      LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+      mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
+      travis_retry wget -O - ${LLVM_URL} | tar --strip-components=1 -xJ -C llvm || exit 1
+      travis_retry wget -O - ${LIBCXX_URL} | tar --strip-components=1 -xJ -C llvm/projects/libcxx || exit 1
+      travis_retry wget -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C llvm/projects/libcxxabi || exit 1
+      (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/llvm/install) || exit 1
+      (cd llvm/build/projects/libcxx && make install -j2) || exit 1
+      (cd llvm/build/projects/libcxxabi && make install -j2) || exit 1
+      export CXXFLAGS="-isystem ${DEPS_DIR}/llvm/install/include/c++/v1"
+      export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
+    fi
 
   - |
     for lib in "HowardHinnant|date|v2.4.1" "Tencent|rapidjson|v1.1.0" "EricNiebler|range-v3|0.3.5"; do
