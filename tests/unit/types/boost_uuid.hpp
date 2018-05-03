@@ -22,6 +22,15 @@
 
 namespace Ossiaco::converter {
 
+template<typename String>
+String UuidToString(const boost::uuids::uuid& uuid)
+{
+    if constexpr(std::is_same_v<String, std::string>)
+        return boost::uuids::to_string(uuid);
+    else
+        return boost::uuids::to_wstring(uuid);
+}
+
 template<>
 struct ConvertCustomValue<boost::uuids::uuid> {
     template<typename Encoding>
@@ -36,13 +45,7 @@ struct ConvertCustomValue<boost::uuids::uuid> {
     template<typename Writer>
     static void toJson(const boost::uuids::uuid& uuid, Writer& writer, ReferenceMapper&)
     {
-        string_t str;
-        if constexpr(wcharUnicodeEnabled)
-            str = boost::uuids::to_wstring(uuid);
-        else
-            str = boost::uuids::to_string(uuid);
-
-        writer.String(str);
+        writer.String(UuidToString<string_t>(uuid));
     }
 };
 
