@@ -38,22 +38,27 @@ install:
   - DEPS_DIR="${HOME}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
+  - |
+    for lib in "HowardHinnant|date|v2.4.1" "Tencent|rapidjson|v1.1.0" "EricNiebler|range-v3|0.3.5"; do
+      ORG_NAME="$(echo $lib | cut -d'|' -f1)"
+      GIT_NAME="$(echo $lib | cut -d'|' -f2)"
+      TAG_NAME="$(echo $lib | cut -d'|' -f3)"
+      git clone https://github.com/"${ORG_NAME}"/"${GIT_NAME}".git && cd "${GIT_NAME}"
+      git checkout tags/"${TAG_NAME}"
+      cd include/
+      for dir in `ls -d */`; do
+        cp -r $dir "${DEPS_DIR}/"
+      done
+    done
+    cd "${DEPS_DIR}"
+    ls
+
   - travis_retry wget -q https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz
   - tar xf boost_1_67_0.tar.gz
 
-  # Get vcpkg with proper version of range-v3 and also rapidjson with install targets
-  # We "steal" the version of cmake downloaded with vcpkg to avoid pulling it twice
-  - |
-    if [[ ! -d vcpkg ]]; then
-      git clone https://github.com/Microsoft/vcpkg.git && cd vcpkg
-      git checkout 4d28651
-      CXX_BACKUP=${CXX}
-      CXX=""; ./bootstrap-vcpkg.sh
-      export CXX=${CXX_BACKUP}
-    fi
-  - ./vcpkg/vcpkg install date range-v3 rapidjson
-
-  - alias cmake="$(find ./vcpkg/downloads/tools/ -regextype sed -regex ".*/bin/cmake")""
+  - travis_retry wget -q https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz
+  - tar xf cmake-3.10.0-Linux-x86_64.tar.gz
+  - alias cmake='./cmake-3.10.0-Linux-x86_64/bin/cmake'
   - cmake --version
 
   - cd "${TRAVIS_BUILD_DIR}"
