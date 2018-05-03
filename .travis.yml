@@ -20,16 +20,7 @@ branches:
   - /appveyor.*/
 
 matrix:
-  include:
-    # Comment these out for now to allow easy initial troubleshooting
-    # Clang 4.0
-    - env: COMPILER=clang++-4.0 ENABLE_MEMCHECK=true
-      addons: { apt: { packages: ["clang-4.0", "libc++-dev", "libc++abi-dev", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
-
-    # Clang 5.0
-    - env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
-      addons: { apt: { packages: ["clang-5.0", "libc++-dev", "libc++abi-dev", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
-    
+  include:    
     # GCC 7
     - env: COMPILER=g++-7 ENABLE_MEMCHECK=true
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
@@ -38,12 +29,6 @@ install:
   - export CXX=${COMPILER}
 
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-
-  - |
-    if [[ "${CXX%%+*}" == "clang" ]]; then
-      export CXXFLAGS="-stdlib=libc++"
-      export LDFLAGS="-lc++abi"
-    fi
 
   - |
     for lib in "HowardHinnant|date|v2.4.1" "Tencent|rapidjson|v1.1.0" "EricNiebler|range-v3|0.3.5"; do
