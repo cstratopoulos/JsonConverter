@@ -15,6 +15,10 @@ os: linux
 dist: trusty
 sudo: false
 
+branches:
+  except:
+  - /appveyor.*/
+
 matrix:
   include:
     # Comment these out for now to allow easy initial troubleshooting
@@ -46,7 +50,7 @@ install:
       ./bootstrap_vcpkg.sh
     fi
   - ./vcpkg/vcpkg install date range-v3 rapidjson
-  
+
   - alias cmake="$(find ./vcpkg/downloads/tools/ -regextype sed -regex ".*/bin/cmake")""
   - cmake --version
 
