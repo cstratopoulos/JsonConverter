@@ -47,7 +47,9 @@ install:
     if [[ ! -d vcpkg ]]; then
       git clone https://github.com/Microsoft/vcpkg.git && cd vcpkg
       git checkout 4d28651
-      CXX=${COMPILER}; ./bootstrap-vcpkg.sh
+      CXX_BACKUP=${CXX}
+      CXX=""; ./bootstrap-vcpkg.sh
+      export CXX=${CXX_BACKUP}
     fi
   - ./vcpkg/vcpkg install date range-v3 rapidjson
 
