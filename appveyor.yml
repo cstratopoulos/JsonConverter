@@ -24,6 +24,10 @@ configuration:
   - Debug
   - Release
 
+branches:
+  except:
+    - /travis.*/
+
 environment:
   VCPKG_DEFAULT_TRIPLET: '%PLATFORM%-windows'
 
