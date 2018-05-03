@@ -31,7 +31,7 @@ matrix:
       addons: { apt: { packages: ["clang-5.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
     
     # GCC 7
-    - env: COMPILER=g++-7 ENABLE_MEMCHECK
+    - env: COMPILER=g++-7 ENABLE_MEMCHECK=true
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
 install:
