@@ -23,15 +23,15 @@ matrix:
   include:
     # Comment these out for now to allow easy initial troubleshooting
     # Clang 4.0
-    #- env: CXX=clang++-4.0 ENABLE_MEMCHECK=true
+    #- env: COMPILER=clang++-4.0 ENABLE_MEMCHECK=true
     #  addons: { apt: { packages: ["clang-4.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
 
     # Clang 5.0
-    #- env: CXX=clang++-5.0 ENABLE_MEMCHECK=true
+    #- env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
     #  addons: &defaults { apt: { packages: ["clang-5.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
     
     # GCC 7
-    - env: CXX=g++-7 ENABLE_MEMCHECK
+    - env: COMPILER=g++-7 ENABLE_MEMCHECK
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
 install:
@@ -47,7 +47,7 @@ install:
     if [[ ! -d vcpkg ]]; then
       git clone https://github.com/Microsoft/vcpkg.git && cd vcpkg
       git checkout 4d28651
-      ./bootstrap-vcpkg.sh
+      CXX=${COMPILER}; ./bootstrap-vcpkg.sh
     fi
   - ./vcpkg/vcpkg install date range-v3 rapidjson
 
@@ -56,7 +56,7 @@ install:
 
   - cd "${TRAVIS_BUILD_DIR}"
   - mkdir build && cd build
-  - cmake --warn-uninitialized -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DCMAKE_TOOLCHAIN_FILE="${HOME}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake" -DOSSIACO_CONVERTER_TESTS=ON ../
+  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DCMAKE_TOOLCHAIN_FILE="${HOME}/deps/vcpkg/scripts/buildsystems/vcpkg.cmake" -DOSSIACO_CONVERTER_TESTS=ON ../
 
 script:
   - make -j4
