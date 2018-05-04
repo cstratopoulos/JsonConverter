@@ -22,8 +22,12 @@ branches:
 matrix:
   include:    
     # GCC 7
-    - env: COMPILER=g++-7 ENABLE_MEMCHECK=true
-      addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
+    #- env: COMPILER=g++-7 ENABLE_MEMCHECK=true
+    #  addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
+    
+    # Clang 5
+    - env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
+      addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
 
 install:
   - export CXX=${COMPILER}
