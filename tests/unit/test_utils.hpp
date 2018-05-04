@@ -79,7 +79,7 @@ auto makeObjectComparison(Args... args)
 
 struct StringObjectConversion {
     template<typename Derived, typename Base = Derived>
-    static std::shared_ptr<Base> testConvert(const Derived& obj);
+    static std::unique_ptr<Base> testConvert(const Derived& obj);
 };
 
 struct FileObjectConversion {
@@ -97,7 +97,7 @@ struct FileObjectConversion {
     {}
 
     template<typename Derived, typename Base = Derived>
-    std::shared_ptr<Base> testConvert(const Derived& obj) const;
+    std::unique_ptr<Base> testConvert(const Derived& obj) const;
 
     const fs::path _path;
 };
@@ -158,7 +158,7 @@ void runTestCases(TestCases&&... tcs)
 }
 
 template<typename Derived, typename Base>
-std::shared_ptr<Base> StringObjectConversion::testConvert(const Derived& obj)
+std::unique_ptr<Base> StringObjectConversion::testConvert(const Derived& obj)
 {
     namespace oc = Ossiaco::converter;
 
@@ -167,7 +167,7 @@ std::shared_ptr<Base> StringObjectConversion::testConvert(const Derived& obj)
     REQUIRE_NOTHROW([&]() mutable { objString = oc::toJsonStringPretty(obj); }());
     CAPTURE(objString);
 
-    std::shared_ptr<Base> newObj{};
+    std::unique_ptr<Base> newObj{};
 
     REQUIRE_NOTHROW(
         [&newObj, &objString] { newObj = oc::JsonDeserializer<Base>::fromString(objString); }());
@@ -176,13 +176,13 @@ std::shared_ptr<Base> StringObjectConversion::testConvert(const Derived& obj)
 }
 
 template<typename Derived, typename Base>
-std::shared_ptr<Base> FileObjectConversion::testConvert(const Derived & obj) const
+std::unique_ptr<Base> FileObjectConversion::testConvert(const Derived & obj) const
 {
     namespace oc = Ossiaco::converter;
 
     REQUIRE_NOTHROW(oc::toJsonFilePretty(obj, _path.c_str()));
 
-    std::shared_ptr<Base> newObj{};
+    std::unique_ptr<Base> newObj{};
 
     REQUIRE_NOTHROW(
         [&newObj, this] { newObj = oc::JsonDeserializer<Base>::fromJsonFile(_path.c_str()); }());
@@ -262,7 +262,7 @@ void BasicTestCase<Base, Func, Comparison, Conversion>::run()
         using ObjConverter = Oc::JsonConverter<ObjType>;
 
         THEN("We should be able to hydrate/rehydrate it correctly") {
-            std::shared_ptr<ObjType> newObj = _converter.testConvert(obj);
+            std::unique_ptr<ObjType> newObj = _converter.testConvert(obj);
             REQUIRE(newObj != nullptr);
 
             _comparator.compareObjects(obj, *newObj);
@@ -273,7 +273,7 @@ void BasicTestCase<Base, Func, Comparison, Conversion>::run()
                     REQUIRE(Oc::jsonPolyImpl<ObjType>());
 
                     AND_THEN("We should be able to polymorphically rehydrate it correctly") {
-                        std::shared_ptr<Base> newObjBase = _converter.template testConvert<Base>(obj);
+                        std::unique_ptr<Base> newObjBase = _converter.template testConvert<Base>(obj);
 
                         ObjType* downCastPtr = dynamic_cast<ObjType*>(newObjBase.get());
                         INFO("Rehydrated as " << Oc::toNarrowString(Oc::printTypeName<Base>()));

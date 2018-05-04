@@ -35,19 +35,19 @@ class JsonConverter;
 template<typename Class, typename Encoding = utf_t>
 class JsonDeserializer : Inconstructible {
 public:
-    static std::shared_ptr<Class> fromString(string_view_t);
-    static std::shared_ptr<Class> fromString(CharType*);
+    static std::unique_ptr<Class> fromString(string_view_t);
+    static std::unique_ptr<Class> fromString(CharType*);
 
-    static std::shared_ptr<Class> fromFile(const CharType* fileName);
+    static std::unique_ptr<Class> fromFile(const CharType* fileName);
 
     static void fromJson(Class&, const rapidjson::GenericValue<Encoding>&, ReferenceMapper&);
 
 private:
-    static std::shared_ptr<Class> deserializeStream(rapidjson::GenericDocument<Encoding>&);
+    static std::unique_ptr<Class> deserializeStream(rapidjson::GenericDocument<Encoding>&);
 };
 
 template<typename Class, typename Encoding>
-std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(string_view_t jsonStr)
+std::unique_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(string_view_t jsonStr)
 {
     std::vector<CharType> mutableBuf;
 
@@ -59,7 +59,7 @@ std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(string_view
 }
 
 template<typename Class, typename Encoding>
-std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(CharType* jsonStr)
+std::unique_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(CharType* jsonStr)
 {
     rapidjson::GenericDocument<Encoding> jsonValue;
     jsonValue.template ParseInsitu<rapidjson::kParseValidateEncodingFlag>(jsonStr);
@@ -68,7 +68,7 @@ std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromString(CharType* j
 }
 
 template<typename Class, typename Encoding>
-std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::fromFile(const CharType* fileName)
+std::unique_ptr<Class> JsonDeserializer<Class, Encoding>::fromFile(const CharType* fileName)
 {
     UniqueFileHandle fp(uniqueHandleFOpen(fileName, OSSIACO_XPLATSTR("rb")));
     std::array<char, 65536> buffer;
@@ -94,7 +94,7 @@ void JsonDeserializer<Class, Encoding>::fromJson(
 }
 
 template<typename Class, typename Encoding>
-std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::deserializeStream(
+std::unique_ptr<Class> JsonDeserializer<Class, Encoding>::deserializeStream(
     rapidjson::GenericDocument<Encoding>& jsonValue)
 {
     if (jsonValue.HasParseError())
@@ -103,13 +103,7 @@ std::shared_ptr<Class> JsonDeserializer<Class, Encoding>::deserializeStream(
     ReferenceMapper refs;
     auto resolver = JsonConverter<Class>::template resolveTypeAllocator<Encoding>(jsonValue);
 
-    std::unique_ptr<Class> tmp(resolver.allocate());
-    std::shared_ptr<Class> result;
-
-    if (auto member = jsonValue.FindMember(OSSIACO_XPLATSTR("@id")); member != jsonValue.MemberEnd())
-        result = refs.add((member->value).GetInt(), std::move(tmp));
-    else
-        result = std::move(tmp);
+    std::unique_ptr<Class> result(resolver.allocate());
 
     resolver.deserialize(*result, jsonValue, refs);
 
