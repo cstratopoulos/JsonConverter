@@ -28,6 +28,10 @@ branches:
   except:
     - /travis.*/
 
+matrix:
+  allow_failures:
+    - os: Visual Studio 2017 Preview
+
 environment:
   VCPKG_DEFAULT_TRIPLET: '%PLATFORM%-windows'
 
