@@ -22,19 +22,19 @@ branches:
 matrix:
   include:    
     # GCC 7
-    #- env: COMPILER=g++-7 ENABLE_MEMCHECK=true
-    #  addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
-
-    # Clang 4
-    - env: COMPILER=clang++-4.0 ENABLE_MEMCHECK=true
-      addons: { apt: { packages: ["clang-4.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-4.0"] } }
+    - env: COMPILER=g++-7
+      addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
     
     # Clang 5
-    #- env: COMPILER=clang++-5.0 ENABLE_MEMCHECK=true
-    #  addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+    - env: COMPILER=clang++-5.0
+      addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
 
 install:
-  - export CXX=${COMPILER}
+  - |
+    export CXX=${COMPILER}
+    if [[ "${CXX%%+*}" == "clang" ]]; then
+      ${CXX} -v 2>&1 | grep -v 'Found candidate'
+    fi
 
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
@@ -59,10 +59,10 @@ install:
     tar xf boost_1_67_0.tar.gz
 
   - |
-   travis_retry wget -q https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz
-   tar xf cmake-3.10.0-Linux-x86_64.tar.gz
-   alias cmake='./cmake-3.10.0-Linux-x86_64/bin/cmake'
-   cmake --version
+    CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
+    mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    cmake --version
 
 script:
   - cd "${TRAVIS_BUILD_DIR}"
@@ -70,10 +70,7 @@ script:
   - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_TESTS=ON ../  
   - make -j4
   - ctest --output-on-failure
-  - |
-    if [[ "${ENABLE_MEMCHECK}" == "true" ]]; then
-      valgrind ctest
-    fi
+  - valgrind ctest
 
 notifications:
   email: false
