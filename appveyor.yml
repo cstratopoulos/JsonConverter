@@ -28,6 +28,12 @@ branches:
   except:
     - /travis.*/
 
+skip_commits:
+  files:
+    - '*.md'
+    - .travis.yml
+
+
 matrix:
   allow_failures:
     - os: Visual Studio 2017 Preview
