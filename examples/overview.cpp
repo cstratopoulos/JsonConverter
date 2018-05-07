@@ -1,12 +1,13 @@
-# Ossiaco JSON Converter 
-[![Build status](https://ci.appveyor.com/api/projects/status/qyr00swb5yqrip08?svg=true)](https://ci.appveyor.com/project/cstratopoulos/converter)
-[![Build Status](https://travis-ci.org/Ossiaco/converter.svg?branch=master)](https://travis-ci.org/Ossiaco/converter)
+// Ossiaco JSON Converter Library
+//
+// Copyright (C) 2018 Ossiaco
+//
+// Licensed under the MIT license ("the license"); you may not use this file
+// except in compliance with the license. The license can be found in the root
+// directory of this project, or at
+//
+// http://opensource.org/licenses/MIT
 
-A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/RapidJSON). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
-
-## Overview
-This example demonstrates simple conversion operations on polymorphic structs. Its source is reproduced in `examples/overview.cpp` where it can be built and run with the rest of the example suite.
-```cpp
 #include <ossiaco/converter/converter.hpp>
 
 #include <iostream>
@@ -212,4 +213,3 @@ bool operator==(const Circle &c1, const Circle &c2)
 {
     return std::tie(c1._center, c1._radius) == std::tie(c2._center, c2._radius);
 }
-```
