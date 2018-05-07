@@ -50,16 +50,16 @@ public:
         using namespace Ossiaco::converter;
         if constexpr (pretty) {
             return std::make_tuple(
-                makeJsonProperty(
+                requiredProperty(
                     chronoFmtPair(&SprintRecord::_dateOfBirth, OSSIACO_XPLATSTR("%Y-%m-%d")),
                     OSSIACO_XPLATSTR("DOB")),
-                makeJsonProperty(
+                requiredProperty(
                     chronoFmtPair(&SprintRecord::_100mTime, OSSIACO_XPLATSTR("%S seconds")),
                     OSSIACO_XPLATSTR("100mTime")));
         } else {
             return std::make_tuple(
-                makeJsonProperty(&SprintRecord::_dateOfBirth, OSSIACO_XPLATSTR("DOB")),
-                makeJsonProperty(&SprintRecord::_100mTime, OSSIACO_XPLATSTR("100mTime")));
+                requiredProperty(&SprintRecord::_dateOfBirth, OSSIACO_XPLATSTR("DOB")),
+                requiredProperty(&SprintRecord::_100mTime, OSSIACO_XPLATSTR("100mTime")));
         }
     }
 

@@ -24,25 +24,25 @@
 namespace Ossiaco::converter {
 
 template<typename Class, typename Property>
-constexpr auto makeJsonProperty(Property Class::* member, const CharType* name)
+constexpr auto requiredProperty(Property Class::* member, const CharType* name)
 {
     return PropertyConverter<Class, Property>(member, name);
 }
 
 template<typename Class, typename Property>
-constexpr auto makeJsonProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
+constexpr auto requiredProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
 {
     return ChronoPropertyConverter<Class, Property>(std::move(chronoPair), name);
 }
 
 template<typename Class, typename Property>
-constexpr auto optionalJsonProperty(Property Class::* member, const CharType* name)
+constexpr auto optionalProperty(Property Class::* member, const CharType* name)
 {
     return OptionalPropertyConverter<Class, Property>(member, name);
 }
 
 template<typename Class, typename Property>
-constexpr auto optionalJsonProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
+constexpr auto optionalProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
 {
     return OptionalChronoPropertyConverter<Class, Property>(std::move(chronoPair), name);
 }
@@ -82,7 +82,7 @@ struct PropertiesHelper {
     /// Add a JSON property with explicitly specified missing value policy.
     ///
     /// Sample usage, with the helper functions above:
-    ///     `operator()(optionalJsonProperty(member, name))`
+    ///     `operator()(optionalProperty(member, name))`
     /// \output_section Add properties with missing value policy
     template<typename Class, typename Property, NotFoundHandlerPtr<Class> notFound>
     constexpr auto operator()(PropertyConverter<Class, Property, notFound>&& propConv)
@@ -93,7 +93,7 @@ struct PropertiesHelper {
     /// Add a chrono formatted JSON property with explicitly specified missing value policy.
     ///
     /// Sample usage with the helper functions above:
-    ///     `operator()(optionalJsonProperty(chronoFmtPair(), name))`
+    ///     `operator()(optionalProperty(chronoFmtPair(), name))`
     /// \output_section Add properties with missing value policy
     template<typename Class, typename Property, NotFoundHandlerPtr<Class> notFound>
     constexpr auto operator()(ChronoPropertyConverter<Class, Property, notFound>&& propConv)
