@@ -5,7 +5,7 @@
 A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/RapidJSON). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
 
 ## Overview
-This example demonstrates simple conversion operations on polymorphic structs. Its source is reproduced in `examples/overview.cpp` where it can be built and run with the rest of the example suite.
+This example demonstrates simple conversion operations on polymorphic structs. Its source is reproduced in [`examples/overview.cpp`](examples/overview.cpp) where it can be built and run with the rest of the example suite.
 ```cpp
 #include <ossiaco/converter/converter.hpp>
 
