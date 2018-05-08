@@ -131,8 +131,10 @@ int main()
 try
 {
     // Register derived classes of Shape for polymorphic conversion
-    assert(Oc::jsonPolyImpl<Circle>());
-    assert(Oc::jsonPolyImpl<Segment>());
+    bool circleRegistered  = Oc::jsonPolyImpl<Circle>();
+    bool segmentRegistered = Oc::jsonPolyImpl<Segment>();
+
+    assert(circleRegistered && segmentRegistered);
 
     // Instantiate some classes, serialize them to JSON strings
     const Point3D yUnit{ 0.0, 1.0, 0.0 };
