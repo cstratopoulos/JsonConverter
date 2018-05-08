@@ -24,6 +24,10 @@ matrix:
     # GCC 7
     - env: COMPILER=g++-7
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
+
+    # GCC 8
+    - env: COMPILER=g++-8
+      addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
     
     # Clang 5
     - env: COMPILER=clang++-5.0
