@@ -22,20 +22,23 @@ branches:
 matrix:
   include:    
     # GCC 7
-    - env: 
-      - COMPILER=g++-7 CONFIG=Debug
-      - COMPILER=g++-7 CONFIG=Release
+    - env: COMPILER=g++-7 CONFIG=Debug
+      addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
+
+    - env: COMPILER=g++-7 CONFIG=Release
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
     # GCC 8
-    - env: COMPILER=g++-8
+    - env: COMPILER=g++-8 CONFIG=Debug
       addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
     
     # Clang 5
-    - env: 
-      - COMPILER=clang++-5.0 CONFIG=Debug
-      - COMPILER=clang++-5.0 CONFIG=Release
+    - env: COMPILER=clang++-5.0 CONFIG=Debug
       addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+
+    - env: COMPILER=clang++-5.0 CONFIG=Release
+      addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+      
 
 install:
   - |
