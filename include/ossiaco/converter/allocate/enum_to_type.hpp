@@ -43,51 +43,6 @@ constexpr bool typeAllocCompatible = boost::mp11::mp_all_of_q<
         std::add_pointer_t, TreeMappedClasses<Enum>>,
     ConvertibleTo<Class*>>::value;
 
-template<typename Map, typename Enum>
-auto typeMapFind(const Map& m, Enum e)
-{
-    static_assert(std::is_enum_v<Enum>);
-
-    auto findItr = m.find(e);
-    if (findItr == m.end()) {
-        if constexpr (boost::is_detected_exact_v<Enum, TreeNodeDefaultVal, Enum>)
-            return m.find(TypeTreeNode<Enum>::defaultVal())->second;
-        else
-            throw InvalidEnumValue<Enum>(e);
-    }
-
-    return findItr->second;
-}
-
-template<typename Class, typename Encoding, typename Enum>
-struct LeafTypeAllocMap {
-    using AllocType = TypeAllocator<Class, Encoding>;
-    using MapType   = std::map<Enum, AllocType>;
-
-    AllocType find(Enum eType) const { return typeMapFind(_map, eType); }
-
-    const MapType _map{[] {
-        using namespace boost::mp11;
-
-        MapType result;
-
-        mp_for_each<typename TypeTreeNode<Enum>::Map>([&result](auto keyValList) {
-            using KVPairType = decltype(keyValList);
-            using ValType = mp_second<KVPairType>;
-
-            result.emplace(
-                mp_first<KVPairType>::value,
-                AllocType::template make<
-                    std::conditional_t<
-                        std::is_convertible_v<ValType*, Class*>, 
-                        ValType, Class>
-                >());
-        });
-
-        return result;
-    }()};
-};
-
 namespace free_callables {
 
 template<typename Class, typename Encoding, typename ValType>
@@ -112,13 +67,83 @@ TypeAllocator<Class, Encoding> nonLeafAllocCallable(const rapidjson::GenericValu
 
 } // namespace free_callables
 
-// The TypeAllocator map for a root or other interal node of a type tree.
-// Maps Enum -> function pointer: TypeAllocator<Class, Encoding>(const GenericValue&)
+template<typename Derived>
+struct TypeAllocMapBase;
+
+template<template<class, class, class> typename Derived, typename Class, typename Encoding, typename Enum>
+class TypeAllocMapBase<Derived<Class, Encoding, Enum>> {
+public:
+    static_assert(providesTypeTreeBasic<Enum>);
+
+    using AllocType = TypeAllocator<Class, Encoding>;
+
+    using MapValType = std::conditional_t<
+        isTypeTreeLeaf<Enum>,
+        AllocType,
+        std::add_pointer_t<AllocType(const rapidjson::GenericValue<Encoding>&)>
+    >;
+
+    using MapType = std::map<Enum, MapValType>;
+
+    MapValType find(Enum e) const
+    {
+        auto findItr = _map.find(e);
+        if (findItr == _map.end()) {
+            if constexpr(boost::is_detected_exact_v<Enum, TreeNodeDefaultVal, Enum>)
+                return _map.find(TypeTreeNode<Enum>::defaultVal())->second;
+            else
+                throw InvalidEnumValue<Enum>(e);
+        }
+
+        return findItr->second;
+    }
+
+private:
+    const MapType _map{ [] {
+        using namespace boost::mp11;
+
+        MapType result;
+
+        mp_for_each<typename TypeTreeNode<Enum>::Map>([&result](auto kvPair) {
+            using KVPairType = decltype(kvPair);
+            using ValType = mp_second<KVPairType>;
+
+            result.emplace(
+                mp_first<KVPairType>::value,
+                Derived<Class, Encoding, Enum>::template makeMapVal<ValType>());
+        });
+
+        return result;
+    }() };
+};
+
 template<typename Class, typename Encoding, typename Enum>
-struct NonLeafTypeAllocMap {
+struct LeafTypeAllocMap : TypeAllocMapBase<LeafTypeAllocMap<Class, Encoding, Enum>> {
+    static_assert(isTypeTreeLeaf<Enum>);
+
+
+    template<typename ValType>
+    static TypeAllocator<Class, Encoding> makeMapVal()
+    {
+        using MakeType = std::conditional_t<
+            std::is_convertible_v<ValType*, Class*>, ValType, Class>;
+
+        return TypeAllocator<Class, Encoding>::template make<MakeType>();
+    }
+
+    TypeAllocator<Class, Encoding>
+    resolveAllocatorImpl(Enum e, const rapidjson::GenericValue<Encoding>&) const
+    {
+        return this->find(e);
+    }
+};
+
+template<typename Class, typename Encoding, typename Enum>
+struct NonLeafTypeAllocMap : TypeAllocMapBase<NonLeafTypeAllocMap<Class, Encoding, Enum>> {
+    static_assert(isTypeTreeNonLeaf<Enum>);
+
     using AllocType     = TypeAllocator<Class, Encoding>;
     using AllocCallable = std::add_pointer_t<AllocType(const rapidjson::GenericValue<Encoding>&)>;
-    using MapType       = std::map<Enum, AllocCallable>;
 
     template<typename ValType>
     static AllocCallable makeMapVal()
@@ -129,51 +154,19 @@ struct NonLeafTypeAllocMap {
             return &free_callables::nonLeafAllocCallable<Class, Encoding, ValType>;
     }
 
-    AllocCallable find(Enum eType) const { return typeMapFind(_map, eType); }
-
-    const MapType _map{[] {
-        MapType result;
-
-        using namespace boost::mp11;
-
-        mp_for_each<typename TypeTreeNode<Enum>::Map>([&result](auto keyVal) {
-            using KVPairType = decltype(keyVal);
-
-            result[mp_first<KVPairType>::value] = makeMapVal<mp_second<KVPairType>>();
-        });
-
-        return result;
-    }()};
-};
-
-template<typename Enum>
-struct AllocMapWrapper {
-    static_assert(providesTypeTreeBasic<Enum>);
-
-    template<typename Class, typename Encoding>
-    static TypeAllocator<Class, Encoding>
-    resolveAllocatorImpl(Enum eVal, const rapidjson::GenericValue<Encoding>& jsonVal)
+    TypeAllocator<Class, Encoding>
+    resolveAllocatorImpl(Enum e, const rapidjson::GenericValue<Encoding>& jsonVal) const
     {
-        using AllocMapType = std::conditional_t<
-            isTypeTreeLeaf<Enum>,
-            LeafTypeAllocMap<Class, Encoding, Enum>,
-            NonLeafTypeAllocMap<Class, Encoding, Enum>>;
-
-        static const AllocMapType allocMap{};
-
-        auto mapResult = allocMap.find(eVal);
-        if constexpr (isTypeTreeLeaf<Enum>)
-            return mapResult;
-        else
-            return mapResult(jsonVal);
+        return (this->find(e))(jsonVal);
     }
 };
 
-template<typename Enum, typename Class, typename Encoding>
-using ResolveAllocImplType = decltype(
-    AllocMapWrapper<Enum>::template resolveAllocatorImpl<Class, Encoding>(
-        Enum(), std::declval<const rapidjson::GenericValue<Encoding>&>())
-    );
+template<typename Class, typename Encoding, typename Enum>
+using AllocMapImplType = std::conditional_t<
+    isTypeTreeLeaf<Enum>,
+    LeafTypeAllocMap<Class, Encoding, Enum>,
+    NonLeafTypeAllocMap<Class, Encoding, Enum>
+>;
 
 } // namespace detail
 
@@ -181,7 +174,6 @@ using ResolveAllocImplType = decltype(
 // See static_assert statements for requirements on Enum.
 template<typename Enum>
 struct EnumTypeMap : Inconstructible {
-    using MapImpl  = detail::AllocMapWrapper<Enum>;
     using TreeNode = TypeTreeNode<Enum>;
 
     static_assert(isTypeTreeLeaf<Enum> || isTypeTreeNonLeaf<Enum>);
@@ -190,11 +182,6 @@ struct EnumTypeMap : Inconstructible {
     static TypeAllocator<Class, Encoding>
     resolveAllocator(const rapidjson::GenericValue<Encoding>& jsonValue)
     {
-        static_assert(
-            boost::is_detected_exact_v<
-                TypeAllocator<Class, Encoding>,
-                detail::ResolveAllocImplType, Enum, Class, Encoding>);
-
         string_view_t typeField = TreeNode::typeFieldName();
 
         auto typeFieldItr = jsonValue.FindMember(typeField.data());
@@ -202,8 +189,9 @@ struct EnumTypeMap : Inconstructible {
             throw TypeFieldMissing<Class, Enum>(typeField);
         }
 
-        return MapImpl::template resolveAllocatorImpl<Class, Encoding>(
-            getValue<Enum>(typeFieldItr->value), jsonValue);
+        static const detail::AllocMapImplType<Class, Encoding, Enum> mapImpl{};
+
+        return mapImpl.resolveAllocatorImpl(getValue<Enum>(typeFieldItr->value), jsonValue);
     }
 };
 
