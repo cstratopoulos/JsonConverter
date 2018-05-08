@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/qyr00swb5yqrip08?svg=true)](https://ci.appveyor.com/project/cstratopoulos/converter)
 [![Build Status](https://travis-ci.org/Ossiaco/converter.svg?branch=master)](https://travis-ci.org/Ossiaco/converter)
 
-A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/RapidJSON). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
+A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
 
 ## Overview
 This example demonstrates simple conversion operations on polymorphic structs. Its source is reproduced in [`examples/overview.cpp`](examples/overview.cpp) where it can be built and run with the rest of the example suite.
@@ -213,3 +213,42 @@ bool operator==(const Circle &c1, const Circle &c2)
     return std::tie(c1._center, c1._radius) == std::tie(c2._center, c2._radius);
 }
 ```
+
+## Compiler requirements
+
+This library is built with C++17, and tested with CI builds on
+
+- Visual Studio 15.6 & 15.7 Preview (x86, x64)
+
+- Clang 5 (x64)
+
+- GCC 7 (x64)
+
+## Dependencies
+
+As mentioned, the library is built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Aside from RapidJSON, the library uses some headers from Boost, [Date](https://github.com/HowardHinnant/date), and Range-v3 (see below for remarks). The Boost libraries used are
+ - [Config](https://www.boost.org/doc/libs/1_67_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
+ - [Core](https://www.boost.org/doc/libs/1_67_0/libs/core/doc/html/index.html) for printing type decorators,
+ - [Mp11](https://www.boost.org/doc/libs/1_67_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming,
+ - [Pointer Container](https://www.boost.org/doc/libs/1_67_0/libs/ptr_container/doc/ptr_container.html) for the machinery behind smart pointer conversion, and
+ - [TypeTraits](https://www.boost.org/doc/libs/1_67_0/libs/type_traits/doc/html/index.html) for the detection idiom.
+
+ Note that Boost >= 1.67 is required.
+
+Converter uses Range-v3 purely for concept checking on convertible ranges, and for `ranges::action::push_back`. Users are free to use either the actual [range-v3](https://github.com/ericniebler/range-v3) or the [Range-V3-VS2015](https://github.com/Microsoft/Range-V3-VS2015) fork.
+
+The unit tests additionally use a few more Boost libraries:
+- [Assert](https://www.boost.org/doc/libs/1_67_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
+- [UUID](https://www.boost.org/doc/libs/1_67_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
+- [Container](https://www.boost.org/doc/libs/1_67_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
+
+## Features
+The example above demonstrates the basics of polymorphic conversion on classes whose members are all composed of fundamental types. Some other features of the library include conversion of...
+
+- Ranges, including arbitrarily nested ranges and key-value map ranges with string keys
+
+- Vocabulary types such as `std::optional`, and conversion of `std::shared_ptr` and `std::weak_ptr` that respects reference relations
+
+- Standard library `std::chrono::time_point` and `std::chrono::duration` types, as well as types from what will become the C++20 standard library for [dates](https://github.com/HowardHinnant/date)
+
+- Use of date library format functions to pretty-print durations, time points, and calendar days
