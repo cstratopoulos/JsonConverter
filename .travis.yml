@@ -20,25 +20,18 @@ branches:
   - /appveyor.*/
 
 matrix:
-  include:    
+  include:
     # GCC 7
-    - env: COMPILER=g++-7 CONFIG=Debug
-      addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
-
-    - env: COMPILER=g++-7 CONFIG=Release
+    - env: COMPILER=g++-7
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
 
     # GCC 8
-    - env: COMPILER=g++-8 CONFIG=Debug
+    - env: COMPILER=g++-8
       addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
     
     # Clang 5
-    - env: COMPILER=clang++-5.0 CONFIG=Debug
+    - env: COMPILER=clang++-5.0
       addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
-
-    - env: COMPILER=clang++-5.0 CONFIG=Release
-      addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
-      
 
 install:
   - |
@@ -78,7 +71,7 @@ install:
 script:
   - cd "${TRAVIS_BUILD_DIR}"
   - mkdir build && cd build
-  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DCMAKE_BUILD_TYPE="${CONFIG}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON ../  
+  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON ../  
   - make -j4
   - ctest --output-on-failure
   - valgrind ctest
