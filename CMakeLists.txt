@@ -20,6 +20,7 @@ project(OssiacoConverter
 #######################
 
 option(OSSIACO_CONVERTER_TESTS "whether to build the unit/integration tests" OFF)
+option(OSSIACO_CONVERTER_EXAMPLES "whether to build the examples" OFF)
 
 option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
 if(${OSSIACO_WCHAR_UNICODE})
@@ -128,12 +129,19 @@ if(MSVC)
     )
 endif()
 
-#################
-# The unit tests
-#################
+##############################
+# The unit tests and examples
+##############################
+
+if(${OSSIACO_CONVERTER_EXAMPLES} OR ${OSSIACO_CONVERTER_TESTS})
+    enable_testing()
+endif()
 
 if(${OSSIACO_CONVERTER_TESTS})
-    enable_testing()
     add_subdirectory(tests/unit)
     add_subdirectory(tests/integration)
+endif()
+
+if(${OSSIACO_CONVERTER_EXAMPLES})
+    add_subdirectory(examples)
 endif()
