@@ -199,7 +199,7 @@ try
     assert(segmentFromShape);
     assert(seg == *segmentFromShape);
 } catch (const std::exception& e) {
-    std::cout << "Example failed with exception: " << e.what() << "\n";
+    std::cerr << "Example failed with exception: " << e.what() << "\n";
 
     return 1;
 }
