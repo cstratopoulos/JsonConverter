@@ -20,7 +20,7 @@ branches:
   - /appveyor.*/
 
 matrix:
-  include:    
+  include:
     # GCC 7
     - env: COMPILER=g++-7
       addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
@@ -71,7 +71,7 @@ install:
 script:
   - cd "${TRAVIS_BUILD_DIR}"
   - mkdir build && cd build
-  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_TESTS=ON ../  
+  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON ../  
   - make -j4
   - ctest --output-on-failure
   - valgrind ctest

@@ -38,6 +38,8 @@ matrix:
   allow_failures:
     - os: Visual Studio 2017 Preview
 
+  fast_finish: true
+
 environment:
   VCPKG_DEFAULT_TRIPLET: '%PLATFORM%-windows'
 
@@ -51,7 +53,7 @@ install:
   - vcpkg install range-v3 rapidjson date
   - cd c:/projects/converter
   - mkdir build && cd build
-  - call cmake --warn-uninitialized -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=c:/project/deps/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=%VCPKG_DEFAULT_TRIPLET% -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
+  - call cmake --warn-uninitialized -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=c:/project/deps/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=%VCPKG_DEFAULT_TRIPLET% -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
 
 build:
   project: c:/projects/converter/build/ALL_BUILD.vcxproj

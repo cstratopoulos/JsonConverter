@@ -128,10 +128,13 @@ auto& tcout = std::cout;
 #endif
 
 int main()
+try
 {
     // Register derived classes of Shape for polymorphic conversion
-    assert(Oc::jsonPolyImpl<Circle>());
-    assert(Oc::jsonPolyImpl<Segment>());
+    bool circleRegistered  = Oc::jsonPolyImpl<Circle>();
+    bool segmentRegistered = Oc::jsonPolyImpl<Segment>();
+
+    assert(circleRegistered && segmentRegistered);
 
     // Instantiate some classes, serialize them to JSON strings
     const Point3D yUnit{ 0.0, 1.0, 0.0 };
@@ -197,6 +200,10 @@ int main()
     const auto segmentFromShape         = dynamic_cast<const Segment*>(segmentShape.get());
     assert(segmentFromShape);
     assert(seg == *segmentFromShape);
+} catch (const std::exception& e) {
+    std::cerr << "Example failed with exception: " << e.what() << "\n";
+
+    return 1;
 }
 
 bool operator==(const Point3D& p1, const Point3D& p2)
