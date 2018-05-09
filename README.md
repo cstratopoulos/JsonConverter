@@ -224,7 +224,7 @@ This library is built with C++17, and tested with CI builds on
 
 - Clang 5 (x64)
 
-- GCC 7 (x64)
+- GCC 7 & 8 (x64)
 
 ## Dependencies
 
