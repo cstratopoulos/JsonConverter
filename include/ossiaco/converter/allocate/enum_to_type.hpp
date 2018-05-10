@@ -43,30 +43,6 @@ constexpr bool typeAllocCompatible = boost::mp11::mp_all_of_q<
         std::add_pointer_t, TreeMappedClasses<Enum>>,
     ConvertibleTo<Class*>>::value;
 
-namespace free_callables {
-
-template<typename Class, typename Encoding, typename ValType>
-TypeAllocator<Class, Encoding> leafAllocCallable(const rapidjson::GenericValue<Encoding>& jsonVal)
-{
-    if constexpr(typeAllocCompatible<ValType, Class>)
-        return EnumTypeMap<ValType>::template resolveAllocator<Class, Encoding>(jsonVal);
-    else
-        return TypeAllocator<Class, Encoding>::make();
-}
-
-template<typename Class, typename Encoding, typename ValType>
-TypeAllocator<Class, Encoding> nonLeafAllocCallable(const rapidjson::GenericValue<Encoding>& jsonVal)
-{
-    using AllocType = TypeAllocator<Class, Encoding>;
-
-    if constexpr(std::is_convertible_v<ValType*, Class*>)
-        return AllocType::template make<ValType>();
-    else
-        return AllocType::make();
-}
-
-} // namespace free_callables
-
 template<typename Derived>
 struct TypeAllocMapBase;
 
@@ -125,10 +101,9 @@ struct LeafTypeAllocMap : TypeAllocMapBase<LeafTypeAllocMap<Class, Encoding, Enu
     template<typename ValType>
     static TypeAllocator<Class, Encoding> makeMapVal()
     {
-        using MakeType = std::conditional_t<
-            std::is_convertible_v<ValType*, Class*>, ValType, Class>;
-
-        return TypeAllocator<Class, Encoding>::template make<MakeType>();
+        return TypeAllocator<Class, Encoding>::template make<
+            std::conditional_t<std::is_convertible_v<ValType*, Class*>, 
+            ValType, Class>>();
     }
 
     TypeAllocator<Class, Encoding>
@@ -145,13 +120,28 @@ struct NonLeafTypeAllocMap : TypeAllocMapBase<NonLeafTypeAllocMap<Class, Encodin
     using AllocType     = TypeAllocator<Class, Encoding>;
     using AllocCallable = std::add_pointer_t<AllocType(const rapidjson::GenericValue<Encoding>&)>;
 
+    template<bool b>
+    using AllocCallableRet = std::enable_if_t<b, AllocCallable>;
+
     template<typename ValType>
-    static AllocCallable makeMapVal()
+    static AllocCallableRet<std::is_enum_v<ValType>> makeMapVal()
     {
-        if constexpr(std::is_enum_v<ValType>)
-            return &free_callables::leafAllocCallable<Class, Encoding, ValType>;
-        else
-            return &free_callables::nonLeafAllocCallable<Class, Encoding, ValType>;
+        return [](const rapidjson::GenericValue<Encoding>& jsonVal) {
+            if constexpr(typeAllocCompatible<ValType, Class>)
+                return EnumTypeMap<ValType>::template resolveAllocator<Class, Encoding>(jsonVal);
+            else
+                return TypeAllocator<Class, Encoding>::make();
+        };
+    }
+
+    template<typename ValType>
+    static AllocCallableRet<!std::is_enum_v<ValType>> makeMapVal()
+    {
+        return [](const rapidjson::GenericValue<Encoding>&) {
+            return AllocType::template make<
+                std::conditional_t<std::is_convertible_v<ValType*, Class*>, 
+                ValType, Class>>();
+        };
     }
 
     TypeAllocator<Class, Encoding>
