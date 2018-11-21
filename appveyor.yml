@@ -13,12 +13,12 @@ version: '{build}'
 shallow_clone: true
 
 os:
-  - Visual Studio 2017
+  #- Visual Studio 2017
   - Visual Studio 2017 Preview
 
 platform:
   - x64
-  - x86
+  #- x86
 
 configuration: 
   - Debug
@@ -35,8 +35,8 @@ skip_commits:
 
 
 matrix:
-  allow_failures:
-    - os: Visual Studio 2017 Preview
+  #allow_failures:
+  #  - os: Visual Studio 2017 Preview
 
   fast_finish: true
 
