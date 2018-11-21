@@ -64,7 +64,7 @@ install:
       cmake_paths
 
       [options]
-      Boost:header_only=True
+      boost:header_only=True
       ' > conanfile.txt
 
     cat conanfile.txt
