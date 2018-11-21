@@ -44,7 +44,7 @@ constexpr auto chronoFmtPair(Property Class::*member, const CharType* format)
 template<
     typename Class,
     typename Property,
-    NotFoundHandlerPtr<Class> notFound = &throwNotFound<Class>>
+    NotFoundHandlerPtr notFound = throwNotFound<Class>>
 class ChronoPropertyConverter {
 public:
     using PmdType = Property Class::*;
@@ -92,7 +92,7 @@ private:
 
 /// Alias template for a formatted chrono JSON property whose absence should be ignored.
 template<typename Class, typename Property>
-using OptionalChronoPropertyConverter = ChronoPropertyConverter<Class, Property, &ignoreNotFound<Class>>;
+using OptionalChronoPropertyConverter = ChronoPropertyConverter<Class, Property, &ignoreNotFound>;
 
 } // namespace Ossiaco::converter
 
