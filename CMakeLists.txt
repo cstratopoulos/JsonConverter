@@ -122,11 +122,10 @@ target_compile_definitions(ossiaco_converter INTERFACE
 )
 
 if(MSVC)
-    target_compile_definitions(ossiaco_converter INTERFACE 
-        _CRT_SECURE_NO_WARNINGS
-        _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-        _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
-        _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+    target_compile_options(ossiaco_converter INTERFACE
+        /permissive-
+        /bigobj
+        /EHsc
     )
 endif()
 
