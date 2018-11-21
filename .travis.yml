@@ -39,7 +39,6 @@ matrix:
 
 install:
   - |
-    set -eux
     export CXX=${COMPILER}
     if [[ "${CXX%%+*}" == "clang" ]]; then
       ${CXX} -v 2>&1 | grep -v 'Found candidate'
@@ -55,7 +54,6 @@ install:
     conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   
   - |
-    set -eux
     cd ${DEPS_DIR}
     echo \
       '[requires]
@@ -72,7 +70,6 @@ install:
     conan install . -s compiler.libcxx=libstdc++11
 
   - |
-    set -eux
     CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
