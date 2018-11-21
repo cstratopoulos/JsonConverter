@@ -24,7 +24,7 @@
 
 namespace Oc = Ossiaco::converter;
 
-namespace mp11 = boost::mp11;
+using namespace boost::mp11;
 
 static std::size_t registeredCount = 0;
 
@@ -43,7 +43,7 @@ void hookOssiacoConverterDecoratorLog(Base*, Derived*)
 } // namespace test_types
 
 template<typename Derived>
-using ShapeHookDetected = mp11::mp_bool<Oc::decoratorHookDetected<test_types::Shape, Derived>>;
+using ShapeHookDetected = mp_bool<Oc::decoratorHookDetected<test_types::Shape, Derived>>;
 
 template<typename Derived>
 constexpr std::size_t inheritanceDepth()
@@ -55,7 +55,7 @@ constexpr std::size_t inheritanceDepth()
 }
 
 template<typename Derived>
-using InheritanceDepthType = mp11::mp_int<inheritanceDepth<Derived>()>;
+using InheritanceDepthType = mp_int<inheritanceDepth<Derived>()>;
 
 TEST_CASE(
     "Checking invocation of ADL hook for poly decorator registration",
@@ -63,12 +63,12 @@ TEST_CASE(
 {
     namespace tt = test_types;
 
-    using DerivedList = mp11::mp_list<tt::Circle, tt::DrawableCircle, tt::Segment, tt::Circle, tt::DrawableCircle>;
+    using DerivedList = mp_list<tt::Circle, tt::DrawableCircle, tt::Segment, tt::Circle, tt::DrawableCircle>;
 
-    static_assert(mp11::mp_all_of<DerivedList, ShapeHookDetected>());
+    static_assert(mp_all_of<DerivedList, ShapeHookDetected>());
     SUCCEED("static_assert passed: All derived classes detected hook for registration with shape");
 
-    mp11::mp_for_each<DerivedList>([](auto shapeDerived) {
+    mp_for_each<DerivedList>([](auto shapeDerived) {
         using DerivedShape = decltype(shapeDerived);
 
         REQUIRE(Oc::jsonPolyImpl<DerivedShape>());
@@ -76,13 +76,13 @@ TEST_CASE(
 
     // Given a hierarchy Base_0, Base_1, ..., Base_(n-1), Derived, registration of Derived into Base0 should happen precisely once
     // for each Base_k from 0 to n-1.
-    static constexpr std::size_t expectedCount = mp11::mp_apply<
-        mp11::mp_plus,
-        mp11::mp_transform<
-            InheritanceDepthType,
-            mp11::mp_unique<DerivedList>
-        >
-    >();
+    using DepthCounts = mp_transform<
+        InheritanceDepthType,
+        mp_unique<DerivedList>>;
+
+    // This is possible as mp_apply<mp_plus, DepthCounts> but MSVC doesn't like it!
+    std::size_t expectedCount = 0;
+    mp_for_each<DepthCounts>([&expectedCount](auto intC) { expectedCount += intC(); });
 
     CHECK(registeredCount == expectedCount);
 }

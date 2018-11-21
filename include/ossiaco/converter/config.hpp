@@ -13,6 +13,14 @@
 
 #include <boost/config.hpp>
 
+#ifndef OSSIACO_MSVC_TUPLE_WORKAROUND
+#    if defined(_MSC_VER) && !defined(__clang__)
+#        define OSSIACO_MSVC_TUPLE_WORKAROUND 1
+#    else
+#        define OSSIACO_MSVC_TUPLE_WORKAROUND 0
+#    endif
+#endif
+
 #ifndef OSSIACO_WCHAR_UNICODE
 /// Wether to use unicode through `char_t`. Off by default.
 ///
