@@ -48,7 +48,6 @@ install:
 
   - |
     set -eux
-    sudo pip install --upgrade pip setuptools wheel
     sudo pip install conan
     conan --version
     conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
