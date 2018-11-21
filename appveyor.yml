@@ -50,6 +50,7 @@ install:
   - cd c:/tools/vcpkg
   - git pull
   - git checkout 7a931c92
+  - .\bootstrap-vcpkg.bat
   - vcpkg remove range-v3-vs2015
   - vcpkg install range-v3 rapidjson date
   - cd c:/projects/converter
