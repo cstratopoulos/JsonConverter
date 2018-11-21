@@ -88,6 +88,7 @@ script:
       cd ..
       mkdir build-dbg && cd build-dbg
       cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug ../
+      make -j4
       valgrind ctest
     fi
 
