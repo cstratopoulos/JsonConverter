@@ -17,8 +17,8 @@ os:
   - Visual Studio 2017 Preview
 
 platform:
-  #- x86
   - x64
+  - x86
 
 configuration: 
   - Debug
