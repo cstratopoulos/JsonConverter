@@ -41,6 +41,8 @@ install:
   - |
     export CC=${_CC}
     export CXX=${_CXX}
+    ${CC} --version
+    ${CXX --version
 
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
