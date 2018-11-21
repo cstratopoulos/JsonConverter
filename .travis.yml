@@ -47,7 +47,7 @@ install:
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
   - |
-    pip install conan
+    sudo pip install conan
     conan --version
     conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   
