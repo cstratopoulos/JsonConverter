@@ -8,19 +8,11 @@
 # 
 # http://opensource.org/licenses/MIT
 
-#######################################
-# Pull in Catch as an interface target
-#######################################
-set(CATCH_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/catch)
-add_library(Catch INTERFACE)
-target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
-
 ####################################################
 # Define a library of headers shared by unit tests
 ####################################################
-add_library(converter_test_utils INTERFACE)
-
-target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
+add_library(converter_test_utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/catch_main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_utils.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/chess.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/digraph.hpp
@@ -35,11 +27,11 @@ target_sources(converter_test_utils INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/types/shape.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/sprint_record.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/udt_ranges.hpp
->)
+)
 
 target_link_libraries(converter_test_utils
-    INTERFACE ossiaco_converter
-    INTERFACE Catch
+    PUBLIC Catch2::Catch2
+    PUBLIC ossiaco_converter
 )
 
 add_subdirectory(core_final)
