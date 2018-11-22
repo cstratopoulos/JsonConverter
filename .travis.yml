@@ -74,6 +74,7 @@ install:
       (cd llvm/build/projects/libcxx && make install -j2) || exit 1
       (cd llvm/build/projects/libcxxabi && make install -j2) || exit 1
       export CXXFLAGS="-isystem ${DEPS_DIR}/llvm/install/include/c++/v1"
+      if [[ "${CXX}" == "clang++-5.0" ]]; then export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_STD_VER=17"; fi
       export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
     fi
