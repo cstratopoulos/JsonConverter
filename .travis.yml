@@ -109,7 +109,7 @@ install:
       cat conanfile.txt
 
       LIBCXX=libstdc++11
-      if [[ "${CXX%%+*}" == "clang" ]]; then LIBCXX=libc++; fi
+      if [[ ${USE_LIBCXX} -eq 1 ]]; then LIBCXX=libc++; fi
 
       conan install . -s compiler.libcxx=${LIBCXX} --build missing
 
