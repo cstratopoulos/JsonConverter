@@ -39,8 +39,8 @@ matrix:
       addons: { apt: { packages: ["clang-6.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
 
     # Clang 7
-    - env: _CC=clang-7.0 _CXX=clang++-7.0 VALGRIND_DBG=1 USE_LIBCXX=1
-      addons: { apt: { packages: ["clang-7.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
+    - env: _CC=clang-7 _CXX=clang++-7 VALGRIND_DBG=1 USE_LIBCXX=1
+      addons: { apt: { packages: ["clang-7", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
 install:
 
   # Set compiler
@@ -64,7 +64,7 @@ install:
   - |
     if [[ ${USE_LIBCXX} -eq 1 ]]; then
       if [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1";
-      elif [[ "${CXX}" == "clang++-7.0" ]]; then LLVM_VERSION="7.0.0"
+      elif [[ "${CXX}" == "clang++-7" ]]; then LLVM_VERSION="7.0.0"
       fi
 
       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
