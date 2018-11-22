@@ -13,7 +13,7 @@
 
 #include <boost/uuid/string_generator.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace tt = test_types;
 

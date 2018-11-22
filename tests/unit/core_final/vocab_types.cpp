@@ -15,7 +15,7 @@
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/integral.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace tt = test_types;
 

@@ -18,7 +18,7 @@
 
 #include "../types/person.hpp"
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace boost {
 

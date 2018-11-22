@@ -13,7 +13,7 @@
 #include "../test_utils.hpp"
 #include "../types/shape.hpp"
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace tt = test_types;
 

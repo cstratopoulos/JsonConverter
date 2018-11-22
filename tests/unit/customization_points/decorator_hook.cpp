@@ -18,7 +18,7 @@
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/function.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

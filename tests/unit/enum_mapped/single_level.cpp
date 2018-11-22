@@ -14,7 +14,7 @@
 #include "../types/messages.hpp"
 #include "../types/chess.hpp"
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace tt = test_types;
 namespace Oc = Ossiaco::converter;
