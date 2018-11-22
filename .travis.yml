@@ -35,8 +35,8 @@ matrix:
       addons: { apt: { packages: ["clang-5.0", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
 
     # Clang 6
-    - env: _CC=clang-6.0 _CXX=clang++-6.0 VALGRIND_DBG=1 USE_LIBCXX=1
-      addons: { apt: { packages: ["clang-6.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
+    - env: _CC=clang-6.0 _CXX=clang++-6.0 USE_LIBCXX=1
+      addons: { apt: { packages: ["clang-6.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
 
     # Clang 7
     - env: _CC=clang-7 _CXX=clang++-7 VALGRIND_DBG=1 USE_LIBCXX=1
