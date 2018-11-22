@@ -38,47 +38,28 @@ matrix:
       addons: { apt: { packages: ["clang-6.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
 
 install:
+
+  # Set compiler
   - |
     export CC=${_CC}
     export CXX=${_CXX}
     ${CC} --version
     ${CXX} --version
 
+  # Ensure deps directory
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-  - |
-    sudo pip install conan
-    conan --version
-    conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  
-  - |
-    cd ${DEPS_DIR}
-    echo \
-      '[requires]
-      boost/1.68.0@conan/stable
-      date/2.4.1@bincrafters/stable
-      range-v3/0.4.0@ericniebler/stable
-      rapidjson/1.1.0@bincrafters/stable
-
-      [generators]
-      cmake_paths
-
-      [options]
-      boost:header_only=True
-      ' > conanfile.txt
-
-    cat conanfile.txt
-    conan install . -s compiler.libcxx=libstdc++11 --build missing
-
+  # Get recent CMake
   - |
     CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     cmake --version
 
+  # Install libc++ and libc++abi on clang
   - |
     if [[ "${CXX%%+*}" == "clang" ]]; then
-      elif [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
+      if [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
       elif [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1"
       fi
 
@@ -96,6 +77,36 @@ install:
       export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
     fi
+
+  # Set up conan
+  - |
+    sudo pip install conan
+    conan --version
+    conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan    
+
+  # Conan install deps
+  - |
+      cd ${DEPS_DIR}
+      echo \
+        '[requires]
+        boost/1.68.0@conan/stable
+        date/2.4.1@bincrafters/stable
+        range-v3/0.4.0@ericniebler/stable
+        rapidjson/1.1.0@bincrafters/stable
+
+        [generators]
+        cmake_paths
+
+        [options]
+        boost:header_only=True
+        ' > conanfile.txt
+
+      cat conanfile.txt
+
+      LIBCXX=libstdc++11
+      if [[ "${CXX%%+*}" == "clang" ]]; then LIBCXX=libc++; fi
+
+      conan install . -s compiler.libcxx=${LIBCXX} --build missing
 
 script:
   - CMAKE_OPTS="--warn-uninitialized -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/conan_paths.cmake  -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON"
