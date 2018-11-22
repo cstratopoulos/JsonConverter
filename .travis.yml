@@ -30,13 +30,17 @@ matrix:
       addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
     
     # Clang 5
+    # For some reason clang5/libc++ builds fail due to std::invoke_result not being exposed in type_traits
     - env: _CC=clang-5.0 _CXX=clang++-5.0
-      addons: { apt: { packages: ["clang-5.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+      addons: { apt: { packages: ["clang-5.0", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
 
     # Clang 6
-    - env: _CC=clang-6.0 _CXX=clang++-6.0 VALGRIND_DBG=1
+    - env: _CC=clang-6.0 _CXX=clang++-6.0 VALGRIND_DBG=1 USE_LIBCXX=1
       addons: { apt: { packages: ["clang-6.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
 
+    # Clang 7
+    - env: _CC=clang-7.0 _CXX=clang++-7.0 VALGRIND_DBG=1 USE_LIBCXX=1
+      addons: { apt: { packages: ["clang-7.0", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
 install:
 
   # Set compiler
@@ -58,9 +62,9 @@ install:
 
   # Install libc++ and libc++abi on clang
   - |
-    if [[ "${CXX%%+*}" == "clang" ]]; then
-      if [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.2";
-      elif [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1"
+    if [[ ${USE_LIBCXX} -eq 1 ]]; then
+      if [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1";
+      elif [[ "${CXX}" == "clang++-7.0" ]]; then LLVM_VERSION="7.0.0"
       fi
 
       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
@@ -74,7 +78,6 @@ install:
       (cd llvm/build/projects/libcxx && make install -j2) || exit 1
       (cd llvm/build/projects/libcxxabi && make install -j2) || exit 1
       export CXXFLAGS="-isystem ${DEPS_DIR}/llvm/install/include/c++/v1"
-      if [[ "${CXX}" == "clang++-5.0" ]]; then export CXXFLAGS="${CXXFLAGS} -D_LIBCPP_STD_VER=17"; fi
       export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
     fi
