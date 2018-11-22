@@ -20,6 +20,7 @@
 #include <chrono>
 #include <optional>
 
+#include <ciso646>
 #include <cstdint>
 
 namespace Ossiaco::converter {
@@ -106,7 +107,13 @@ struct ConvertVocabType<date::sys_time<Duration>> {
     static void
     fromJson(TimePoint& object, const rapidjson::GenericValue<Encoding>& value, ReferenceMapper&)
     {
-        const auto epochMs = std::chrono::milliseconds(getValue<int64_t>(value));
+#ifdef _LIBCPP_VERSION
+        using GetAsType = uint64_t;
+#else
+        using GetAsType = int64_t;
+#endif // _LIBCPP_VERSION
+
+        const auto epochMs = std::chrono::milliseconds(getValue<GetAsType>(value));
 
         object = TimePoint(std::chrono::duration_cast<Duration>(epochMs));
     }
