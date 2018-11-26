@@ -106,7 +106,7 @@ struct FileObjectConversion {
 template<typename Base, typename Func, typename Comparison, typename Conversion>
 struct BasicTestCase {
     static_assert(
-        boost::is_invocable_r_v<const Base&, Func>,
+        boost::callable_traits::is_invocable_r_v<const Base&, Func>,
         "The constructor function of a BasicTestCase must return base or an inheritor");
 
     void run();
