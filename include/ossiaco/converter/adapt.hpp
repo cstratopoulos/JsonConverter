@@ -109,9 +109,11 @@ struct PropertiesHelper {
     template<typename ReturnType>
     constexpr auto operator()(ReturnType(*func)())
     {
-        static_assert(isSpecialization<ReturnType, std::tuple>);
-
-        return expand(func());
+        if constexpr (std::is_void_v<ReturnType>) {
+            return std::move(*this);
+        } else {
+            return expand(func());
+        }
     }
 };
 
