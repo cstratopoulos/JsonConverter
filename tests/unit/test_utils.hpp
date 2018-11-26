@@ -20,7 +20,6 @@
 
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/tuple.hpp>
-#include <boost/callable_traits/is_invocable.hpp>
 #include <boost/type_traits/remove_cv_ref.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
 
@@ -106,7 +105,7 @@ struct FileObjectConversion {
 template<typename Base, typename Func, typename Comparison, typename Conversion>
 struct BasicTestCase {
     static_assert(
-        boost::callable_traits::is_invocable_r_v<const Base&, Func>,
+        std::is_invocable_r_v<const Base&, Func>,
         "The constructor function of a BasicTestCase must return base or an inheritor");
 
     void run();
