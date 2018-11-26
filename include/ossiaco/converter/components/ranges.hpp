@@ -103,9 +103,9 @@ struct ConvertKeyValueRange {
     {
         writer.StartObject();
 
-        for (const auto& [key, val] : kvMap) {
-            writer.String(key);
-            MappedTypeConverter::toJson(val, writer, references);
+        for (const auto& kvPair : kvMap) {
+            writer.String(kvPair.first);
+            MappedTypeConverter::toJson(kvPair.second, writer, references);
         }
 
         writer.EndObject();
