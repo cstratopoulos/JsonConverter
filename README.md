@@ -218,13 +218,13 @@ bool operator==(const Circle &c1, const Circle &c2)
 
 ## Compiler requirements
 
-This library is built with C++17, and tested with CI builds on
+This library is built with C++17 and tested regularly on
 
-- Visual Studio 15.6 & 15.7 Preview (x86, x64)
+- Visual Studio 15.9
 
-- Clang 5 (x64)
+- Clang 5, 6, 7
 
-- GCC 7 & 8 (x64)
+- GCC 7, 8
 
 ## Dependencies
 
@@ -237,7 +237,7 @@ As mentioned, the library is built on top of [RapidJSON](https://github.com/Tenc
 
  Note that Boost >= 1.67 is required.
 
-Converter uses Range-v3 purely for concept checking on convertible ranges, and for `ranges::action::push_back`. Users are free to use either the actual [range-v3](https://github.com/ericniebler/range-v3) or the [Range-V3-VS2015](https://github.com/Microsoft/Range-V3-VS2015) fork.
+Converter uses Range-v3 purely for concept checking on convertible ranges, and for `ranges::action::push_back`.
 
 The unit tests additionally use a few more Boost libraries:
 - [Assert](https://www.boost.org/doc/libs/1_67_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
