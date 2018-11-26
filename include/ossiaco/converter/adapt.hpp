@@ -84,7 +84,7 @@ struct PropertiesHelper {
     /// Sample usage, with the helper functions above:
     ///     `operator()(optionalProperty(member, name))`
     /// \output_section Add properties with missing value policy
-    template<typename Class, typename Property, NotFoundHandlerPtr<Class> notFound>
+    template<typename Class, typename Property, NotFoundHandlerPtr notFound>
     constexpr auto operator()(PropertyConverter<Class, Property, notFound>&& propConv)
     {
         return expand(std::make_tuple(std::move(propConv)));
@@ -95,7 +95,7 @@ struct PropertiesHelper {
     /// Sample usage with the helper functions above:
     ///     `operator()(optionalProperty(chronoFmtPair(), name))`
     /// \output_section Add properties with missing value policy
-    template<typename Class, typename Property, NotFoundHandlerPtr<Class> notFound>
+    template<typename Class, typename Property, NotFoundHandlerPtr notFound>
     constexpr auto operator()(ChronoPropertyConverter<Class, Property, notFound>&& propConv)
     {
         return expand(std::make_tuple(std::move(propConv)));

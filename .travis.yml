@@ -22,59 +22,113 @@ branches:
 matrix:
   include:
     # GCC 7
-    - env: COMPILER=g++-7
-      addons: { apt: { packages: ["g++-7", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
+    - env: _CC=gcc-7 _CXX=g++-7
+      addons: { apt: { packages: ["g++-7"], sources: ["ubuntu-toolchain-r-test"] } }
 
     # GCC 8
-    - env: COMPILER=g++-8
+    - env: _CC=gcc-8 _CXX=g++-8 VALGRIND_DBG=1
       addons: { apt: { packages: ["g++-8", "valgrind"], sources: ["ubuntu-toolchain-r-test"] } }
-    
+
+    # For some reason clang5/libc++ builds fail due to std::invoke_result/is_invocable not being exposed in type_traits        
     # Clang 5
-    - env: COMPILER=clang++-5.0
-      addons: { apt: { packages: ["clang-5.0", "valgrind", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
+    - env: _CC=clang-5.0 _CXX=clang++-5.0
+      addons: { apt: { packages: ["clang-5.0", "libstdc++-7-dev"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-5.0"] } }
 
+    # Clang 6
+    - env: _CC=clang-6.0 _CXX=clang++-6.0 USE_LIBCXX=1
+      addons: { apt: { packages: ["clang-6.0"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-6.0"] } }
+
+    # Clang 7
+    - env: _CC=clang-7 _CXX=clang++-7 VALGRIND_DBG=1 USE_LIBCXX=1
+      addons: { apt: { packages: ["clang-7", "valgrind"], sources: ["ubuntu-toolchain-r-test", "llvm-toolchain-trusty-7"] } }
 install:
-  - |
-    export CXX=${COMPILER}
-    if [[ "${CXX%%+*}" == "clang" ]]; then
-      ${CXX} -v 2>&1 | grep -v 'Found candidate'
-    fi
 
+  # Set compiler
+  - |
+    export CC=${_CC}
+    export CXX=${_CXX}
+    ${CC} --version
+    ${CXX} --version
+
+  # Ensure deps directory
   - DEPS_DIR="${HOME}/deps"; mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-  - |
-    for lib in "HowardHinnant|date|v2.4.1" "Tencent|rapidjson|v1.1.0" "EricNiebler|range-v3|0.3.5"; do
-      ORG_NAME="$(echo $lib | cut -d'|' -f1)"
-      GIT_NAME="$(echo $lib | cut -d'|' -f2)"
-      TAG_NAME="$(echo $lib | cut -d'|' -f3)"
-      git clone https://github.com/"${ORG_NAME}"/"${GIT_NAME}".git && cd "${GIT_NAME}"
-      git checkout tags/"${TAG_NAME}"
-      cd include/
-      for dir in `ls -d */`; do
-        cp -r $dir "${DEPS_DIR}/"
-      done
-    done
-    cd "${DEPS_DIR}"
-    ls
-    export PATH=${DEPS_DIR}:${PATH}
-
-  - |
-    travis_retry wget -q https://dl.bintray.com/boostorg/release/1.67.0/source/boost_1_67_0.tar.gz
-    tar xf boost_1_67_0.tar.gz
-
+  # Get recent CMake
   - |
     CMAKE_URL="https://cmake.org/files/v3.10/cmake-3.10.0-Linux-x86_64.tar.gz"
     mkdir cmake && travis_retry wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
     cmake --version
 
+  # Install libc++ and libc++abi on clang
+  - |
+    if [[ ${USE_LIBCXX} -eq 1 ]]; then
+      if [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1";
+      elif [[ "${CXX}" == "clang++-7" ]]; then LLVM_VERSION="7.0.0"
+      fi
+
+      LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+      LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+      LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+      mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
+      travis_retry wget -O - ${LLVM_URL} | tar --strip-components=1 -xJ -C llvm || exit 1
+      travis_retry wget -O - ${LIBCXX_URL} | tar --strip-components=1 -xJ -C llvm/projects/libcxx || exit 1
+      travis_retry wget -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C llvm/projects/libcxxabi || exit 1
+      (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/llvm/install) || exit 1
+      (cd llvm/build/projects/libcxx && make install -j2) || exit 1
+      (cd llvm/build/projects/libcxxabi && make install -j2) || exit 1
+      export CXXFLAGS="-isystem ${DEPS_DIR}/llvm/install/include/c++/v1"
+      export LDFLAGS="-L ${DEPS_DIR}/llvm/install/lib -l c++ -l c++abi"
+      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DEPS_DIR}/llvm/install/lib"
+    fi
+
+  # Set up conan
+  - |
+    sudo pip install conan
+    conan --version
+    conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan    
+
+  # Conan install deps
+  - |
+      cd ${DEPS_DIR}
+      echo \
+        '[requires]
+        boost/1.68.0@conan/stable
+        catch2/2.4.1@bincrafters/stable
+        date/2.4.1@bincrafters/stable
+        range-v3/0.4.0@ericniebler/stable
+        rapidjson/1.1.0@bincrafters/stable
+
+        [generators]
+        cmake_paths
+
+        [options]
+        boost:header_only=True
+        ' > conanfile.txt
+
+      cat conanfile.txt
+
+      LIBCXX=libstdc++11
+      if [[ ${USE_LIBCXX} -eq 1 ]]; then LIBCXX=libc++; fi
+
+      conan install . -s compiler.libcxx=${LIBCXX} --build missing
+
 script:
+  - CMAKE_OPTS="--warn-uninitialized -DCMAKE_TOOLCHAIN_FILE=${DEPS_DIR}/conan_paths.cmake  -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON"
   - cd "${TRAVIS_BUILD_DIR}"
   - mkdir build && cd build
-  - cmake --warn-uninitialized -DCMAKE_CXX_COMPILER="${COMPILER}" -DBOOST_ROOT="${HOME}/deps/boost_1_67_0" -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON ../  
+  - cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Release ../  
   - make -j4
   - ctest --output-on-failure
-  - valgrind ctest
+  - |
+    if [[ ${VALGRIND_DBG} -eq 1 ]]; then
+      cd ..
+      mkdir build-dbg && cd build-dbg
+      cmake ${CMAKE_OPTS} -DCMAKE_BUILD_TYPE=Debug ../
+      make -j4
+      valgrind ctest
+    fi
 
 notifications:
   email: false
+  

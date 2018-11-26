@@ -12,7 +12,7 @@
 #include "../types/nested_ranges.hpp"
 #include "../types/udt_ranges.hpp"
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace tt = test_types;
 

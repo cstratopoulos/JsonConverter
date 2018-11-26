@@ -13,12 +13,12 @@ version: '{build}'
 shallow_clone: true
 
 os:
-  - Visual Studio 2017
+  #- Visual Studio 2017
   - Visual Studio 2017 Preview
 
 platform:
-  - x86
   - x64
+  #- x86
 
 configuration: 
   - Debug
@@ -35,8 +35,8 @@ skip_commits:
 
 
 matrix:
-  allow_failures:
-    - os: Visual Studio 2017 Preview
+  #allow_failures:
+  #  - os: Visual Studio 2017 Preview
 
   fast_finish: true
 
@@ -47,11 +47,15 @@ cache:
   - c:/tools/vcpkg/installed
 
 install:
-  - mkdir c:\project\deps\ && cd c:\project\deps\
-  - vcpkg install range-v3 rapidjson date
+  - cd c:/tools/vcpkg
+  - git pull
+  - git checkout 7a931c92
+  - .\bootstrap-vcpkg.bat
+  - vcpkg remove range-v3-vs2015
+  - vcpkg install catch2 range-v3 rapidjson date
   - cd c:/projects/converter
   - mkdir build && cd build
-  - call cmake --warn-uninitialized -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DBOOST_ROOT=c:/Libraries/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=%VCPKG_DEFAULT_TRIPLET% -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
+  - call cmake --warn-uninitialized -G"Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=%CONFIGURATION% -DCMAKE_CXX_FLAGS="/D_CRT_SECURE_NO_WARNINGS /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS" -DBOOST_ROOT=c:/Libraries/boost_1_67_0 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=%VCPKG_DEFAULT_TRIPLET% -DOSSIACO_CONVERTER_EXAMPLES=ON -DOSSIACO_CONVERTER_TESTS=ON -DOSSIACO_WCHAR_UNICODE=ON ..\
 
 build:
   project: c:/projects/converter/build/ALL_BUILD.vcxproj

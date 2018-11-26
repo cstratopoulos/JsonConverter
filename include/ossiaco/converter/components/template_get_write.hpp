@@ -53,29 +53,21 @@ Value getValue(const rapidjson::GenericValue<Encoding>& value)
 
     if constexpr (std::is_same_v<Value, string_t>) {
         return value.GetString();
-    }
-    else if constexpr (std::is_same_v<Value, bool>) {
+    } else if constexpr (std::is_same_v<Value, bool>) {
         return value.GetBool();
-    }
-    else if constexpr (std::is_same_v<Value, int32_t>) {
+    } else if constexpr (std::is_same_v<Value, int32_t>) {
         return value.GetInt();
-    }
-    else if constexpr (std::is_same_v<Value, uint32_t>) {
+    } else if constexpr (std::is_same_v<Value, uint32_t>) {
         return value.GetUint();
-    }
-    else if constexpr (std::is_same_v<Value, int64_t>) {
+    } else if constexpr (std::is_same_v<Value, int64_t>) {
         return value.GetInt64();
-    }
-    else if constexpr (std::is_same_v<Value, uint64_t>) {
+    } else if constexpr (std::is_same_v<Value, uint64_t>) {
         return value.GetUint64();
-    }
-    else if constexpr (std::is_same_v<Value, float>) {
+    } else if constexpr (std::is_same_v<Value, float>) {
         return value.GetFloat();
-    }
-    else if constexpr (std::is_same_v<Value, double>) {
+    } else if constexpr (std::is_same_v<Value, double>) {
         return value.GetDouble();
-    }
-    else {
+    } else {
         return static_cast<Value>(value.GetInt());
     }
 }
@@ -91,30 +83,22 @@ bool writeValue(Writer& writer, const Value& value)
 
     if constexpr (std::is_same_v<Value, string_t>) {
         return writer.String(value.c_str());
-    }
-    else if constexpr (std::is_same_v<Value, bool>) {
+    } else if constexpr (std::is_same_v<Value, bool>) {
         return writer.Bool(value);
-    }
-    else if constexpr (std::is_same_v<Value, int32_t>) {
+    } else if constexpr (std::is_same_v<Value, int32_t>) {
         return writer.Int(value);
-    }
-    else if constexpr (std::is_same_v<Value, uint32_t>) {
+    } else if constexpr (std::is_same_v<Value, uint32_t>) {
         return writer.Uint(value);
-    }
-    else if constexpr (std::is_same_v<Value, int64_t>) {
+    } else if constexpr (std::is_same_v<Value, int64_t>) {
         return writer.Int64(value);
-    }
-    else if constexpr (std::is_same_v<Value, uint64_t>) {
+    } else if constexpr (std::is_same_v<Value, uint64_t>) {
         return writer.Uint64(value);
-    }
-    else if constexpr (std::is_same_v<Value, float>) {
+    } else if constexpr (std::is_same_v<Value, float>) {
         return writer.Float(value);
-    }
-    else if constexpr (std::is_same_v<Value, double>) {
+    } else if constexpr (std::is_same_v<Value, double>) {
         return writer.Double(value);
-    }
-    else {
-        writer.Uint64(static_cast<uint64_t>(value));
+    } else {
+        return writer.Uint64(static_cast<uint64_t>(value));
     }
 }
 

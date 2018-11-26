@@ -22,8 +22,7 @@ void throwNotFound(string_view_t propName)
     throw RequiredPropertyMissing<Class>(propName);
 }
 
-template<typename>
-void ignoreNotFound(string_view_t) {}
+inline void ignoreNotFound(string_view_t) {}
 
 /// Function pointer as policy template parameter for handling missing JSON property.
 ///
@@ -31,8 +30,7 @@ void ignoreNotFound(string_view_t) {}
 /// type can be provided to declare how missing JSON properties should be found.
 /// `NotFoundHandlerPtr(propName)` is called when deserializing JSON which has no member named
 /// `propName`.
-template<typename Class>
-using NotFoundHandlerPtr = decltype(&throwNotFound<Class>);
+using NotFoundHandlerPtr = std::add_pointer_t<void(string_view_t)>;
 
 } // namespace Ossiaco::converter
 

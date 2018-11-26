@@ -34,12 +34,11 @@ endif()
 ####################################
 
 find_path(DATE_INCLUDE_DIRS date/date.h)
-find_path(RANGE_V3_INCLUDE_DIRS range/v3/range.hpp)
 find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
 
+find_package(Catch2 2.4.1 REQUIRED)
+find_package(range-v3 0.4.0 REQUIRED)
 find_package(Boost 1.67.0 REQUIRED)
-
-# find_package(RapidJSON 1.1.0 REQUIRED)
 
 ###############################
 # The converter library target
@@ -103,11 +102,14 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
 
 target_include_directories(ossiaco_converter INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 
-target_include_directories(ossiaco_converter
-    INTERFACE ${Boost_INCLUDE_DIRS}
-    INTERFACE ${DATE_INCLUDE_DIRS}
-    INTERFACE ${RAPIDJSON_INCLUDE_DIRS}
-    INTERFACE ${RANGE_V3_INCLUDE_DIRS}
+target_include_directories(ossiaco_converter INTERFACE
+    ${DATE_INCLUDE_DIRS}
+    ${RAPIDJSON_INCLUDE_DIRS}
+)
+
+target_link_libraries(ossiaco_converter INTERFACE
+    Boost::boost
+    range-v3 meta
 )
 
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
@@ -121,11 +123,10 @@ target_compile_definitions(ossiaco_converter INTERFACE
 )
 
 if(MSVC)
-    target_compile_definitions(ossiaco_converter INTERFACE 
-        _CRT_SECURE_NO_WARNINGS
-        _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-        _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
-        _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING
+    target_compile_options(ossiaco_converter INTERFACE
+        /permissive-
+        /bigobj
+        /EHsc
     )
 endif()
 

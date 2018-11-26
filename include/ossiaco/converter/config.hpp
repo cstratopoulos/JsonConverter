@@ -15,9 +15,7 @@
 
 #ifndef OSSIACO_MSVC_TUPLE_WORKAROUND
 #    if defined(_MSC_VER) && !defined(__clang__)
-#        if _MSC_VER <= 1914
-#            define OSSIACO_MSVC_TUPLE_WORKAROUND 1
-#        endif
+#        define OSSIACO_MSVC_TUPLE_WORKAROUND 1
 #    else
 #        define OSSIACO_MSVC_TUPLE_WORKAROUND 0
 #    endif

@@ -23,7 +23,7 @@
 #include <boost/type_traits/remove_cv_ref.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <memory>
 #include <string_view>

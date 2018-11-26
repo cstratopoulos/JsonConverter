@@ -28,7 +28,7 @@ class ReferenceMapper;
 template<
     typename Class,
     typename Property,
-    NotFoundHandlerPtr<Class> notFound = &throwNotFound<Class>>
+    NotFoundHandlerPtr notFound = throwNotFound<Class>>
 class PropertyConverter {
 public:
     using ConvHandler = DeducedConverterType<Property>;
@@ -62,7 +62,7 @@ private:
 
 /// Alias template for a JSON property whose absence during deserialization should be ignored.
 template<typename Class, typename Property>
-using OptionalPropertyConverter = PropertyConverter<Class, Property, &ignoreNotFound<Class>>;
+using OptionalPropertyConverter = PropertyConverter<Class, Property, &ignoreNotFound>;
 
 } // namespace Ossiaco::converter
 

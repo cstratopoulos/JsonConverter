@@ -13,7 +13,7 @@
 #include "../test_utils.hpp"
 #include "../types/messages2.hpp"
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 namespace ttv2 = test_types::v2;
 

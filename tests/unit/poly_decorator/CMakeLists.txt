@@ -15,7 +15,6 @@
 ############################################################################
 
 add_executable(poly_decorator_tests
-    main.cpp
     abstract_base.cpp
 )
 

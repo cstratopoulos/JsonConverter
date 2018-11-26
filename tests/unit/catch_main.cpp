@@ -8,7 +8,7 @@
 //
 // http://opensource.org/licenses/MIT
 
-// Core final tests main
+// Common main implementation
 
 #define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#include <catch2/catch.hpp>
