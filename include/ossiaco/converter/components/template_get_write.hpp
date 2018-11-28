@@ -81,8 +81,8 @@ bool writeValue(Writer& writer, const Value& value)
         return writeValue(writer, static_cast<detail::SafeUnderlyingType<Value>>(value));
     }
 
-    if constexpr (std::is_same_v<Value, string_t>) {
-        return writer.String(value.c_str());
+    if constexpr (std::is_constructible_v<string_view_t, const Value&>) {
+        return writer.String(string_view_t(value).data());
     } else if constexpr (std::is_same_v<Value, bool>) {
         return writer.Bool(value);
     } else if constexpr (std::is_same_v<Value, int32_t>) {
