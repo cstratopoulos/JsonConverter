@@ -1,20 +1,48 @@
+# Ossiaco JSON Converter Library
+# 
+# Copyright (C) 2018 Ossiaco
+# 
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+# 
+# http://opensource.org/licenses/MIT
+
+
 # Set -x will cause issues with the vso task being set twice.
 
 steps:
   - bash: |
-      set -eu
-      wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-      sudo apt-add-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
+      set -eux
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
       sudo apt update
-      sudo apt install clang-7 libc++-7-dev libc++abi-7-dev
+      sudo apt install $(CXX)
+    displayName: 'Add apt source and install gcc'
+    condition: and(succeeded(), startsWith(variables['CXX'], 'g++'))
+
+  - bash: |
+      set -eux
+      VER_TAG=${CXX//clang\+\+\-/}
+      wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+      sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-${VER_TAG} main"
+      sudo apt update
+      sudo apt install clang-${VER_TAG}
+    displayName: 'Add LLVM deb source and install compiler for clang 5/7'
+    condition: and(succeeded(), in(variables['CXX'], 'clang++-5.0', 'clang++-7'))
+
+  - bash: |
+      set -eu
+      sudo apt install libc++-7-dev libc++abi-7-dev
       echo "##vso[task.setvariable variable=CXXFLAGS]-stdlib=libc++"
       echo "##vso[task.setvariable variable=LDFLAGS]-l c++ -l c++abi"
-    displayName: 'Install clang-7 and libc++'
+    displayName: 'Apt install libc++ for clang 7'
     condition: and(succeeded(), eq(variables['CXX'], 'clang++-7'))
-    
+
   - bash: |
       set -euo pipefail
-      LLVM_VERSION="6.0.1";
+      if   [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
+      elif [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1";
+      fi      
 
       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
       LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
@@ -30,5 +58,5 @@ steps:
       echo "##vso[task.setvariable variable=CXXFLAGS]-isystem $(DEPS_DIR)/llvm/install/include/c++/v1"
       echo "##vso[task.setvariable variable=LDFLAGS]-L $(DEPS_DIR)/llvm/install/lib -l c++ -l c++abi"
       echo "##vso[task.setvariable variable=LD_LIBRARY_PATH]$(DEPS_DIR)/llvm/install/lib"
-    displayName: 'Set up libc++ for pre-installed clang-6'
-    condition: and(succeeded(), eq(variables['CXX'], 'clang++-6.0'))
+    displayName: 'Set up libc++ for clang 5/6'
+    condition: and(succeeded(), in(variables['CXX'], 'clang++-5.0', 'clang++-6.0'))
