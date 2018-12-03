@@ -1,0 +1,34 @@
+# Set -x will cause issues with the vso task being set twice.
+
+steps:
+  - bash: |
+      set -eu
+      wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+      sudo apt-add-repository 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-7 main'
+      sudo apt update
+      sudo apt install clang-7 libc++-7-dev libc++abi-7-dev
+      echo "##vso[task.setvariable variable=CXXFLAGS]-stdlib=libc++"
+      echo "##vso[task.setvariable variable=LDFLAGS]-l c++ -l c++abi"
+    displayName: 'Install clang-7 and libc++'
+    condition: and(succeeded(), eq(variables['CXX'], 'clang++-7'))
+    
+  - bash: |
+      set -euo pipefail
+      LLVM_VERSION="6.0.1";
+
+      LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+      LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+      LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+      mkdir -p llvm llvm/build llvm/projects/libcxx llvm/projects/libcxxabi
+      wget -O - ${LLVM_URL} | tar --strip-components=1 -xvJ -C llvm
+      wget -O - ${LIBCXX_URL} | tar --strip-components=1 -xvJ -C llvm/projects/libcxx 
+      wget -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xvJ -C llvm/projects/libcxxabi 
+      (cd llvm/build && cmake .. -DCMAKE_INSTALL_PREFIX=${DEPS_DIR}/llvm/install) 
+      (cd llvm/build/projects/libcxx && make install -j2) 
+      (cd llvm/build/projects/libcxxabi && make install -j2)
+
+      echo "##vso[task.setvariable variable=CXXFLAGS]-isystem $(DEPS_DIR)/llvm/install/include/c++/v1"
+      echo "##vso[task.setvariable variable=LDFLAGS]-L $(DEPS_DIR)/llvm/install/lib -l c++ -l c++abi"
+      echo "##vso[task.setvariable variable=LD_LIBRARY_PATH]$(DEPS_DIR)/llvm/install/lib"
+    displayName: 'Set up libc++ for pre-installed clang-6'
+    condition: and(succeeded(), eq(variables['CXX'], 'clang++-6.0'))

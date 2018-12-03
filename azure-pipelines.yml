@@ -1,0 +1,94 @@
+# Ossiaco JSON Converter Library
+# 
+# Copyright (C) 2018 Ossiaco
+# 
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+# 
+# http://opensource.org/licenses/MIT
+
+resources:
+- repo: self
+
+trigger:
+  branches:
+    include:
+    - feature/*
+    - master
+  paths:
+    exclude:
+    - README.md
+
+jobs:
+# This will be uncommented exactly as soon as the vs2017-win2016 images
+# get VS 15.9
+# - job: Windows
+
+#   pool:
+#     vmImage: 'vs2017-win2016'
+
+#   variables:
+#     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+#     PARALLEL_FLAG: "/m"
+#     DO_JUNIT: 0
+
+#   strategy:
+#     maxParallel: 4
+#     matrix:
+#       Debug:
+#         BUILD_TYPE: Debug
+#       Release:
+#         BUILD_TYPE: Release
+
+#   steps:
+#   - template: ci/deps-setup.yml
+#   - template: ci/build-and-test.yml
+
+- job: Linux
+
+  pool:
+    vmImage: 'ubuntu 16.04'
+
+  variables:
+    BUILD_TYPE: Release
+    DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+    CXXFLAGS: ""
+    LDFLAGS: ""
+    LD_LIBRARY_PATH: ""
+    PARALLEL_FLAG: "-j"
+    SUDO: sudo # Sudo is implicit on Windows
+    CONAN_OPTS: "-s compiler.libcxx=libc++"
+
+  strategy:
+    maxParallel: 8
+    matrix:
+      gcc7-rel:
+        CXX: g++-7
+
+      gcc8-dbg:
+        CXX: g++-8
+        BUILD_TYPE: Debug
+
+      gcc8-rel:
+        CXX: g++-8
+
+      clang5-rel:
+        CXX: clang++-5.0
+
+      clang6-rel:
+        CXX: clang++-6.0
+
+      clang7-dbg:
+        CXX: clang++-7
+        BUILD_TYPE: Debug
+
+      clang7-rel:
+        CXX: clang++-7
+
+  steps:
+  - template: ci/deps-setup.yml
+
+  - template: ci/compiler-stdlib-setup.yml
+
+  - template: ci/build-and-test.yml

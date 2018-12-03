@@ -1,0 +1,30 @@
+# Ossiaco JSON Converter Library
+# 
+# Copyright (C) 2018 Ossiaco
+# 
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+# 
+# http://opensource.org/licenses/MIT
+
+steps:
+  - bash: |
+      set -eux
+      mkdir -p ${DEPS_DIR}
+      cd ${DEPS_DIR}
+      pwd
+    displayName: 'Ensure deps directory exists'
+
+  - bash: |
+      set -eux
+      pip --version
+      ${SUDO:-} python -m pip install --upgrade pip setuptools wheel
+    displayName: 'Setup and Update pip'
+
+  - bash: |
+      set -eux
+      ${SUDO:-} python -m pip install conan
+      conan --version
+      conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+    displayName: 'Install conan'
