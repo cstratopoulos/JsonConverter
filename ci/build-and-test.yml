@@ -1,0 +1,31 @@
+# Ossiaco JSON Converter Library
+# 
+# Copyright (C) 2018 Ossiaco
+# 
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+# 
+# http://opensource.org/licenses/MIT
+
+steps:
+  - bash: conan install ../ ${CONAN_OPTS:-} -s build_type=${BUILD_TYPE} --build missing
+    displayName: 'Conan install deps'
+    workingDirectory: $(DEPS_DIR)
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      cmakeArgs: "-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=$(DEPS_DIR)/conan_paths.cmake .."
+    displayName: 'CMake Generate'
+
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'build'
+      cmakeArgs: "--build . -- $(PARALLEL_FLAG) 4"
+    displayName: 'CMake Build'
+
+  - bash: |
+      ctest -V || exit 1
+    displayName: 'Test suite'
+    workingDirectory: build
