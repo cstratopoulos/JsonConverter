@@ -53,12 +53,12 @@ jobs:
   variables:
     BUILD_TYPE: Release
     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+    CONAN_OPTS: ""
     CXXFLAGS: ""
     LDFLAGS: ""
     LD_LIBRARY_PATH: ""
     PARALLEL_FLAG: "-j"
     SUDO: sudo # Sudo is implicit on Windows
-    CONAN_OPTS: "-s compiler.libcxx=libc++"
 
   strategy:
     maxParallel: 8

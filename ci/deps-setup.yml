@@ -28,3 +28,18 @@ steps:
       conan --version
       conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
     displayName: 'Install conan'
+
+  - bash: |
+      set -eu
+      echo "##vso[task.setvariable variable=CONAN_OPTS]-s compiler=gcc compiler.libcxx=libstdc++11 compiler.version=${CXX//g\+\+\-/}"
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      sudo apt update
+      sudo apt install $(CXX)
+    displayName: 'Set gcc conan opts'
+    condition: and(succeeded(), startsWith(variables['CXX'], 'g++'))
+
+  - bash: |
+      set -eu
+      echo "##vso[task.setvariable variable=CONAN_OPTS]-s compiler.libcxx=libc++"
+    displayName: 'Set clang conan opts'
+    condition: and(succeeded(), startsWith(variables['CXX'], 'clang'))
