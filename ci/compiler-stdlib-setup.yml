@@ -27,8 +27,8 @@ steps:
       sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-${VER_TAG} main"
       sudo apt update
       sudo apt install clang-${VER_TAG}
-    displayName: 'Add LLVM deb source and install compiler for clang 5/7'
-    condition: and(succeeded(), in(variables['CXX'], 'clang++-5.0', 'clang++-7'))
+    displayName: 'Add LLVM deb source and install compiler for clang 4/5/7'
+    condition: and(succeeded(), in(variables['CXX'], 'clang++-4.0', 'clang++-5.0', 'clang++-7'))
 
   - bash: |
       set -eu
@@ -40,7 +40,8 @@ steps:
 
   - bash: |
       set -euo pipefail
-      if   [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
+      if   [[ "${CXX}" == "clang++-4.0" ]]; then LLVM_VERSION="4.0.1";
+      elif [[ "${CXX}" == "clang++-5.0" ]]; then LLVM_VERSION="5.0.1";
       elif [[ "${CXX}" == "clang++-6.0" ]]; then LLVM_VERSION="6.0.1";
       fi      
 
@@ -58,5 +59,5 @@ steps:
       echo "##vso[task.setvariable variable=CXXFLAGS]-isystem $(DEPS_DIR)/llvm/install/include/c++/v1"
       echo "##vso[task.setvariable variable=LDFLAGS]-L $(DEPS_DIR)/llvm/install/lib -l c++ -l c++abi"
       echo "##vso[task.setvariable variable=LD_LIBRARY_PATH]$(DEPS_DIR)/llvm/install/lib"
-    displayName: 'Set up libc++ for clang 5/6'
-    condition: and(succeeded(), in(variables['CXX'], 'clang++-5.0', 'clang++-6.0'))
+    displayName: 'Set up libc++ for clang 4/5/6'
+    condition: and(succeeded(), in(variables['CXX'], 'clang++-4.0', 'clang++-5.0', 'clang++-6.0'))

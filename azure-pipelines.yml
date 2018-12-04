@@ -73,6 +73,9 @@ jobs:
       gcc8-rel:
         CXX: g++-8
 
+      clang4-rel:
+        CXX: clang++-4.0
+
       clang5-rel:
         CXX: clang++-5.0
 
