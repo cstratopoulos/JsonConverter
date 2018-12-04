@@ -62,8 +62,6 @@ jobs:
 
   strategy:
     matrix:
-      xcode-9-4-1:
-        XCODE_VER: "9.4.1"
       xcode-10-1:
         XCODE_VER: "10.1"
 
@@ -78,54 +76,54 @@ jobs:
 
   - template: ci/build-and-test.yml
 
-# - job: Linux
+- job: Linux
 
-#   pool:
-#     vmImage: 'ubuntu 16.04'
+  pool:
+    vmImage: 'ubuntu 16.04'
 
-#   variables:
-#     BUILD_TYPE: Release
-#     CONAN_OPTS: "-o boost:header_only=True"
-#     CXXFLAGS: ""
-#     LDFLAGS: ""
-#     LD_LIBRARY_PATH: ""
-#     PARALLEL_FLAG: "-j"
-#     PIP_CMD: "sudo pip"
+  variables:
+    BUILD_TYPE: Release
+    CONAN_OPTS: "-o boost:header_only=True"
+    CXXFLAGS: ""
+    LDFLAGS: ""
+    LD_LIBRARY_PATH: ""
+    PARALLEL_FLAG: "-j"
+    PIP_CMD: "sudo pip"
 
-#   strategy:
-#     matrix:
-#       gcc7-rel:
-#         CXX: g++-7
+  strategy:
+    matrix:
+      gcc7-rel:
+        CXX: g++-7
 
-#       gcc8-dbg:
-#         CXX: g++-8
-#         BUILD_TYPE: Debug
+      gcc8-dbg:
+        CXX: g++-8
+        BUILD_TYPE: Debug
 
-#       gcc8-rel:
-#         CXX: g++-8
+      gcc8-rel:
+        CXX: g++-8
 
-#       clang4-rel:
-#         CXX: clang++-4.0
+      clang4-rel:
+        CXX: clang++-4.0
 
-#       clang5-rel:
-#         CXX: clang++-5.0
+      clang5-rel:
+        CXX: clang++-5.0
 
-#       clang6-rel:
-#         CXX: clang++-6.0
+      clang6-rel:
+        CXX: clang++-6.0
 
-#       clang7-dbg:
-#         CXX: clang++-7
-#         BUILD_TYPE: Debug
+      clang7-dbg:
+        CXX: clang++-7
+        BUILD_TYPE: Debug
 
-#       clang7-rel:
-#         CXX: clang++-7
+      clang7-rel:
+        CXX: clang++-7
 
-#       clang8-dev-rel:
-#         CXX: clang++-8
+      clang8-dev-rel:
+        CXX: clang++-8
 
-#   steps:
-#   - template: ci/deps-setup.yml
+  steps:
+  - template: ci/deps-setup.yml
 
-#   - template: ci/compiler-stdlib-setup.yml
+  - template: ci/compiler-stdlib-setup.yml
 
-#   - template: ci/build-and-test.yml
+  - template: ci/build-and-test.yml
