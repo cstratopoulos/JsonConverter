@@ -44,9 +44,13 @@ steps:
   - bash: |
       set -eu
       echo "##vso[task.setvariable variable=CONAN_OPTS]"
-      echo "##vso[task.setvariable variable=CMAKE_OPTS]$(CMAKE_OPTS) -DOSSIACO_CONVERTER_BOOST_FS=1"
-    displayName: 'Set XCode conan/cmake opts'
+    displayName: 'Set XCode conan opts'
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
+
+  - bash: |
+      set -eu
+      echo "##vso[task.setvariable variable=CMAKE_OPTS]$(CMAKE_OPTS) ${EXTRA_CMAKE_OPTS:-}"
+    displayName: 'Append extra cmake opts if any'
 
   - bash: |
       set -eux
