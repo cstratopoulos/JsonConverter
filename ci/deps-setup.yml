@@ -42,6 +42,13 @@ steps:
     condition: and(succeeded(), startsWith(variables['CXX'], 'clang'))
 
   - bash: |
+      set -eu
+      echo "##vso[task.setvariable variable=CONAN_OPTS]"
+      echo "##vso[task.setvariable variable=CMAKE_OPTS]$(CMAKE_OPTS) -DOSSIACO_CONVERTER_BOOST_FS=1"
+    displayName: 'Set XCode conan/cmake opts'
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
+
+  - bash: |
       set -eux
       sudo apt install valgrind
     displayName: 'Get valgrind'

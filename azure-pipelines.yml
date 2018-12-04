@@ -20,6 +20,10 @@ trigger:
     exclude:
     - README.md
 
+variables:
+  DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+  CMAKE_OPTS: -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=$(DEPS_DIR)/conan_paths.cmake
+
 jobs:
 # This will be uncommented exactly as soon as the vs2017-win2016 images
 # get VS 15.9
@@ -30,7 +34,6 @@ jobs:
 
 #   variables:
 #     CONAN_OPTS: "-o boost:header_only=True"
-#     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
 #     PARALLEL_FLAG: "/m"
 #     DO_JUNIT: 0
 #     PIP_CMD: "python -m pip"
@@ -54,7 +57,6 @@ jobs:
 
   variables:
     BUILD_TYPE: Release
-    DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
     PARALLEL_FLAG: "-j"
     PIP_CMD: "sudo pip"
 
@@ -81,7 +83,6 @@ jobs:
 
 #   variables:
 #     BUILD_TYPE: Release
-#     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
 #     CONAN_OPTS: "-o boost:header_only=True"
 #     CXXFLAGS: ""
 #     LDFLAGS: ""

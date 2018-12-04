@@ -16,7 +16,7 @@ steps:
   - task: CMake@1
     inputs:
       workingDirectory: 'build'
-      cmakeArgs: "-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=$(DEPS_DIR)/conan_paths.cmake .."
+      cmakeArgs: "-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) .."
     displayName: 'CMake Generate'
 
   - task: CMake@1
