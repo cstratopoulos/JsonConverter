@@ -34,7 +34,6 @@ jobs:
 
 #   variables:
 #     CONAN_OPTS: "-o boost:header_only=True"
-#     PARALLEL_FLAG: "/m"
 #     DO_JUNIT: 0
 #     PIP_CMD: "python -m pip"
 
@@ -57,7 +56,6 @@ jobs:
 
   variables:
     BUILD_TYPE: Release
-    PARALLEL_FLAG: "-j"
     PIP_CMD: "sudo pip"
 
   strategy:
@@ -88,7 +86,6 @@ jobs:
     CXXFLAGS: ""
     LDFLAGS: ""
     LD_LIBRARY_PATH: ""
-    PARALLEL_FLAG: "-j"
     PIP_CMD: "sudo pip"
 
   strategy:
