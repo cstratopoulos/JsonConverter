@@ -45,53 +45,90 @@ jobs:
 #   - template: ci/deps-setup.yml
 #   - template: ci/build-and-test.yml
 
-- job: Linux
+- job: Mac
 
   pool:
-    vmImage: 'ubuntu 16.04'
+    vmImage: 'macOS-10.13'
 
   variables:
     BUILD_TYPE: Release
     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
-    CONAN_OPTS: ""
-    CXXFLAGS: ""
-    LDFLAGS: ""
-    LD_LIBRARY_PATH: ""
     PARALLEL_FLAG: "-j"
     SUDO: sudo # Sudo is implicit on Windows
 
   strategy:
-    maxParallel: 8
     matrix:
-      gcc7-rel:
-        CXX: g++-7
-
-      gcc8-dbg:
-        CXX: g++-8
-        BUILD_TYPE: Debug
-
-      gcc8-rel:
-        CXX: g++-8
-
-      clang4-rel:
-        CXX: clang++-4.0
-
-      clang5-rel:
-        CXX: clang++-5.0
-
-      clang6-rel:
-        CXX: clang++-6.0
-
-      clang7-dbg:
-        CXX: clang++-7
-        BUILD_TYPE: Debug
-
-      clang7-rel:
-        CXX: clang++-7
+      xcode-10-1:
+        XCODE_VER: "10.1"
 
   steps:
   - template: ci/deps-setup.yml
 
-  - template: ci/compiler-stdlib-setup.yml
+  - bash: |
+      set -eux
+      cmake --version
+      sudo brew upgrade cmake
+      cmake --version
+    displayName: 'Get recent CMake from homebrew'
+    #condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
 
+  - bash: |
+      set -eux
+      sudo xcode-select -switch "/Applications/Xcode_${XCODE_VER}.app"
+      xcode-select -print-path
+    displayName: 'Set XCode ver'
+    
   - template: ci/build-and-test.yml
+
+# - job: Linux
+
+#   pool:
+#     vmImage: 'ubuntu 16.04'
+
+#   variables:
+#     BUILD_TYPE: Release
+#     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+#     CONAN_OPTS: ""
+#     CXXFLAGS: ""
+#     LDFLAGS: ""
+#     LD_LIBRARY_PATH: ""
+#     PARALLEL_FLAG: "-j"
+#     SUDO: sudo # Sudo is implicit on Windows
+
+#   strategy:
+#     matrix:
+#       gcc7-rel:
+#         CXX: g++-7
+
+#       gcc8-dbg:
+#         CXX: g++-8
+#         BUILD_TYPE: Debug
+
+#       gcc8-rel:
+#         CXX: g++-8
+
+#       clang4-rel:
+#         CXX: clang++-4.0
+
+#       clang5-rel:
+#         CXX: clang++-5.0
+
+#       clang6-rel:
+#         CXX: clang++-6.0
+
+#       clang7-dbg:
+#         CXX: clang++-7
+#         BUILD_TYPE: Debug
+
+#       clang7-rel:
+#         CXX: clang++-7
+
+#       clang8-dev-rel:
+#         CXX: clang++-8
+
+#   steps:
+#   - template: ci/deps-setup.yml
+
+#   - template: ci/compiler-stdlib-setup.yml
+
+#   - template: ci/build-and-test.yml
