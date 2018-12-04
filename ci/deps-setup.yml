@@ -19,12 +19,12 @@ steps:
   - bash: |
       set -eux
       pip --version
-      ${SUDO:-} python -m pip install --upgrade pip setuptools wheel
+      ${PIP_CMD} install --upgrade pip setuptools wheel
     displayName: 'Setup and Update pip'
 
   - bash: |
       set -eux
-      ${SUDO:-} python -m pip install conan
+      ${PIP_CMD} install conan
       conan --version
       conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
     displayName: 'Install conan'
