@@ -31,7 +31,7 @@ steps:
 
   - bash: |
       set -eu
-      echo "##vso[task.setvariable variable=CONAN_OPTS]-s compiler=gcc compiler.libcxx=libstdc++11 compiler.version=${CXX//g\+\+\-/}"
+      echo "##vso[task.setvariable variable=CONAN_OPTS]-s compiler=gcc -s compiler.libcxx=libstdc++11 -s compiler.version=${CXX//g\+\+\-/}"
     displayName: 'Set gcc conan opts'
     condition: and(succeeded(), startsWith(variables['CXX'], 'g++'))
 
