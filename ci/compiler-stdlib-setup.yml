@@ -27,8 +27,8 @@ steps:
       sudo apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-${VER_TAG} main"
       sudo apt update
       sudo apt install clang-${VER_TAG}
-    displayName: 'Add LLVM deb source and install compiler for clang 4/5/7/8'
-    condition: and(succeeded(), in(variables['CXX'], 'clang++-4.0', 'clang++-5.0', 'clang++-7', 'clang++-8'))
+    displayName: 'Add LLVM deb source and install compiler for clang 4/5/7'
+    condition: and(succeeded(), in(variables['CXX'], 'clang++-4.0', 'clang++-5.0', 'clang++-7'))
 
   - bash: |
       set -eu
@@ -36,8 +36,8 @@ steps:
       sudo apt install libc++-${VER_TAG}-dev libc++abi-${VER_TAG}-dev
       echo "##vso[task.setvariable variable=CXXFLAGS]-stdlib=libc++"
       echo "##vso[task.setvariable variable=LDFLAGS]-l c++ -l c++abi"
-    displayName: 'Apt install libc++ for clang 7/8'
-    condition: and(succeeded(), in(variables['CXX'], 'clang++-7', 'clang++-8'))
+    displayName: 'Apt install libc++ for clang 7'
+    condition: and(succeeded(), eq(variables['CXX'], 'clang++-7'))
 
   - bash: |
       set -euo pipefail
