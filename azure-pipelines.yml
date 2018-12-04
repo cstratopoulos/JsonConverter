@@ -117,9 +117,6 @@ jobs:
       clang7-rel:
         CXX: clang++-7
 
-      clang8-dev-rel:
-        CXX: clang++-8
-
   steps:
   - template: ci/deps-setup.yml
 
