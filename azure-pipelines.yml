@@ -62,6 +62,8 @@ jobs:
 
   strategy:
     matrix:
+      xcode-9-4-1:
+        XCODE_VER: "9.4.1"
       xcode-10-1:
         XCODE_VER: "10.1"
 
