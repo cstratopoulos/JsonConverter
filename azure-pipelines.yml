@@ -55,7 +55,6 @@ jobs:
   variables:
     BUILD_TYPE: Release
     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
-    LDFLAGS: "-lboost_filesystem"
     PARALLEL_FLAG: "-j"
     PIP_CMD: "sudo pip"
 
