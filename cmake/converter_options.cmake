@@ -11,10 +11,15 @@
 option(OSSIACO_CONVERTER_TESTS "Build the unit/integration tests" OFF)
 option(OSSIACO_CONVERTER_EXAMPLES "Build the examples" OFF)
 option(OSSIACO_CONVERTER_BOOST_FS "Use Boost.Filesystem in unit test utils" OFF)
-
 option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
+option(OSSIACO_CONVERTER_UBASAN "Enable undefined behavior and address sanitizers" OFF)
+
 if(${OSSIACO_WCHAR_UNICODE})
     set(_ossiaco_wchar_unicode 1)
 else()
     set(_ossiaco_wchar_unicode 0)
+endif()
+
+if(${OSSIACO_CONVERTER_UBASAN})
+    include(converter_ubasan)
 endif()
