@@ -1,6 +1,4 @@
 # Ossiaco JSON Converter 
-[![Build status](https://ci.appveyor.com/api/projects/status/qyr00swb5yqrip08?branch=master&svg=true)](https://ci.appveyor.com/project/cstratopoulos/converter)
-[![Build Status](https://travis-ci.org/Ossiaco/converter.svg?branch=master)](https://travis-ci.org/Ossiaco/converter)
 
 A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
 
@@ -218,31 +216,41 @@ bool operator==(const Circle &c1, const Circle &c2)
 
 ## Compiler requirements
 
-This library is built with C++17 and tested regularly on
+This library requires a C++17-compatible compiler with decent support for the C++17 standard library. The following are tested as part of the CI process:
 
-- Visual Studio 15.9
+- Linux
+    - GCC 7 & 8
+    - Clang 4, 5, 6, 7 using `libc++`
+- Mac
+    - XCode 10.1
 
-- Clang 5, 6, 7
+On Windows, Visual Studio 15.9 is supported but not yet part of CI builds pending its inclusion on Azure DevOps hosted instances. 
 
-- GCC 7, 8
+Unit tests for all Linux builds are additionally run under `valgrind`, and a Clang 7 build is performed with undefined behavior and address sanitizers enabled. 
 
 ## Dependencies
 
-As mentioned, the library is built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Aside from RapidJSON, the library uses some headers from Boost, [Date](https://github.com/HowardHinnant/date), and Range-v3 (see below for remarks). The Boost libraries used are
- - [Config](https://www.boost.org/doc/libs/1_67_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
- - [Core](https://www.boost.org/doc/libs/1_67_0/libs/core/doc/html/index.html) for printing type decorators,
- - [Mp11](https://www.boost.org/doc/libs/1_67_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming,
- - [Pointer Container](https://www.boost.org/doc/libs/1_67_0/libs/ptr_container/doc/ptr_container.html) for the machinery behind smart pointer conversion, and
- - [TypeTraits](https://www.boost.org/doc/libs/1_67_0/libs/type_traits/doc/html/index.html) for the detection idiom.
+As mentioned, the library is built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Aside from RapidJSON, the library uses some headers from Boost, [Date](https://github.com/HowardHinnant/date), and [Range v3](https://github.com/ericniebler/range-v3/). The Boost libraries used are
+ - [Config](https://www.boost.org/doc/libs/1_68_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
+ - [Core](https://www.boost.org/doc/libs/1_68_0/libs/core/doc/html/index.html) for printing type decorators,
+ - [Mp11](https://www.boost.org/doc/libs/1_68_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming,
+ - [Pointer Container](https://www.boost.org/doc/libs/1_68_0/libs/ptr_container/doc/ptr_container.html) for the machinery behind smart pointer conversion, and
+ - [TypeTraits](https://www.boost.org/doc/libs/1_68_0/libs/type_traits/doc/html/index.html) for the detection idiom.
 
  Note that Boost >= 1.67 is required.
 
-Converter uses Range-v3 purely for concept checking on convertible ranges, and for `ranges::action::push_back`.
-
 The unit tests additionally use a few more Boost libraries:
-- [Assert](https://www.boost.org/doc/libs/1_67_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
-- [UUID](https://www.boost.org/doc/libs/1_67_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
-- [Container](https://www.boost.org/doc/libs/1_67_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
+- [Assert](https://www.boost.org/doc/libs/1_68_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
+- [UUID](https://www.boost.org/doc/libs/1_68_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
+- [Container](https://www.boost.org/doc/libs/1_68_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
+
+For authoring tests which perform file I/O, the unit tests require some sort of filesystem library. The following are preferred, in order, using `__has_include`:
+1. C++17 filesystem library (`#include <filesystem>`)
+2. C++17 experimental filesystem library (`#include <experimental/filesystem>`)
+3. [Boost.Filesystem](https://www.boost.org/doc/libs/1_68_0/libs/filesystem/doc/index.htm) (`#include <boost/filesystem.hpp>`)
+
+Depending on the implementation, this may require an additional library link (e.g., `-lstdc++fs`, `-lc++experimemntal`, `-lboost_filesystem`). Users are responsible
+for handling this at the configure step, unless `-DOSSIACO_CONVERTER_BOOST_FS=1` is passed to CMake, in which case `boost_filesystem` will be linkeed automatically.
 
 ## Features
 The example above demonstrates the basics of polymorphic conversion on classes whose members are all composed of fundamental types. Some other features of the library include conversion of...
