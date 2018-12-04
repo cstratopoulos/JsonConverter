@@ -19,8 +19,9 @@ project(OssiacoConverter
 # Configuration macros
 #######################
 
-option(OSSIACO_CONVERTER_TESTS "whether to build the unit/integration tests" OFF)
-option(OSSIACO_CONVERTER_EXAMPLES "whether to build the examples" OFF)
+option(OSSIACO_CONVERTER_TESTS "Build the unit/integration tests" OFF)
+option(OSSIACO_CONVERTER_EXAMPLES "Build the examples" OFF)
+option(OSSIACO_CONVERTER_BOOST_FS "Use Boost.Filesystem in unit test utils" OFF)
 
 option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
 if(${OSSIACO_WCHAR_UNICODE})
@@ -33,12 +34,18 @@ endif()
 # Library dependency paths/packages
 ####################################
 
+if(${OSSIACO_CONVERTER_TESTS} AND ${OSSIACO_CONVERTER_BOOST_FS})
+    set(_boost_fs_components "COMPONENTS filesystem")
+endif()
+
 find_path(DATE_INCLUDE_DIRS date/date.h)
 find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
 
 find_package(Catch2 2.4.1 REQUIRED)
 find_package(range-v3 0.4.0 REQUIRED)
-find_package(Boost 1.67.0 REQUIRED)
+find_package(Boost 1.67.0 REQUIRED
+    ${_boost_fs_components}
+)
 
 ###############################
 # The converter library target

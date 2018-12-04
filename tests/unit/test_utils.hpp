@@ -39,7 +39,6 @@ namespace fs = std::filesystem;
 #elif __has_include(<boost/filesystem.hpp>)
 #    include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
-#    warning "Falling back to boost filesystem; user responsible for linking at configure step."
 #else
 #    error "Some sort of filesystem implementation needed for unit tests"
 #endif

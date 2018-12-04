@@ -29,6 +29,7 @@ jobs:
 #     vmImage: 'vs2017-win2016'
 
 #   variables:
+#     CONAN_OPTS: "-o boost:header_only=True"
 #     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
 #     PARALLEL_FLAG: "/m"
 #     DO_JUNIT: 0
@@ -82,7 +83,7 @@ jobs:
 #   variables:
 #     BUILD_TYPE: Release
 #     DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
-#     CONAN_OPTS: ""
+#     CONAN_OPTS: "-o boost:header_only=True"
 #     CXXFLAGS: ""
 #     LDFLAGS: ""
 #     LD_LIBRARY_PATH: ""

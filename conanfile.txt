@@ -7,6 +7,3 @@ rapidjson/1.1.0@bincrafters/stable
 
 [generators]
 cmake_paths
-
-[options]
-boost:header_only=True
