@@ -40,3 +40,9 @@ steps:
       echo "##vso[task.setvariable variable=CONAN_OPTS]-s compiler.libcxx=libc++"
     displayName: 'Set clang conan opts'
     condition: and(succeeded(), startsWith(variables['CXX'], 'clang'))
+
+  - bash: |
+      set -eux
+      sudo apt install valgrind
+    displayName: 'Get valgrind'
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
