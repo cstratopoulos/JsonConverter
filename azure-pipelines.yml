@@ -61,6 +61,7 @@ jobs:
     PIP_CMD: "sudo pip"
 
   strategy:
+    maxParallel: 2
     matrix:
       xcode-10-1:
         XCODE_VER: "10.1"
@@ -91,6 +92,7 @@ jobs:
     PIP_CMD: "sudo pip"
 
   strategy:
+    maxParallel: 8
     matrix:
       gcc7-rel:
         CXX: g++-7
