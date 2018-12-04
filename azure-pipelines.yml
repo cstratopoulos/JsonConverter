@@ -93,31 +93,31 @@ jobs:
   strategy:
     maxParallel: 8
     matrix:
-      # gcc7-rel:
-      #   CXX: g++-7
+      gcc7-rel:
+        CXX: g++-7
 
-      # gcc8-dbg:
-      #   CXX: g++-8
-      #   BUILD_TYPE: Debug
+      gcc8-dbg:
+        CXX: g++-8
+        BUILD_TYPE: Debug
 
-      # gcc8-rel:
-      #   CXX: g++-8
+      gcc8-rel:
+        CXX: g++-8
 
-      # clang4-rel:
-      #   CXX: clang++-4.0
+      clang4-rel:
+        CXX: clang++-4.0
 
-      # clang5-rel:
-      #   CXX: clang++-5.0
+      clang5-rel:
+        CXX: clang++-5.0
 
-      # clang6-rel:
-      #   CXX: clang++-6.0
+      clang6-rel:
+        CXX: clang++-6.0
 
-      # clang7-dbg:
-      #   CXX: clang++-7
-      #   BUILD_TYPE: Debug
+      clang7-dbg:
+        CXX: clang++-7
+        BUILD_TYPE: Debug
 
-      # clang7-rel:
-      #   CXX: clang++-7
+      clang7-rel:
+        CXX: clang++-7
 
       clang7-ubasan:
         CXX: clang++-7
