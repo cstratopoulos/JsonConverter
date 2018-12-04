@@ -67,14 +67,6 @@ jobs:
 
   - bash: |
       set -eux
-      cmake --version
-      sudo brew upgrade cmake
-      cmake --version
-    displayName: 'Get recent CMake from homebrew'
-    #condition: and(succeeded(), eq(variables['Agent.OS'], 'Darwin'))
-
-  - bash: |
-      set -eux
       sudo xcode-select -switch "/Applications/Xcode_${XCODE_VER}.app"
       xcode-select -print-path
     displayName: 'Set XCode ver'
