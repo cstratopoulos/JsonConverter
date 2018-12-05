@@ -25,11 +25,13 @@ steps:
       cmakeArgs: "--build . --parallel 4"
     displayName: 'CMake Build'
 
-  - bash: ctest -V
+  - bash: |
+      echo "##vso[task.setvariable variable=VALGRIND_DUMMY]1"
+      ctest -V
     displayName: 'Test suite'
     workingDirectory: build
 
   - bash: valgrind ctest -V
     displayName: 'Valgrind test suite'
     workingDirectory: build
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
+    condition: and(eq(variables['Agent.OS'], 'Linux'), eq(variables['VALGRIND_DUMMY'], '1'))

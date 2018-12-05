@@ -89,6 +89,9 @@ jobs:
     LDFLAGS: ""
     LD_LIBRARY_PATH: ""
     PIP_CMD: "sudo pip"
+    # Dummy variable which lets the valgrind test suite run
+    # if the build made it to the unit tests but they failed
+    VALGRIND_DUMMY: ""
 
   strategy:
     maxParallel: 8
