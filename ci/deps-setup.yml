@@ -18,7 +18,7 @@ steps:
 
   - bash: |
       set -eux
-      pip --version
+      ${PIP_CMD//sudo /} --version
       ${PIP_CMD} install --upgrade pip setuptools wheel
     displayName: 'Setup and Update pip'
 
