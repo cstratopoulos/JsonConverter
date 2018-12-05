@@ -25,13 +25,11 @@ steps:
       cmakeArgs: "--build . --parallel 4"
     displayName: 'CMake Build'
 
-  - bash: |
-      ctest -V || exit 1
+  - bash: ctest -V
     displayName: 'Test suite'
     workingDirectory: build
 
-  - bash: |
-      valgrind ctest -V || exit 1
+  - bash: valgrind ctest -V
     displayName: 'Valgrind test suite'
     workingDirectory: build
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
