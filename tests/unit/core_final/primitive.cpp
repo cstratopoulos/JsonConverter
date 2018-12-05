@@ -26,7 +26,8 @@ namespace tt = test_types;
 
 TEST_CASE("Converting 3D points", "[double][SimpleTypeAllocator]")
 {
-    tt::Point3D unitVec{ 0.0, 1.0, 0.0 };
+    REQUIRE(false);
+    tt::Point3D unitVec{0.0, 1.0, 0.0};
 
     SECTION("JSON string appearance")
     {
@@ -42,11 +43,7 @@ TEST_CASE("Converting 3D points", "[double][SimpleTypeAllocator]")
 
     runTestCases(
         makeSimpleStringTest("The origin", [] { return tt::Point3D{}; }),
-        makeSimpleStringTest(
-            "A unit vector",
-            [=] {
-                return unitVec;
-            }),
+        makeSimpleStringTest("A unit vector", [=] { return unitVec; }),
         makeSimpleStringTest("Some arbitrary vector", [] {
             return tt::Point3D{-1.5, 1000.12345, -99.87654321};
         }));
@@ -55,7 +52,8 @@ TEST_CASE("Converting 3D points", "[double][SimpleTypeAllocator]")
 TEST_CASE("Converting Person (name/city of residence string)"
           "[string][unicode][SimpleTypeAllocator]")
 {
-    SECTION("JSON string appearance") {
+    SECTION("JSON string appearance")
+    {
         tt::Person marge(OSSIACO_XPLATSTR("Marge"), OSSIACO_XPLATSTR("Springfield"));
         jsonCompare(
             Ossiaco::converter::toJsonStringPretty(marge),
@@ -80,7 +78,8 @@ TEST_CASE("Converting Person (name/city of residence string)"
 
 TEST_CASE("Converting Light (bool/enum members)", "[bool][enum][SimpleTypeAllocator]")
 {
-    SECTION("JSON string appearance") {
+    SECTION("JSON string appearance")
+    {
         tt::Light off{};
         jsonCompare(Ossiaco::converter::toJsonStringPretty(off), OSSIACO_XPLATSTR(R"--({
 "color": 0,
