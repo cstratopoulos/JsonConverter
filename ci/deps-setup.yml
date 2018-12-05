@@ -55,5 +55,6 @@ steps:
   - bash: |
       set -eux
       sudo apt install valgrind
+      valgrind --version
     displayName: 'Get valgrind'
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
