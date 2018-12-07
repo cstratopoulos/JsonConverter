@@ -36,8 +36,11 @@ namespace fs = std::experimental::filesystem;
 #elif __has_include(<filesystem>)
 #    include <filesystem>
 namespace fs = std::filesystem;
+#elif __has_include(<boost/filesystem.hpp>)
+#    include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 #else
-#    error "Filesystem implementation needed for unit tests"
+#    error "Some sort of filesystem implementation needed for unit tests"
 #endif
 
 inline void jsonCompare(Ossiaco::converter::string_view_t json1, Ossiaco::converter::string_view_t json2)
@@ -85,7 +88,7 @@ struct StringObjectConversion {
 struct FileObjectConversion {
     explicit FileObjectConversion(fs::path path) : _path(path)
     {
-        if (_path.extension().string<Ossiaco::converter::CharType>() != OSSIACO_XPLATSTR(".json"))
+        if (_path.extension() != OSSIACO_XPLATSTR(".json"))
             throw std::logic_error(
                 "FileObjectConversion must be constructed with path to .json file");
 
@@ -105,7 +108,7 @@ struct FileObjectConversion {
 template<typename Base, typename Func, typename Comparison, typename Conversion>
 struct BasicTestCase {
     static_assert(
-        std::is_invocable_r_v<const Base&, Func>,
+        std::is_convertible_v<decltype(std::declval<Func>()()), const Base&>,
         "The constructor function of a BasicTestCase must return base or an inheritor");
 
     void run();
@@ -131,7 +134,7 @@ auto makeBasicTestCase(std::string_view desc, Func&& f, Comparison&& comp, Conve
 template<typename Func, typename... Args>
 auto makeSimpleStringTest(std::string_view desc, Func&& f, Args... args)
 {
-    using Base = std::invoke_result_t<Func>;
+    using Base = decltype(f());
 
     return makeBasicTestCase<Base>(
         desc, std::forward<Func>(f), makeObjectComparison<Base>(args...), StringObjectConversion{});
@@ -142,7 +145,7 @@ template<typename Func, typename... Args>
 auto makeSimpleFileTest(
     std::string_view desc, Func&& f, const Ossiaco::converter::CharType* path, Args... args)
 {
-    using Base = std::invoke_result_t<Func>;
+    using Base = decltype(f());
 
     return makeBasicTestCase<Base>(
         desc,
@@ -229,8 +232,7 @@ public:
             const auto&[origRet, newRet] =
                 std::make_pair((origObj.*methodPtr)(), (newObj.*methodPtr)());
 
-            using OrigRet = std::invoke_result_t<decltype(methodPtr), Derived>;
-            using RetType = boost::remove_cv_ref_t<OrigRet>;
+            using RetType = boost::remove_cv_ref_t<decltype(origRet)>;
 
             if constexpr (
                 oc::isSpecialization<RetType, std::weak_ptr> ||

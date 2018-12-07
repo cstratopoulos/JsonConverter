@@ -1,0 +1,134 @@
+# Ossiaco JSON Converter Library
+# 
+# Copyright (C) 2018 Ossiaco
+# 
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+# 
+# http://opensource.org/licenses/MIT
+
+resources:
+- repo: self
+
+trigger:
+  branches:
+    include:
+    - feature/*
+    - master
+  paths:
+    exclude:
+    - README.md
+
+variables:
+  DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+  CMAKE_OPTS: -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=$(DEPS_DIR)/conan_paths.cmake
+
+jobs:
+# This will be uncommented exactly as soon as the vs2017-win2016 images
+# get VS 15.9
+# - job: Windows
+
+#   pool:
+#     vmImage: 'vs2017-win2016'
+
+#   variables:
+#     CONAN_OPTS: "-o boost:header_only=True"
+#     DO_JUNIT: 0
+#     PIP_CMD: "python -m pip"
+
+#   strategy:
+#     maxParallel: 4
+#     matrix:
+#       Debug:
+#         BUILD_TYPE: Debug
+#       Release:
+#         BUILD_TYPE: Release
+
+#   steps:
+#   - template: ci/deps-setup.yml
+#   - template: ci/build-and-test.yml
+
+- job: Mac
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  variables:
+    BUILD_TYPE: Release
+    PIP_CMD: "sudo pip"
+
+
+  strategy:
+    maxParallel: 2
+    matrix:
+      xcode-10-1:
+        EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_BOOST_FS=1"
+        XCODE_VER: "10.1"
+
+  steps:
+  - template: ci/deps-setup.yml
+
+  - bash: |
+      set -eux
+      sudo xcode-select -switch "/Applications/Xcode_${XCODE_VER}.app"
+      xcode-select -print-path
+    displayName: 'Set XCode ver'
+
+  - template: ci/build-and-test.yml
+
+- job: Linux
+
+  pool:
+    vmImage: 'ubuntu 16.04'
+
+  variables:
+    BUILD_TYPE: Release
+    CONAN_OPTS: "-o boost:header_only=True"
+    CXXFLAGS: ""
+    LDFLAGS: ""
+    LD_LIBRARY_PATH: ""
+    PIP_CMD: "sudo pip"
+    # Flag variable which lets the valgrind test suite run
+    # if the build made it to the unit tests, whether or not they pass
+    RUN_VALGRIND: ""
+
+  strategy:
+    maxParallel: 8
+    matrix:
+      gcc7-rel:
+        CXX: g++-7
+
+      gcc8-dbg:
+        CXX: g++-8
+        BUILD_TYPE: Debug
+
+      gcc8-rel:
+        CXX: g++-8
+
+      clang4-rel:
+        CXX: clang++-4.0
+
+      clang5-rel:
+        CXX: clang++-5.0
+
+      clang6-rel:
+        CXX: clang++-6.0
+
+      clang7-dbg:
+        CXX: clang++-7
+        BUILD_TYPE: Debug
+
+      clang7-rel:
+        CXX: clang++-7
+
+      clang7-ubasan:
+        CXX: clang++-7
+        EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_UBASAN=1"
+
+  steps:
+  - template: ci/deps-setup.yml
+
+  - template: ci/compiler-stdlib-setup.yml
+
+  - template: ci/build-and-test.yml

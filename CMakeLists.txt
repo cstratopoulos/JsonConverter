@@ -15,30 +15,19 @@ project(OssiacoConverter
     LANGUAGES CXX
 )
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 #######################
 # Configuration macros
 #######################
 
-option(OSSIACO_CONVERTER_TESTS "whether to build the unit/integration tests" OFF)
-option(OSSIACO_CONVERTER_EXAMPLES "whether to build the examples" OFF)
-
-option(OSSIACO_WCHAR_UNICODE "whether to enable wchar_t as the primary character/string element type for using unicode on windows" OFF)
-if(${OSSIACO_WCHAR_UNICODE})
-    set(_ossiaco_wchar_unicode 1)
-else()
-    set(_ossiaco_wchar_unicode 0)
-endif()
+include(converter_options)
 
 ####################################
 # Library dependency paths/packages
 ####################################
 
-find_path(DATE_INCLUDE_DIRS date/date.h)
-find_path(RAPIDJSON_INCLUDE_DIRS rapidjson/rapidjson.h)
-
-find_package(Catch2 2.4.1 REQUIRED)
-find_package(range-v3 0.4.0 REQUIRED)
-find_package(Boost 1.67.0 REQUIRED)
+include(converter_externals)
 
 ###############################
 # The converter library target

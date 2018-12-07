@@ -1,0 +1,9 @@
+[requires]
+boost/1.68.0@conan/stable
+catch2/2.4.1@bincrafters/stable
+date/2.4.1@bincrafters/stable
+range-v3/0.4.0@ericniebler/stable
+rapidjson/1.1.0@bincrafters/stable
+
+[generators]
+cmake_paths

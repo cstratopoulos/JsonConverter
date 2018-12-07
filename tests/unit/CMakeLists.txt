@@ -34,6 +34,12 @@ target_link_libraries(converter_test_utils
     PUBLIC ossiaco_converter
 )
 
+if(${OSSIACO_CONVERTER_BOOST_FS})
+    target_link_libraries(converter_test_utils
+        PUBLIC Boost::filesystem
+    )
+endif()
+
 add_subdirectory(core_final)
 add_subdirectory(customization_points)
 add_subdirectory(enum_mapped)
