@@ -1,4 +1,5 @@
-# Ossiaco JSON Converter 
+
+# Ossiaco JSON Converter [![Build Status](https://dev.azure.com/ossiaco/ossiaco/_apis/build/status/JsonConverterCI?branchName=master)](https://dev.azure.com/ossiaco/ossiaco/_build/latest?definitionId=25)
 
 A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
 
