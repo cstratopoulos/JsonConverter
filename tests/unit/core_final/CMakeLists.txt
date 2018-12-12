@@ -17,6 +17,7 @@ add_executable(core_final_tests
     primitive.cpp
     ranges.cpp
     smart_ptr.cpp
+    unilateral_to_json.cpp
     vocab_types.cpp
 )
 

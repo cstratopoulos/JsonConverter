@@ -52,11 +52,11 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/allocate/type_allocator.hpp
 
     # Converter components
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/chrono_fmt_prop_converter.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/chrono_fmt_json_property.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/custom_value.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/dispatch.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/first_class.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/property_converter.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/json_property.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/ranges.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/smart_ptr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/template_get_write.hpp
@@ -82,6 +82,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/serialize/serializer.hpp
 
     # Miscellaneous utilities
+	${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/accessors.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/customized.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/detect_specialization.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/file_handle.hpp

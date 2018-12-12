@@ -19,11 +19,9 @@ namespace tt = test_types;
 
 TEST_CASE("Using ConvertCustomValue to convert boost UUIDs", "[ConvertCustomValue]")
 {
-    constexpr bool converterDeduced = Ossiaco::converter::
-        expectedConverterComponent<boost::uuids::uuid, Ossiaco::converter::ConvertCustomValue>;
-
-    static_assert(converterDeduced);
-    SUCCEED("Static converter dispatch as expected");
+    STATIC_REQUIRE(
+        Ossiaco::converter::
+            expectedConverterComponent<boost::uuids::uuid, Ossiaco::converter::ConvertCustomValue>);
 
     runTestCases(
         makeSimpleStringTest("A Key with a nil UUID", [] { return tt::UuidKey{}; }),

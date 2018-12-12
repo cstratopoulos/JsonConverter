@@ -21,6 +21,14 @@
 #    endif
 #endif
 
+#ifndef OSSIACO_LIBCPP_INVOCABLE_WORKAROUND
+#    if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 6000
+#        define OSSIACO_LIBCPP_INVOCABLE_WORKAROUND 1
+#    else
+#        define OSSIACO_LIBCPP_INVOCABLE_WORKAROUND 0
+#    endif
+#endif
+
 #ifndef OSSIACO_WCHAR_UNICODE
 /// Wether to use unicode through `char_t`. Off by default.
 ///

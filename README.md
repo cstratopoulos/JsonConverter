@@ -232,6 +232,7 @@ Unit tests for all Linux builds are additionally run under `valgrind`, and a Cla
 ## Dependencies
 
 As mentioned, the library is built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Aside from RapidJSON, the library uses some headers from Boost, [Date](https://github.com/HowardHinnant/date), and [Range v3](https://github.com/ericniebler/range-v3/). The Boost libraries used are
+ - [CallableTraits](https://www.boost.org/doc/libs/1_68_0/libs/callable_traits/doc/html/index.html) for PMD-/PMF-wrangling,
  - [Config](https://www.boost.org/doc/libs/1_68_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
  - [Core](https://www.boost.org/doc/libs/1_68_0/libs/core/doc/html/index.html) for printing type decorators,
  - [Mp11](https://www.boost.org/doc/libs/1_68_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming,

@@ -12,8 +12,8 @@
 #define OSSIACO_CONVERTER_ADAPT_HPP
 
 #include <ossiaco/converter/allocate/type_allocator.hpp>
-#include <ossiaco/converter/components/chrono_fmt_prop_converter.hpp>
-#include <ossiaco/converter/components/property_converter.hpp>
+#include <ossiaco/converter/components/chrono_fmt_json_property.hpp>
+#include <ossiaco/converter/components/json_property.hpp>
 #include <ossiaco/converter/core/buffers_streams_writers.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/serialize.hpp>
@@ -23,28 +23,30 @@
 
 namespace Ossiaco::converter {
 
-template<typename Class, typename Property>
-constexpr auto requiredProperty(Property Class::* member, const CharType* name)
+// Sadly CTAD for alias templates does not exist so these helpers are still needed.
+
+template<typename MemberPtr>
+constexpr auto requiredProperty(MemberPtr member, const CharType* name)
 {
-    return PropertyConverter<Class, Property>(member, name);
+    return RequiredJsonProperty<MemberPtr>(member, name);
 }
 
-template<typename Class, typename Property>
-constexpr auto requiredProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
+template<typename MemberPtr>
+constexpr auto optionalProperty(MemberPtr member, const CharType* name)
 {
-    return ChronoPropertyConverter<Class, Property>(std::move(chronoPair), name);
+	return OptionalJsonProperty<MemberPtr>(member, name);
 }
 
-template<typename Class, typename Property>
-constexpr auto optionalProperty(Property Class::* member, const CharType* name)
+template<typename MemberPtr>
+constexpr auto requiredProperty(ChronoFmtPair<MemberPtr> fmtPair, const CharType* name)
 {
-    return OptionalPropertyConverter<Class, Property>(member, name);
+	return RequiredChronoJsonProperty<MemberPtr>(std::move(fmtPair), name);
 }
 
-template<typename Class, typename Property>
-constexpr auto optionalProperty(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
+template<typename MemberPtr>
+constexpr auto optionalProperty(ChronoFmtPair<MemberPtr> fmtPair, const CharType* name)
 {
-    return OptionalChronoPropertyConverter<Class, Property>(std::move(chronoPair), name);
+    return OptionalChronoJsonProperty<MemberPtr>(std::move(fmtPair), name);
 }
 
 /// Helper class which exposes a chainable call operator for use in macros.
@@ -63,40 +65,35 @@ struct PropertiesHelper {
     /// No-op for providing empty properties.
     constexpr auto operator()() { return std::move(*this); }
 
-    /// Add a required JSON property by specifying the PMD and its name.
-    /// \output_section Add required properties
-    template<typename Class, typename Property>
-    constexpr auto operator()(Property Class::* member, const CharType* name)
+	// Add a required JSON property by specifying a member pointer and property name.
+	template<typename MemberPtr, typename = std::enable_if_t<std::is_member_pointer_v<MemberPtr>>>
+	constexpr auto operator()(MemberPtr member, const CharType* name)
+	{
+		return expand(std::make_tuple(JsonProperty<MemberPtr>(member, name)));
+	}
+
+	// Add a JSON property with explicitly specified missing value policy.
+	// e.g., with the helper functions above:
+	//     `operator()(optionalProperty(member, name))`
+	template<typename MemberPtr, NotFoundHandlerPtr notFound>
+	constexpr auto operator()(JsonProperty<MemberPtr, notFound> prop)
+	{
+		return expand(std::make_tuple(std::move(prop)));
+	}
+
+    // Add a required formatted chrono JSON property by specifying a ChronoFmtPair and name.
+    template<typename MemberPtr>
+    constexpr auto operator()(ChronoFmtPair<MemberPtr> chronoPair, const CharType* name)
     {
-        return expand(std::make_tuple(PropertyConverter<Class, Property>(member, name)));
+        return expand(std::make_tuple(ChronoJsonProperty<MemberPtr>(std::move(chronoPair), name)));
     }
 
-    /// Add a required formatted chrono JSON property by specifying a [ChronoFmtPair] and name.
-    /// \output_section Add required properties
-    template<typename Class, typename Property>
-    constexpr auto operator()(ChronoFmtPair<Class, Property> chronoPair, const CharType* name)
-    {
-        return expand(std::make_tuple(ChronoPropertyConverter<Class, Property>(std::move(chronoPair), name)));
-    }
-
-    /// Add a JSON property with explicitly specified missing value policy.
-    ///
-    /// Sample usage, with the helper functions above:
-    ///     `operator()(optionalProperty(member, name))`
-    /// \output_section Add properties with missing value policy
-    template<typename Class, typename Property, NotFoundHandlerPtr notFound>
-    constexpr auto operator()(PropertyConverter<Class, Property, notFound>&& propConv)
-    {
-        return expand(std::make_tuple(std::move(propConv)));
-    }
-
-    /// Add a chrono formatted JSON property with explicitly specified missing value policy.
-    ///
-    /// Sample usage with the helper functions above:
-    ///     `operator()(optionalProperty(chronoFmtPair(), name))`
-    /// \output_section Add properties with missing value policy
-    template<typename Class, typename Property, NotFoundHandlerPtr notFound>
-    constexpr auto operator()(ChronoPropertyConverter<Class, Property, notFound>&& propConv)
+	// Add a chrono formatted JSON property with explicitly specified missing value policy.
+    //
+    // Sample usage with the helper functions above:
+    //     `operator()(optionalProperty(chronoFmtPair(member, format), name))`
+    template<typename MemberPtr, NotFoundHandlerPtr notFound>
+    constexpr auto operator()(ChronoJsonProperty<MemberPtr, notFound> propConv)
     {
         return expand(std::make_tuple(std::move(propConv)));
     }
@@ -188,7 +185,7 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
     static_assert(true, "Force trailing semicolon")
 
 #if OSSIACO_MSVC_TUPLE_WORKAROUND
-#    define OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_chainedCall)                                    \
+#    define OSSIACO_JSON_PROPERTIES_IMPL(_chainedCall)                                             \
         static constexpr auto& jsonProperties()                                                    \
         {                                                                                          \
             using namespace Ossiaco::converter;                                                    \
@@ -202,7 +199,7 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
 // https://developercommunity.visualstudio.com/content/problem/202891/visual-studio-1560-preview-60-breaks-existing-cons.html
 // The MSVC workaround implementaiton above could be used unilaterally but for the fact that GCC does not allow
 // static variables to be defined in constexpr functions.
-#    define OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_chainedCall)                                    \
+#    define OSSIACO_JSON_PROPERTIES_IMPL(_chainedCall)                                             \
         static constexpr auto jsonProperties()                                                     \
         {                                                                                          \
             using namespace Ossiaco::converter;                                                    \
@@ -219,14 +216,14 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
 
 /// Put this macro in public visibility of `_type` to support non-polymorphic JSON conversion.
 #define OSSIACO_CONVERTER_FINAL_SUPPORTED(_type, _propsCall)                                       \
-    OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_propsCall)                                              \
+    OSSIACO_JSON_PROPERTIES_IMPL(_propsCall)                                              \
     OSSIACO_INTERNAL_PURE_TEMPLATE_TOJSON_METHODS(_type)                                           \
     OSSIACO_INTERNAL_JSON_FRIENDS_AND_TAG(_type, Ossiaco::converter::traits::FinalSupportTag)
 
 /// Put this macro in public visibility in `_type` that shall be base class in a hierarchy supporting JSON
 /// conversion.
 #define OSSIACO_CONVERTER_BASE_SUPPORTED(_type, _propsCall)                                        \
-    OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_propsCall)                                              \
+    OSSIACO_JSON_PROPERTIES_IMPL(_propsCall)                                              \
     OSSIACO_INTERNAL_TOJSON_METHOD_IMPLS(OSSIACO_INTERNAL_TOJSON_METHOD_VIRTUAL_IMPL, _type)       \
     OSSIACO_INTERNAL_JSON_FRIENDS_AND_TAG(_type, Ossiaco::converter::traits::PolySupportTag)
 
@@ -239,7 +236,7 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
 /// Put this macro in public visibility in `_type` that shall be polymorphically convertible via
 /// `_baseType`.
 #define OSSIACO_CONVERTER_POLY_SUPPORTED(_type, _baseType, _propsCall)                             \
-    OSSIACO_INTERNAL_JSON_PROPERTIES_IMPL(_propsCall)                                              \
+    OSSIACO_JSON_PROPERTIES_IMPL(_propsCall)                                              \
     OSSIACO_INTERNAL_JSON_BASE(_baseType)                                                          \
     OSSIACO_INTERNAL_TOJSON_METHOD_IMPLS(OSSIACO_INTERNAL_TOJSON_METHOD_OVERRIDE_IMPL, _type)      \
     OSSIACO_INTERNAL_JSON_FRIENDS_AND_TAG(_type, Ossiaco::converter::traits::PolySupportTag)

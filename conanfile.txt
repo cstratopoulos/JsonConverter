@@ -1,6 +1,16 @@
+# Ossiaco JSON Converter Library
+#
+# Copyright (C) 2018 Ossiaco
+#
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+#
+# http://opensource.org/licenses/MIT
+
 [requires]
 boost/1.68.0@conan/stable
-catch2/2.4.1@bincrafters/stable
+catch2/2.4.2@bincrafters/stable
 date/2.4.1@bincrafters/stable
 range-v3/0.4.0@ericniebler/stable
 rapidjson/1.1.0@bincrafters/stable

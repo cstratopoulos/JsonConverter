@@ -65,8 +65,7 @@ TEST_CASE(
 
     using DerivedList = mp_list<tt::Circle, tt::DrawableCircle, tt::Segment, tt::Circle, tt::DrawableCircle>;
 
-    static_assert(mp_all_of<DerivedList, ShapeHookDetected>());
-    SUCCEED("static_assert passed: All derived classes detected hook for registration with shape");
+    STATIC_REQUIRE(mp_all_of<DerivedList, ShapeHookDetected>());
 
     mp_for_each<DerivedList>([](auto shapeDerived) {
         using DerivedShape = decltype(shapeDerived);

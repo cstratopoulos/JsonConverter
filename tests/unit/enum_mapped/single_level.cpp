@@ -46,29 +46,25 @@ auto makeChessTest(std::string_view desc, Func&& func)
 
 TEST_CASE("Message allocator dispatch/trait checks", "[MappedTypeAllocator]")
 {
-    static_assert(
+    STATIC_REQUIRE(
         mp11::mp_all_of<
             mp11::mp_transform<mp11::mp_second, typename Oc::TypeTreeNode<tt::Message::Type>::Map>,
             ExpectedBackend>::value);
 
-    static_assert(Oc::isTypeTreeLeaf<tt::Message::Type>);
-
-    SUCCEED("Mapped type allocator static asserts passed");
+    STATIC_REQUIRE(Oc::isTypeTreeLeaf<tt::Message::Type>);
 }
 
 TEST_CASE("Chess piece allocator dispatch checks", "[MappedTypeAllocator]")
 {
-    static_assert(Oc::expectedAllocBackend<tt::IChessPiece, Oc::MappedTypeAllocator>);
+    STATIC_REQUIRE(Oc::expectedAllocBackend<tt::IChessPiece, Oc::MappedTypeAllocator>);
 
-    static_assert(mp11::mp_all_of<
+    STATIC_REQUIRE(mp11::mp_all_of<
                       mp11::mp_transform<
                           mp11::mp_second,
                           typename Oc::TypeTreeNode<tt::IChessPiece::Type>::Map>,
                       ExpectedBackend>::value);
 
-    static_assert(Oc::isTypeTreeLeaf<tt::IChessPiece::Type>);
-
-    SUCCEED("Mapped type allocator static asserts passed");
+    STATIC_REQUIRE(Oc::isTypeTreeLeaf<tt::IChessPiece::Type>);
 }
 
 TEST_CASE("Converting a class with default value", "[MappedTypeAllocator]")

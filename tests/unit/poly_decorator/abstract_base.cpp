@@ -37,8 +37,7 @@ TEST_CASE("Expected alloc backend template", "[PolyDecoratorAllocator]")
 {
     using types = mp11::mp_list<tt::Shape, tt::Segment, tt::DrawableCircle>;
 
-    static_assert(mp11::mp_all_of<types, PolyExpected>());
-    SUCCEED("Allocator backend variable template static assert succeeded");
+    STATIC_REQUIRE(mp11::mp_all_of<types, PolyExpected>());
 }
 
 TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAllocator]")

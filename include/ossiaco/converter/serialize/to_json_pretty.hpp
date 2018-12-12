@@ -11,8 +11,9 @@
 #ifndef OSSIACO_CONVERTER_SERIALIZE_PRETTY_CONVENIENT_HPP
 #define OSSIACO_CONVERTER_SERIALIZE_PRETTY_CONVENIENT_HPP
 
-#include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/core/buffers_streams_writers.hpp>
+#include <ossiaco/converter/core/char_types.hpp>
+#include <ossiaco/converter/core/reference_mapper.hpp>
 #include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/utils/file_handle.hpp>
 
@@ -35,12 +36,15 @@ void toJsonFilePretty(const Class& obj, const CharType* fileName);
 template<typename Class>
 string_t toJsonStringPretty(const Class& obj)
 {
-    static_assert(traits::jsonSupportDetected<Class>);
-
     EncodedStringBuffer buf;
     PrettyStringBufferWriter writer(buf);
 
-    obj.toJson(writer);
+    if constexpr (traits::jsonSupportDetected<Class>) {
+        obj.toJson(writer);
+    } else {
+        ReferenceMapper refs;
+        JsonSerializer<Class>::template toJson<PrettyStringBufferWriter>(obj, writer, refs, nullptr);
+    }
 
     return string_t(buf.GetString());
 }
@@ -53,9 +57,15 @@ void toJsonFilePretty(const Class& obj, const CharType* fileName)
 
     rapidjson::FileWriteStream fs(file.get(), buf.data(), buf.size());
     EncodedFileStream eos(fs, true /* put BOM */);
-    PrettyFileStreamWriter stm(eos);
+    PrettyFileStreamWriter writer(eos);
 
-    obj.toJson(stm);
+    if constexpr (traits::jsonSupportDetected<Class>) {
+        obj.toJson(writer);
+    } else {
+        ReferenceMapper refs;
+
+        JsonSerializer<Class>::template toJson<PrettyFileStreamWriter>(obj, writer, refs, nullptr);
+    }
 }
 
 } // namespace Ossiaco::converter
