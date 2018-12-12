@@ -8,6 +8,8 @@
 //
 // http://opensource.org/licenses/MIT
 
+// enables terse cross-platform string literal macro
+#define OSSIACO_XPLATSTR_ALIAS 1
 #include <ossiaco/converter/converter.hpp>
 
 #include <iostream>
@@ -22,12 +24,12 @@ struct Point3D {
     // don't want to enable polymorphic conversion. 
     // Its first argument is...
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
-        Point3D,                                // ...Class name, followed by...
-        (&Point3D::_x, OSSIACO_XPLATSTR("x"))   // ...a series of operator() calls taking a member data pointer and
-        (&Point3D::_y, OSSIACO_XPLATSTR("y"))   // string literal for the JSON property name. Note these are chained,
-        (&Point3D::_z, OSSIACO_XPLATSTR("z"))); // *not* comma separated!
+        Point3D,                    // ...Class name, followed by...
+        (&Point3D::_x, TSTR("x"))   // ...a series of operator() calls taking a member data pointer and
+        (&Point3D::_y, TSTR("y"))   // string literal for the JSON property name. Note these are chained,
+        (&Point3D::_z, TSTR("z"))); // *not* comma separated!
 
-    // N.B.: The OSSIACO_XPLATSTR macro expands its argument verbatim or to a wide
+    // N.B.: The TSTR macro expands its argument verbatim or to a wide
     // character literal depending on the OSSIACO_WCHAR_UNICODE macro. This is
     // done for portability, you are free to exclude it in your code.
 
@@ -83,8 +85,8 @@ struct Segment : public Shape {
     // which declares the JSON-convertible base class.
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         Segment, Shape,
-        (&Segment::_p1, OSSIACO_XPLATSTR("p1"))    // Note that p1 and p2 are instances of Point3D:
-        (&Segment::_p2, OSSIACO_XPLATSTR("p2")));  // we can compose JSON-convertible types.
+        (&Segment::_p1, TSTR("p1"))    // Note that p1 and p2 are instances of Point3D:
+        (&Segment::_p2, TSTR("p2")));  // we can compose JSON-convertible types.
 
     Point3D _p1{};
     Point3D _p2{};
@@ -106,8 +108,8 @@ struct Circle : public Shape {
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         Circle, Shape,
-        (&Circle::_center, OSSIACO_XPLATSTR("center"))  
-        (&Circle::_radius, OSSIACO_XPLATSTR("radius")));
+        (&Circle::_center, TSTR("center"))  
+        (&Circle::_radius, TSTR("radius")));
 
     Point3D _center{};
     double _radius{0.0};

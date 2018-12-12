@@ -21,9 +21,9 @@ namespace test_types {
 struct Point3D {
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         Point3D,
-        (&Point3D::_x, OSSIACO_XPLATSTR("x"))
-        (&Point3D::_y, OSSIACO_XPLATSTR("y"))
-        (&Point3D::_z, OSSIACO_XPLATSTR("z")));
+        (&Point3D::_x, TSTR("x"))
+        (&Point3D::_y, TSTR("y"))
+        (&Point3D::_z, TSTR("z")));
 
     double _x{ 0.0 };
     double _y{ 0.0 };

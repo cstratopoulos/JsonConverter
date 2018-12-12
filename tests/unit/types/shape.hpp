@@ -46,8 +46,8 @@ public:
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         Circle, Shape,
-        (&Circle::_center, OSSIACO_XPLATSTR("center"))
-        (&Circle::_radius, OSSIACO_XPLATSTR("radius")));
+        (&Circle::_center, TSTR("center"))
+        (&Circle::_radius, TSTR("radius")));
 
     friend bool operator==(const Circle& lhs, const Circle& rhs)
     {
@@ -94,8 +94,8 @@ public:
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         Segment, Shape,
-        (&Segment::_p1, OSSIACO_XPLATSTR("p1"))
-        (&Segment::_p2, OSSIACO_XPLATSTR("p2")));
+        (&Segment::_p1, TSTR("p1"))
+        (&Segment::_p2, TSTR("p2")));
 
     friend bool operator==(const Segment& lhs, const Segment& rhs)
     {

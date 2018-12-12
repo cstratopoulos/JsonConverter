@@ -30,7 +30,7 @@
 #endif
 
 #ifndef OSSIACO_WCHAR_UNICODE
-/// Wether to use unicode through `char_t`. Off by default.
+/// Whether to use unicode through `char_t`. Off by default.
 ///
 /// This should be defined for Windows projects in situations where `UNICODE`/`_UNICODE` would
 /// have been by the Visual Studio properties manager.
@@ -42,6 +42,11 @@
 #else
 /// Use to wrap all instances of character or string literals for conformance with unicode setting.
 #    define OSSIACO_XPLATSTR(x) x
+#endif
+
+// A terse alias for OSSIACO_XPLATSTR. Off by default to prevent macro name collisions.
+#if defined(OSSIACO_XPLATSTR_ALIAS) && OSSIACO_XPLATSTR_ALIAS
+#    define TSTR(x) OSSIACO_XPLATSTR(x)
 #endif
 
 #if OSSIACO_WCHAR_UNICODE && defined(BOOST_WINDOWS)

@@ -31,7 +31,7 @@ struct MapOfMaps {
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         MapOfMaps,
-        (&MapOfMaps::_mapMap, OSSIACO_XPLATSTR("mapMap")));
+        (&MapOfMaps::_mapMap, TSTR("mapMap")));
 
     std::unordered_map<string_t, std::map<string_t, std::list<string_t>>> _mapMap;
 };
@@ -80,8 +80,8 @@ public:
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         NumberMap,
-        (&NumberMap::_stringNums, OSSIACO_XPLATSTR("stringNums"))
-        (&NumberMap::_vecNums,    OSSIACO_XPLATSTR("vecNums")));
+        (&NumberMap::_stringNums, TSTR("stringNums"))
+        (&NumberMap::_vecNums,    TSTR("vecNums")));
 
 private:
     // A mapping of strings to numbers.

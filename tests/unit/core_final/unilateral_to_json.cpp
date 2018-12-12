@@ -21,7 +21,6 @@
 
 #include <vector>
 
-#define _T(X) OSSIACO_XPLATSTR(X)
 
 namespace Oc = Ossiaco::converter;
 using Oc::string_t;
@@ -33,8 +32,8 @@ struct PublicData {
 	string_t _s;
 
 	OSSIACO_JSON_PROPERTIES_IMPL(
-		(&PublicData::_i, _T("i"))
-		(&PublicData::_s, _T("s"))
+		(&PublicData::_i, TSTR("i"))
+		(&PublicData::_s, TSTR("s"))
 	);
 };
 
@@ -49,8 +48,8 @@ public:
 	const std::vector<double>& v() const { return _v; }
 
 	OSSIACO_JSON_PROPERTIES_IMPL(
-		(&PrivateDataRefGetters::s, _T("s"))
-		(&PrivateDataRefGetters::v, _T("v"))
+		(&PrivateDataRefGetters::s, TSTR("s"))
+		(&PrivateDataRefGetters::v, TSTR("v"))
 	);
 
 private:
@@ -68,8 +67,8 @@ public:
 	double d() const { return _d; }
 
 	OSSIACO_JSON_PROPERTIES_IMPL(
-		(&PrivateDataValGetters::i, _T("i"))
-		(&PrivateDataValGetters::d, _T("d"))
+		(&PrivateDataValGetters::i, TSTR("i"))
+		(&PrivateDataValGetters::d, TSTR("d"))
 	);
 
 private:
@@ -90,9 +89,9 @@ public:
 	const std::vector<double>& v() const { return _v; }
 
 	OSSIACO_JSON_PROPERTIES_IMPL(
-		(&MixedGetterPublic::_i, _T("i"))
-		(&MixedGetterPublic::j, _T("j"))
-		(&MixedGetterPublic::v, _T("v"))
+		(&MixedGetterPublic::_i, TSTR("i"))
+		(&MixedGetterPublic::j, TSTR("j"))
+		(&MixedGetterPublic::v, TSTR("v"))
 	);
 private:
 	int _j;
@@ -106,7 +105,7 @@ public:
 	date::year_month_day d() const { return _d; }
 
 	OSSIACO_JSON_PROPERTIES_IMPL(
-		(Oc::chronoFmtPair(&ChronoFmtGetter::d, _T("%Y-%m-%d")), _T("d"))
+		(Oc::chronoFmtPair(&ChronoFmtGetter::d, TSTR("%Y-%m-%d")), TSTR("d"))
 	);
 private:
 	date::year_month_day _d;
@@ -147,24 +146,24 @@ TEST_CASE("Unilateral serialization", "[OSSIACO_JSON_PROPERTIES_IMPL]")
 
     SECTION("Unilateral serialization string appearance")
     {
-        jsonCompare(Oc::toJsonStringPretty(PublicData{1, _T("dog")}), _T(R"--({
+        jsonCompare(Oc::toJsonStringPretty(PublicData{1, TSTR("dog")}), TSTR(R"--({
 "i": 1,
 "s": "dog"
 })--"));
 
         jsonCompare(
-            Oc::toJsonStringPretty(PrivateDataRefGetters(_T("cat"), {1.0, 2.0, 3.0})), _T(R"--({
+            Oc::toJsonStringPretty(PrivateDataRefGetters(TSTR("cat"), {1.0, 2.0, 3.0})), TSTR(R"--({
 "s": "cat",
 "v": [1.0, 2.0, 3.0]
 })--"));
 
         jsonCompare(
             Oc::toJsonStringPretty(PrivateDataValGetters(5, 26.3)),
-            _T(R"--({"i": 5, "d": 26.3})--"));
+            TSTR(R"--({"i": 5, "d": 26.3})--"));
 
 		jsonCompare(
 			Oc::toJsonStringPretty(MixedGetterPublic(1, 2, { 3.0, 4.0 })),
-			_T(R"--({
+			TSTR(R"--({
 "i": 1,
 "j": 2,
 "v": [3.0, 4.0]
@@ -174,6 +173,6 @@ TEST_CASE("Unilateral serialization", "[OSSIACO_JSON_PROPERTIES_IMPL]")
 
 		jsonCompare(
 			Oc::toJsonStringPretty(ChronoFmtGetter(2011_y / date::nov / 11)),
-			_T(R"--({"d": "2011-11-11"})--"));
+			TSTR(R"--({"d": "2011-11-11"})--"));
     }
 }

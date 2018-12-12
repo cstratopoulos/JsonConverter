@@ -26,9 +26,9 @@ using namespace Ossiaco::converter;
 struct SilentOptionalFields {
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         SilentOptionalFields,
-        (&SilentOptionalFields::_name, OSSIACO_XPLATSTR("name"))
-        (&SilentOptionalFields::_i, OSSIACO_XPLATSTR("i"))
-        (&SilentOptionalFields::_d, OSSIACO_XPLATSTR("d")));
+        (&SilentOptionalFields::_name, TSTR("name"))
+        (&SilentOptionalFields::_i, TSTR("i"))
+        (&SilentOptionalFields::_d, TSTR("d")));
 
     string_t _name;
     std::optional<int> _i;
@@ -41,9 +41,9 @@ struct NullOptionalFields {
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         NullOptionalFields,
-        (&NullOptionalFields::_name, OSSIACO_XPLATSTR("name"))
-        (jsonProperty<nvp, nf>(&NullOptionalFields::_city, OSSIACO_XPLATSTR("city")))
-        (jsonProperty<nvp, nf>(&NullOptionalFields::_light, OSSIACO_XPLATSTR("light")))
+        (&NullOptionalFields::_name, TSTR("name"))
+        (jsonProperty<nvp, nf>(&NullOptionalFields::_city, TSTR("city")))
+        (jsonProperty<nvp, nf>(&NullOptionalFields::_light, TSTR("light")))
     );
 
     string_t _name;

@@ -48,11 +48,11 @@ TEST_CASE(
                 usain,
                 [] {
                     return tt::SprintRecord<pretty>(
-                        OSSIACO_XPLATSTR("Usain Bolt"), 1986_y / date::aug / 21, 9580ms);
+                        TSTR("Usain Bolt"), 1986_y / date::aug / 21, 9580ms);
                 }),
             makeSimpleStringTest(florence, [] {
                 return tt::SprintRecord<pretty>(
-                    OSSIACO_XPLATSTR("Florence Griffith-Joyner"), 1959_y / date::dec / 21, 10490ms);
+                    TSTR("Florence Griffith-Joyner"), 1959_y / date::dec / 21, 10490ms);
             }));
     });
 }

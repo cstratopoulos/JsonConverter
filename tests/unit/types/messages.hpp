@@ -58,9 +58,9 @@ public:
 
     OSSIACO_CONVERTER_BASE_MAPPED_SUPPORTED(
         Message, Type,
-        (&Message::_text,      OSSIACO_XPLATSTR("text"))
-        (&Message::_timeStamp, OSSIACO_XPLATSTR("timeStamp"))
-        (&Message::_type,      OSSIACO_XPLATSTR("type")));
+        (&Message::_text,      TSTR("text"))
+        (&Message::_timeStamp, TSTR("timeStamp"))
+        (&Message::_type,      TSTR("type")));
 
 private:
     string_t _text{};
@@ -95,7 +95,7 @@ public:
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         ChatMessage, Message, 
-        (&ChatMessage::_sender, OSSIACO_XPLATSTR("sender")));
+        (&ChatMessage::_sender, TSTR("sender")));
 
 private:
     string_t _sender{};
@@ -136,7 +136,7 @@ public:
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         LogMessage, Message,
-        (&LogMessage::_level, OSSIACO_XPLATSTR("level")));
+        (&LogMessage::_level, TSTR("level")));
 
 private:
     Level _level{Level::info};
@@ -159,7 +159,7 @@ struct TypeTreeNode<test_types::Message::Type> {
         MapEntry<MType::log,     test_types::LogMessage>
     >;
 
-    static constexpr auto typeFieldName() { return OSSIACO_XPLATSTR("type"); }
+    static constexpr auto typeFieldName() { return TSTR("type"); }
     static constexpr auto defaultVal() { return MType::unknown; }
 };
 

@@ -45,12 +45,12 @@ TEST_CASE(
     SECTION("JSON string appearance")
     {
         jsonCompare(
-            Oc::toJsonStringPretty(tt::SilentOptionalFields{OSSIACO_XPLATSTR("garfield"), {}, {}}),
-            OSSIACO_XPLATSTR(R"--({"name": "garfield"})--"));
+            Oc::toJsonStringPretty(tt::SilentOptionalFields{TSTR("garfield"), {}, {}}),
+            TSTR(R"--({"name": "garfield"})--"));
 
         jsonCompare(
-            Oc::toJsonStringPretty(tt::SilentOptionalFields{OSSIACO_XPLATSTR("jeffrey"), {}, 5.0}),
-            OSSIACO_XPLATSTR(R"--({"name": "jeffrey", "d": 5.0})--"));
+            Oc::toJsonStringPretty(tt::SilentOptionalFields{TSTR("jeffrey"), {}, 5.0}),
+            TSTR(R"--({"name": "jeffrey", "d": 5.0})--"));
     }
 
     SECTION("Deserialization")
@@ -58,8 +58,8 @@ TEST_CASE(
         SECTION("Absent or null optional fields")
         {
             for (Oc::string_t jsonStr :
-                 {OSSIACO_XPLATSTR(R"--({"name": "heathcliff", "i": 123 })--"),
-                  OSSIACO_XPLATSTR(R"--({"name": "heathcliff", "i": 123, "d": null })--")}) {
+                 {TSTR(R"--({"name": "heathcliff", "i": 123 })--"),
+                  TSTR(R"--({"name": "heathcliff", "i": 123, "d": null })--")}) {
                 std::unique_ptr<tt::SilentOptionalFields> s;
 
                 REQUIRE_NOTHROW([&] {
@@ -67,13 +67,13 @@ TEST_CASE(
                 }());
 
                 REQUIRE(s);
-                CHECK(*s == tt::SilentOptionalFields{OSSIACO_XPLATSTR("heathcliff"), 123, {}});
+                CHECK(*s == tt::SilentOptionalFields{TSTR("heathcliff"), 123, {}});
             }
         }
 
         SECTION("Absent required field")
         {
-            Oc::string_t nameMissing(OSSIACO_XPLATSTR(R"--({"i": 1, "d": 2.0})--"));
+            Oc::string_t nameMissing(TSTR(R"--({"i": 1, "d": 2.0})--"));
 
             REQUIRE_THROWS_AS(
                 Oc::JsonDeserializer<tt::SilentOptionalFields>::fromString(nameMissing.data()),
@@ -87,15 +87,15 @@ TEST_CASE(
             makeSimpleStringTest(
                 "All optional fields present",
                 [] {
-                    return tt::SilentOptionalFields{OSSIACO_XPLATSTR("Gary"), 154, 12.34};
+                    return tt::SilentOptionalFields{TSTR("Gary"), 154, 12.34};
                 }),
             makeSimpleStringTest(
                 "No optional fields present",
                 [] {
-                    return tt::SilentOptionalFields{OSSIACO_XPLATSTR("Patrick"), {}, {}};
+                    return tt::SilentOptionalFields{TSTR("Patrick"), {}, {}};
                 }),
             makeSimpleStringTest("Only one optional field present", [] {
-                return tt::SilentOptionalFields{OSSIACO_XPLATSTR("Sandy"), {}, 31.23403};
+                return tt::SilentOptionalFields{TSTR("Sandy"), {}, 31.23403};
             }));
     }
 }
@@ -118,8 +118,8 @@ TEST_CASE(
     {
         jsonCompare(
             Ossiaco::converter::toJsonStringPretty(
-                tt::NullOptionalFields{OSSIACO_XPLATSTR("Snoopy"), {}, {}}),
-            OSSIACO_XPLATSTR(R"--({
+                tt::NullOptionalFields{TSTR("Snoopy"), {}, {}}),
+            TSTR(R"--({
 "name": "Snoopy",
 "city": null,
 "light": null
@@ -127,8 +127,8 @@ TEST_CASE(
 
         jsonCompare(
             Ossiaco::converter::toJsonStringPretty(tt::NullOptionalFields{
-                OSSIACO_XPLATSTR("Blossom"), OSSIACO_XPLATSTR("Townsville"), {}}),
-            OSSIACO_XPLATSTR(R"--({
+                TSTR("Blossom"), TSTR("Townsville"), {}}),
+            TSTR(R"--({
 "name": "Blossom",
 "city": "Townsville",
 "light": null
@@ -140,7 +140,7 @@ TEST_CASE(
         namespace Oc = Ossiaco::converter;
 
         // The std::optional field "light" is missing.
-        Oc::string_t jsonString(OSSIACO_XPLATSTR(
+        Oc::string_t jsonString(TSTR(
             R"--(
 {
 "name": "Terry",
@@ -159,18 +159,18 @@ TEST_CASE(
             makeSimpleStringTest(
                 "All optional fields present",
                 [] {
-                    return tt::NullOptionalFields{OSSIACO_XPLATSTR("Christos"),
-                                                  OSSIACO_XPLATSTR("MTL"),
+                    return tt::NullOptionalFields{TSTR("Christos"),
+                                                  TSTR("MTL"),
                                                   tt::Light{tt::Light::Color::blue, true}};
                 }),
             makeSimpleStringTest(
                 "No optional fields present",
                 [] {
-                    return tt::NullOptionalFields{OSSIACO_XPLATSTR("Alex"), {}, {}};
+                    return tt::NullOptionalFields{TSTR("Alex"), {}, {}};
                 }),
             makeSimpleStringTest("One optional field present", [] {
                 return tt::NullOptionalFields{
-                    OSSIACO_XPLATSTR("Dog"), OSSIACO_XPLATSTR("London"), {}};
+                    TSTR("Dog"), TSTR("London"), {}};
             }));
     }
 }

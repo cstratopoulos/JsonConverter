@@ -41,22 +41,22 @@ TEST_CASE("Linear and Map ranges with nested ranges", "[ConvertLinearRange][Conv
             tt::MapOfMaps result;
             auto& mapMap = result._mapMap;
 
-            mapMap[OSSIACO_XPLATSTR("Animal noises")] = {
-                {OSSIACO_XPLATSTR("Dog"),
-                 {OSSIACO_XPLATSTR("woof"), OSSIACO_XPLATSTR("bark"), OSSIACO_XPLATSTR("grr")}},
-                {OSSIACO_XPLATSTR("Cat"),
-                 {OSSIACO_XPLATSTR("meow"), OSSIACO_XPLATSTR("purr"), OSSIACO_XPLATSTR("hiss")}},
-                {OSSIACO_XPLATSTR("Bird"), {OSSIACO_XPLATSTR("chirp"), OSSIACO_XPLATSTR("tweet")}}};
+            mapMap[TSTR("Animal noises")] = {
+                {TSTR("Dog"),
+                 {TSTR("woof"), TSTR("bark"), TSTR("grr")}},
+                {TSTR("Cat"),
+                 {TSTR("meow"), TSTR("purr"), TSTR("hiss")}},
+                {TSTR("Bird"), {TSTR("chirp"), TSTR("tweet")}}};
 
-            mapMap[OSSIACO_XPLATSTR("Vehicle parts")] = {{OSSIACO_XPLATSTR("Car"),
-                                                          {OSSIACO_XPLATSTR("wheels"),
-                                                           OSSIACO_XPLATSTR("bumper"),
-                                                           OSSIACO_XPLATSTR("steering wheel"),
-                                                           OSSIACO_XPLATSTR("gas tank")}},
-                                                         {OSSIACO_XPLATSTR("Plane"),
-                                                          {OSSIACO_XPLATSTR("wings"),
-                                                           OSSIACO_XPLATSTR("engine"),
-                                                           OSSIACO_XPLATSTR("landing gear")}}};
+            mapMap[TSTR("Vehicle parts")] = {{TSTR("Car"),
+                                                          {TSTR("wheels"),
+                                                           TSTR("bumper"),
+                                                           TSTR("steering wheel"),
+                                                           TSTR("gas tank")}},
+                                                         {TSTR("Plane"),
+                                                          {TSTR("wings"),
+                                                           TSTR("engine"),
+                                                           TSTR("landing gear")}}};
 
             return result;
         }));

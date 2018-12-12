@@ -34,7 +34,7 @@ SCENARIO("Throwing exceptions from JSON type errors", "[RapidJsonAssert]")
     WHEN("A JSON field that should be string has int type")
     {
 
-        const auto json = OSSIACO_XPLATSTR(R"--({
+        const auto json = TSTR(R"--({
 "name": 1234,
 "city": "MTL"
 })--");

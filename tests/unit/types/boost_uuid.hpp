@@ -56,7 +56,7 @@ namespace test_types {
 struct UuidKey {
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         UuidKey,
-        (&UuidKey::_key, OSSIACO_XPLATSTR("key")));
+        (&UuidKey::_key, TSTR("key")));
 
     boost::uuids::uuid _key{};
 };

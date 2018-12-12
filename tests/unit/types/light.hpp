@@ -24,8 +24,8 @@ struct Light {
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         Light,
-        (&Light::_color, OSSIACO_XPLATSTR("color"))
-        (&Light::_on,    OSSIACO_XPLATSTR("on")));
+        (&Light::_color, TSTR("color"))
+        (&Light::_on,    TSTR("on")));
 
     Color _color{Color::white};
     bool _on{false};

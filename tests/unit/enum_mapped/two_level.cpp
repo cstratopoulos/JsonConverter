@@ -60,16 +60,16 @@ TEST_CASE("Converting a class in the second level of a type tree hierarchy", "[M
     SECTION("JSON string appearance") {
         const auto timeStamp = ttv2::Message::nowFloor();
 
-        ttv2::CommandMessage<Op::post> postMsg(OSSIACO_XPLATSTR("www.example.com"), OSSIACO_XPLATSTR("/api/1234"), timeStamp);
+        ttv2::CommandMessage<Op::post> postMsg(TSTR("www.example.com"), TSTR("/api/1234"), timeStamp);
 
         Oc::ostringstream_t stream;
-        stream << OSSIACO_XPLATSTR(R"--({
+        stream << TSTR(R"--({
 "text": "/api/1234",
 "timeStamp": )--")
                << std::chrono::time_point_cast<std::chrono::milliseconds>(timeStamp)
                       .time_since_epoch()
                       .count()
-               << OSSIACO_XPLATSTR(R"--(,
+               << TSTR(R"--(,
 "type": 3,
 "op": 1,
 "target": "www.example.com"
@@ -81,12 +81,12 @@ TEST_CASE("Converting a class in the second level of a type tree hierarchy", "[M
 
     runTestCases(makeMsgTest("A GET request", [] {
         return ttv2::CommandMessage<Op::get>(
-            OSSIACO_XPLATSTR("www.google.com"), OSSIACO_XPLATSTR("/"));
+            TSTR("www.google.com"), TSTR("/"));
     }));
 
     SECTION("Command with invalid op field but valid type field")
     {
-        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+        const auto jsonStr = TSTR(R"--({
 "text": "/",
 "timeStamp": 12345,
 "type": 3,

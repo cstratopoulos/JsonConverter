@@ -27,6 +27,6 @@ TEST_CASE("Using ConvertCustomValue to convert boost UUIDs", "[ConvertCustomValu
         makeSimpleStringTest("A Key with a nil UUID", [] { return tt::UuidKey{}; }),
         makeSimpleStringTest("A Key with a string UUID", [] {
             return tt::UuidKey{boost::uuids::string_generator()(
-                OSSIACO_XPLATSTR("01234567-89ab-cdef-0123-456789abcdef"))};
+                TSTR("01234567-89ab-cdef-0123-456789abcdef"))};
         }));
 }

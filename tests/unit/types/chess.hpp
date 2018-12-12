@@ -51,9 +51,9 @@ struct IChessPiece {
 
     OSSIACO_CONVERTER_BASE_MAPPED_SUPPORTED(
         IChessPiece, IChessPiece::Type,
-        (&IChessPiece::_color,  OSSIACO_XPLATSTR("color"))
-        (&IChessPiece::_type,   OSSIACO_XPLATSTR("type"))
-        (&IChessPiece::_active, OSSIACO_XPLATSTR("active")));
+        (&IChessPiece::_color,  TSTR("color"))
+        (&IChessPiece::_type,   TSTR("type"))
+        (&IChessPiece::_active, TSTR("active")));
 
     Color _color{Color::black};
     Type _type{Type::pawn};
@@ -102,7 +102,7 @@ struct TypeTreeNode<test_types::IChessPiece::Type> {
         MapEntry<PieceType::king>
     >;
 
-    static constexpr const CharType* typeFieldName() { return OSSIACO_XPLATSTR("type"); }
+    static constexpr const CharType* typeFieldName() { return TSTR("type"); }
 };
 
 } // namespace Ossiaco::converter

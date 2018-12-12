@@ -41,8 +41,8 @@ public:
     struct Node {
         OSSIACO_CONVERTER_FINAL_SUPPORTED(
             Node,
-            (&Node::_ident,      OSSIACO_XPLATSTR("ident"))
-            (&Node::_sinks, OSSIACO_XPLATSTR("sinks")));
+            (&Node::_ident,      TSTR("ident"))
+            (&Node::_sinks, TSTR("sinks")));
 
         string_t _ident;
 
@@ -99,7 +99,7 @@ public:
     }
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
-        Digraph, (&Digraph::_nodes, OSSIACO_XPLATSTR("nodes")));
+        Digraph, (&Digraph::_nodes, TSTR("nodes")));
 
 private:
     std::vector<std::shared_ptr<Node>> _nodes;

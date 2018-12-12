@@ -34,6 +34,10 @@ target_link_libraries(converter_test_utils
     PUBLIC ossiaco_converter
 )
 
+target_compile_definitions(converter_test_utils
+    PUBLIC OSSIACO_XPLATSTR_ALIAS=1
+)
+
 if(${OSSIACO_CONVERTER_BOOST_FS})
     target_link_libraries(converter_test_utils
         PUBLIC Boost::filesystem

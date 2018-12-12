@@ -38,8 +38,8 @@ public:
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         Person,
-        (&Person::_name, OSSIACO_XPLATSTR("name"))
-        (&Person::_city, OSSIACO_XPLATSTR("city")));
+        (&Person::_name, TSTR("name"))
+        (&Person::_city, TSTR("city")));
 
     friend bool operator==(const Person& lhs, const Person& rhs)
     {

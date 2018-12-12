@@ -21,28 +21,28 @@ TEST_CASE(
             "A path on three vertices",
             [] {
                 return tt::Digraph({
-                    {OSSIACO_XPLATSTR("a"), OSSIACO_XPLATSTR("b")},
-                    {OSSIACO_XPLATSTR("b"), OSSIACO_XPLATSTR("c")},
+                    {TSTR("a"), TSTR("b")},
+                    {TSTR("b"), TSTR("c")},
                 });
             }),
         makeSimpleStringTest(
             "A loop vertex",
             [] {
-                return tt::Digraph({{OSSIACO_XPLATSTR("self"), OSSIACO_XPLATSTR("self")}});
+                return tt::Digraph({{TSTR("self"), TSTR("self")}});
             }),
         makeSimpleStringTest(
             "A bidirectional edge",
             [] {
                 return tt::Digraph({
-                    {OSSIACO_XPLATSTR("here"), OSSIACO_XPLATSTR("there")},
-                    {OSSIACO_XPLATSTR("there"), OSSIACO_XPLATSTR("here")},
+                    {TSTR("here"), TSTR("there")},
+                    {TSTR("there"), TSTR("here")},
                 });
             }),
         makeSimpleStringTest("The complete directed graph on 4 vxs", [] {
-            std::vector<Ossiaco::converter::string_t> vxs{OSSIACO_XPLATSTR("1"),
-                                                          OSSIACO_XPLATSTR("2"),
-                                                          OSSIACO_XPLATSTR("3"),
-                                                          OSSIACO_XPLATSTR("4")};
+            std::vector<Ossiaco::converter::string_t> vxs{TSTR("1"),
+                                                          TSTR("2"),
+                                                          TSTR("3"),
+                                                          TSTR("4")};
 
             tt::Digraph g;
 

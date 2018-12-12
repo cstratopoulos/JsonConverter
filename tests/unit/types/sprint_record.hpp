@@ -51,21 +51,21 @@ public:
         if constexpr (pretty) {
             return std::make_tuple(
                 requiredProperty(
-                    chronoFmtPair(&SprintRecord::_dateOfBirth, OSSIACO_XPLATSTR("%Y-%m-%d")),
-                    OSSIACO_XPLATSTR("DOB")),
+                    chronoFmtPair(&SprintRecord::_dateOfBirth, TSTR("%Y-%m-%d")),
+                    TSTR("DOB")),
                 requiredProperty(
-                    chronoFmtPair(&SprintRecord::_100mTime, OSSIACO_XPLATSTR("%S seconds")),
-                    OSSIACO_XPLATSTR("100mTime")));
+                    chronoFmtPair(&SprintRecord::_100mTime, TSTR("%S seconds")),
+                    TSTR("100mTime")));
         } else {
             return std::make_tuple(
-                requiredProperty(&SprintRecord::_dateOfBirth, OSSIACO_XPLATSTR("DOB")),
-                requiredProperty(&SprintRecord::_100mTime, OSSIACO_XPLATSTR("100mTime")));
+                requiredProperty(&SprintRecord::_dateOfBirth, TSTR("DOB")),
+                requiredProperty(&SprintRecord::_100mTime, TSTR("100mTime")));
         }
     }
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         SprintRecord,
-        (&SprintRecord::_runnerName, OSSIACO_XPLATSTR("runnerName"))
+        (&SprintRecord::_runnerName, TSTR("runnerName"))
         (&SprintRecord::chronoProps));
 
     friend bool operator==(const SprintRecord& lhs, const SprintRecord& rhs)

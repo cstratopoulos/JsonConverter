@@ -32,7 +32,7 @@ TEST_CASE("Converting 3D points", "[double][SimpleTypeAllocator]")
     {
         jsonCompare(
             Ossiaco::converter::toJsonStringPretty(unitVec),
-            OSSIACO_XPLATSTR(
+            TSTR(
                 R"--({
 "x": 0.0,
 "y": 1.0,
@@ -56,10 +56,10 @@ TEST_CASE("Converting Person (name/city of residence string)"
           "[string][unicode][SimpleTypeAllocator]")
 {
     SECTION("JSON string appearance") {
-        tt::Person marge(OSSIACO_XPLATSTR("Marge"), OSSIACO_XPLATSTR("Springfield"));
+        tt::Person marge(TSTR("Marge"), TSTR("Springfield"));
         jsonCompare(
             Ossiaco::converter::toJsonStringPretty(marge),
-            OSSIACO_XPLATSTR(
+            TSTR(
                 R"--({
 "name": "Marge",
 "city": "Springfield"
@@ -69,12 +69,12 @@ TEST_CASE("Converting Person (name/city of residence string)"
     runTestCases(
         makeSimpleStringTest(
             "A Person with all ASCII characters",
-            [=] { return tt::Person(OSSIACO_XPLATSTR("Sam"), OSSIACO_XPLATSTR("Texas")); }),
+            [=] { return tt::Person(TSTR("Sam"), TSTR("Texas")); }),
         makeSimpleStringTest(
             "A Person with accented city name",
-            [] { return tt::Person(OSSIACO_XPLATSTR("Christos"), OSSIACO_XPLATSTR("Montréal")); }),
+            [] { return tt::Person(TSTR("Christos"), TSTR("Montréal")); }),
         makeSimpleStringTest("A Person with a Japanese name", [] {
-            return tt::Person(OSSIACO_XPLATSTR("あいこ"), OSSIACO_XPLATSTR("東京都"));
+            return tt::Person(TSTR("あいこ"), TSTR("東京都"));
         }));
 }
 
@@ -82,7 +82,7 @@ TEST_CASE("Converting Light (bool/enum members)", "[bool][enum][SimpleTypeAlloca
 {
     SECTION("JSON string appearance") {
         tt::Light off{};
-        jsonCompare(Ossiaco::converter::toJsonStringPretty(off), OSSIACO_XPLATSTR(R"--({
+        jsonCompare(Ossiaco::converter::toJsonStringPretty(off), TSTR(R"--({
 "color": 0,
 "on": false
 })--"));

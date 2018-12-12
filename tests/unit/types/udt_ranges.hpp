@@ -28,8 +28,8 @@ namespace test_types {
 struct PointsLights {
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         PointsLights,
-        (&PointsLights::_points, OSSIACO_XPLATSTR("points"))
-        (&PointsLights::_lights, OSSIACO_XPLATSTR("lights")));
+        (&PointsLights::_points, TSTR("points"))
+        (&PointsLights::_lights, TSTR("lights")));
 
     boost::container::small_vector<Point3D, 5> _points{};
 

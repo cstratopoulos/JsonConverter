@@ -73,19 +73,19 @@ TEST_CASE("Converting a class with default value", "[MappedTypeAllocator]")
     runTestCases(
         makeMsgTest(
             "A chat message",
-            [] { return tt::ChatMessage(OSSIACO_XPLATSTR("user"), OSSIACO_XPLATSTR("hello!")); }),
+            [] { return tt::ChatMessage(TSTR("user"), TSTR("hello!")); }),
         makeMsgTest(
             "A log message",
             [] {
                 return tt::LogMessage(
-                    tt::LogMessage::Level::fatal, OSSIACO_XPLATSTR("a fatal error!!!!!"));
+                    tt::LogMessage::Level::fatal, TSTR("a fatal error!!!!!"));
             }),
         makeMsgTest("A default/base message", [] {
-            return tt::Message(OSSIACO_XPLATSTR("A simple message"));
+            return tt::Message(TSTR("A simple message"));
         }));
 
     SECTION("Log message with invalid JSON enum value") {
-        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+        const auto jsonStr = TSTR(R"--({
 "text": "Error happened",
 "timeStamp": 1234567,
 "type": -1,
@@ -127,7 +127,7 @@ TEST_CASE("Converting a class with no default and an abstract base", "[MappedTyp
 
         jsonCompare(
             jsonStr,
-            OSSIACO_XPLATSTR(R"--({
+            TSTR(R"--({
 "color": 0,
 "type": 3,
 "active": true
@@ -142,7 +142,7 @@ TEST_CASE("Converting a class with no default and an abstract base", "[MappedTyp
     );
 
     SECTION("JSON with an invalid value") {
-        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+        const auto jsonStr = TSTR(R"--({
 "color": 1,
 "type": 1234,
 "active": true
@@ -157,7 +157,7 @@ TEST_CASE("Converting a class with no default and an abstract base", "[MappedTyp
     }
 
     SECTION("JSON with no type field") {
-        const auto jsonStr = OSSIACO_XPLATSTR(R"--({
+        const auto jsonStr = TSTR(R"--({
 "color": 0,
 "active": false
 })--");

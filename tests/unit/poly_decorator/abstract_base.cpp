@@ -44,7 +44,7 @@ TEST_CASE("Converting inheritors of a pure interface ABC", "[PolyDecoratorAlloca
 {
     SECTION("JSON string appearance") {
         tt::Circle unit(tt::Point3D{ 0.0, 0.0, 0.0 }, 1.0);
-        jsonCompare(Ossiaco::converter::toJsonStringPretty(unit), OSSIACO_XPLATSTR(R"--({
+        jsonCompare(Ossiaco::converter::toJsonStringPretty(unit), TSTR(R"--({
 "@type": "test_types::Circle",
 "center":
     {
@@ -81,7 +81,7 @@ struct OopsShape : tt::Shape {
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         OopsShape, test_types::Shape, 
-        (&OopsShape::_someInt, OSSIACO_XPLATSTR("someInt")));
+        (&OopsShape::_someInt, TSTR("someInt")));
 
     int _someInt{};
 };
@@ -93,7 +93,7 @@ SCENARIO("Raising allocation errors", "[PolyDecoratorAllocator]")
 
     GIVEN("A JSON string describing an abstract type")
     {
-        const auto jsonString = OSSIACO_XPLATSTR(
+        const auto jsonString = TSTR(
             R"--(
 {
 "@type": "test_types::Shape"
@@ -111,7 +111,7 @@ SCENARIO("Raising allocation errors", "[PolyDecoratorAllocator]")
 
     GIVEN("A JSON string for a class which does not exist")
     {
-        const auto jsonString = OSSIACO_XPLATSTR(
+        const auto jsonString = TSTR(
             R"--(
 {
 "@type": "some_namespace::SomeClass",

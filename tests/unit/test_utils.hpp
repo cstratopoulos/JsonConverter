@@ -88,7 +88,7 @@ struct StringObjectConversion {
 struct FileObjectConversion {
     explicit FileObjectConversion(fs::path path) : _path(path)
     {
-        if (_path.extension() != OSSIACO_XPLATSTR(".json"))
+        if (_path.extension() != TSTR(".json"))
             throw std::logic_error(
                 "FileObjectConversion must be constructed with path to .json file");
 
