@@ -15,6 +15,7 @@
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/core/not_found.hpp>
 #include <ossiaco/converter/utils/accessors.hpp>
+#include <ossiaco/converter/utils/detect_specialization.hpp>
 
 #include <boost/type_traits/remove_cv_ref.hpp>
 
@@ -24,19 +25,34 @@ namespace Ossiaco::converter {
 
 class ReferenceMapper;
 
+enum class NullValuePolicy {
+    silent, // do nothing
+    write   // write a null value to the JSON
+};
+
 // Interface for JSON conversion of member data.
 //
 // Delegates to a deduced converter, wrapping the common logic of writing a field name or 
 // checking for member existence. 
 // Note one or both of `toJson`/`fromJson` will be present.
+// When deserializing the default policy is to throw an exception if the value is not 
+// present, unless we're converting an std::optional in which case it will be ignored.
 template<
     typename MemberPtr,
-    NotFoundHandlerPtr notFound = throwNotFound<ClassOf<MemberPtr>>>
+    NullValuePolicy nullValPolicy = NullValuePolicy::silent,
+    NotFoundHandlerPtr notFound   = isSpecialization<PropertyOf<MemberPtr>, std::optional>
+                                      ? &ignoreNotFound
+                                      : throwNotFound<ClassOf<MemberPtr>>>
 class JsonProperty {
 public:
     static_assert(std::is_member_pointer_v<MemberPtr>);
 
-    using Class = ClassOf<MemberPtr>;
+    using Class    = ClassOf<MemberPtr>;
+    using Property = PropertyOf<MemberPtr>;
+
+    using PropertyConverter = DeducedConverterType<Property>;
+
+    static constexpr NullValuePolicy nullValuePolicy = nullValPolicy;
 
 	static constexpr bool enableFromJson = hasMutableAccess<MemberPtr>;
 	static constexpr bool enableToJson   = hasConstAccess<MemberPtr>;
@@ -55,9 +71,7 @@ public:
         -> std::enable_if_t<enableFromJson, Void>
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd()) {
-            auto& field = std::invoke(_member, object);
-            DeducedConverterType<boost::remove_cv_ref_t<decltype(field)>>::fromJson(
-                object.*_member, findItr->value, refs);
+            PropertyConverter::fromJson(std::invoke(_member, object), findItr->value, refs);
         } else {
             notFound(_name);
         }
@@ -67,23 +81,16 @@ public:
     auto toJson(const Class& object, Writer& writer, ReferenceMapper& refs) const
         -> std::enable_if_t<enableToJson, Void>
     {
-        // TODO optional handling sketch:
-        // JsonProperty<MemberPtr, NotFoundHandlerPtr, NullValuePolicy = SilentNull>
-        // Could also have NotFoundHandlerPtr default to ignoreNotFound for
-        // std::optional, throwNotFound otherwise
-        /*
-            if constexpr(std::is_same_v<NullValuePolicy, SilentNull>
-                    && isSpecialization<Class, std::optional>) {
-                if (!field.has_value())
-                        return;
-            }
-        */
-
-        writer.String(_name);
-
         const auto& field = std::invoke(_member, object);
 
-        DeducedConverterType<boost::remove_cv_ref_t<decltype(field)>>::toJson(field, writer, refs);
+        if constexpr (nullValPolicy == NullValuePolicy::silent && isSpecialization<Property, std::optional>) {
+            if (!field.has_value()) {
+                return;
+            }
+        }
+
+        writer.String(_name);
+        PropertyConverter::toJson(field, writer, refs);
     }
 
 private:
@@ -93,10 +100,10 @@ private:
 };
 
 template<typename MemberPtr>
-using RequiredJsonProperty = JsonProperty<MemberPtr, throwNotFound<ClassOf<MemberPtr>>>;
+using RequiredJsonProperty = JsonProperty<MemberPtr, NullValuePolicy::silent, throwNotFound<ClassOf<MemberPtr>>>;
 
 template<typename MemberPtr>
-using OptionalJsonProperty = JsonProperty<MemberPtr, &ignoreNotFound>;
+using OptionalJsonProperty = JsonProperty<MemberPtr, NullValuePolicy::silent, &ignoreNotFound>;
 
 } // namespace Ossiaco::converter
 

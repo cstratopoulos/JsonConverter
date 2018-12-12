@@ -23,7 +23,11 @@
 
 namespace Ossiaco::converter {
 
-// Sadly CTAD for alias templates does not exist so these helpers are still needed.
+template<NullValuePolicy nullValPolicy, NotFoundHandlerPtr notFound, typename MemberPtr>
+constexpr auto jsonProperty(MemberPtr member, const CharType* name)
+{
+    return JsonProperty<MemberPtr, nullValPolicy, notFound>(member, name);
+}
 
 template<typename MemberPtr>
 constexpr auto requiredProperty(MemberPtr member, const CharType* name)
@@ -65,7 +69,7 @@ struct PropertiesHelper {
     /// No-op for providing empty properties.
     constexpr auto operator()() { return std::move(*this); }
 
-	// Add a required JSON property by specifying a member pointer and property name.
+	// Add a JSON property by specifying a member pointer and property name.
 	template<typename MemberPtr, typename = std::enable_if_t<std::is_member_pointer_v<MemberPtr>>>
 	constexpr auto operator()(MemberPtr member, const CharType* name)
 	{
@@ -75,8 +79,8 @@ struct PropertiesHelper {
 	// Add a JSON property with explicitly specified missing value policy.
 	// e.g., with the helper functions above:
 	//     `operator()(optionalProperty(member, name))`
-	template<typename MemberPtr, NotFoundHandlerPtr notFound>
-	constexpr auto operator()(JsonProperty<MemberPtr, notFound> prop)
+	template<typename MemberPtr, NullValuePolicy nullValPolicy, NotFoundHandlerPtr notFound>
+	constexpr auto operator()(JsonProperty<MemberPtr, nullValPolicy, notFound> prop)
 	{
 		return expand(std::make_tuple(std::move(prop)));
 	}

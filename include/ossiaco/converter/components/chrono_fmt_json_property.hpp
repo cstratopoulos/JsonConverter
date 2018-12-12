@@ -25,7 +25,7 @@ namespace Ossiaco::converter {
 
 class ReferenceMapper;
 
-// Syntatctic "salt" alias which explicitly associates a chrono PMD to its format string.
+// Syntactic "salt" alias which explicitly associates a chrono PMD to its format string.
 template<typename MemberPtr>
 using ChronoFmtPair = std::pair<MemberPtr, const CharType*>;
 

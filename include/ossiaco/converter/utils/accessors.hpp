@@ -14,15 +14,23 @@
 #include <ossiaco/converter/config.hpp>
 
 #include <boost/callable_traits/class_of.hpp>
-#include <boost/callable_traits/is_invocable.hpp>
+#include <boost/callable_traits/return_type.hpp>
+#include <boost/type_traits/remove_cv_ref.hpp>
 
 #include <functional>
 #include <type_traits>
 
 namespace Ossiaco::converter {
 
-template<typename T>
-using ClassOf = boost::callable_traits::class_of_t<T>;
+// For a member pointer MemPtr, the class to which the pointer belongs.
+template<typename MemPtr>
+using ClassOf = boost::callable_traits::class_of_t<MemPtr>;
+
+// Given a member pointer MemPtr, this is the cv-ref removed type of either
+// - the pointed data if MemPtr is a pointer to member data
+// - the return type if MemPtr is a pointer to member function
+template<typename MemPtr>
+using PropertyOf = boost::remove_cv_ref_t<boost::callable_traits::return_type_t<MemPtr>>;
 
 #if OSSIACO_LIBCPP_INVOCABLE_WORKAROUND
 

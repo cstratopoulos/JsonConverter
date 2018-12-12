@@ -21,14 +21,30 @@
 
 namespace test_types {
 
-struct OptionalFields {
-    using string_t = Ossiaco::converter::string_t;
+using namespace Ossiaco::converter;
+
+struct SilentOptionalFields {
+    OSSIACO_CONVERTER_FINAL_SUPPORTED(
+        SilentOptionalFields,
+        (&SilentOptionalFields::_name, OSSIACO_XPLATSTR("name"))
+        (&SilentOptionalFields::_i, OSSIACO_XPLATSTR("i"))
+        (&SilentOptionalFields::_d, OSSIACO_XPLATSTR("d")));
+
+    string_t _name;
+    std::optional<int> _i;
+    std::optional<double> _d;
+};
+
+struct NullOptionalFields {
+    static constexpr auto nvp = NullValuePolicy::write;
+    static constexpr auto nf = throwNotFound<NullOptionalFields>;
 
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
-        OptionalFields,
-        (&OptionalFields::_name, OSSIACO_XPLATSTR("name"))
-        (&OptionalFields::_city, OSSIACO_XPLATSTR("city"))
-        (&OptionalFields::_light, OSSIACO_XPLATSTR("light")));
+        NullOptionalFields,
+        (&NullOptionalFields::_name, OSSIACO_XPLATSTR("name"))
+        (jsonProperty<nvp, nf>(&NullOptionalFields::_city, OSSIACO_XPLATSTR("city")))
+        (jsonProperty<nvp, nf>(&NullOptionalFields::_light, OSSIACO_XPLATSTR("light")))
+    );
 
     string_t _name;
 
@@ -37,9 +53,14 @@ struct OptionalFields {
     std::optional<Light> _light;
 };
 
-inline bool operator==(const OptionalFields& lhs, const OptionalFields& rhs)
+inline bool operator==(const NullOptionalFields& lhs, const NullOptionalFields& rhs)
 {
     return std::tie(lhs._name, lhs._city, lhs._light) == std::tie(rhs._name, rhs._city, rhs._light);
+}
+
+inline bool operator==(const SilentOptionalFields& lhs, const SilentOptionalFields& rhs)
+{
+    return std::tie(lhs._name, lhs._i, lhs._d) == std::tie(rhs._name, rhs._i, rhs._d);
 }
 
 } // namespace test_types
