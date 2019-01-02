@@ -57,4 +57,4 @@ steps:
       sudo apt install valgrind
       valgrind --version
     displayName: 'Get valgrind'
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'), eq(variables['WANT_VALGRIND'], '1'))

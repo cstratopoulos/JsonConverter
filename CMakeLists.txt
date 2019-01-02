@@ -125,6 +125,14 @@ endif()
 ##############################
 
 if(${OSSIACO_CONVERTER_EXAMPLES} OR ${OSSIACO_CONVERTER_TESTS})
+    find_program(MEMORYCHECK_COMMAND valgrind)
+    if(MEMORYCHECK_COMMAND)
+        message(STATUS "Found valgrind: ${MEMORYCHECK_COMMAND}")
+        set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1")
+        include(CTest)
+    else()
+        message(STATUS "Valgrind not found")
+    endif()
     enable_testing()
 endif()
 

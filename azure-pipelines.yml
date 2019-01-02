@@ -91,6 +91,7 @@ jobs:
     LDFLAGS: ""
     LD_LIBRARY_PATH: ""
     PIP_CMD: "sudo pip"
+    WANT_VALGRIND: 1
     # Flag variable which lets the valgrind test suite run
     # if the build made it to the unit tests, whether or not they pass
     RUN_VALGRIND: ""
@@ -135,6 +136,7 @@ jobs:
       clang7-ubasan:
         CXX: clang++-7
         EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_UBASAN=1"
+        WANT_VALGRIND: 0
 
   steps:
   - bash: |
