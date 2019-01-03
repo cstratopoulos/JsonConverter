@@ -107,13 +107,7 @@ struct ConvertVocabType<date::sys_time<Duration>> {
     static void
     fromJson(TimePoint& object, const rapidjson::GenericValue<Encoding>& value, ReferenceMapper&)
     {
-#ifdef _LIBCPP_VERSION
-        using GetAsType = uint64_t;
-#else
-        using GetAsType = int64_t;
-#endif // _LIBCPP_VERSION
-
-        const auto epochMs = std::chrono::milliseconds(getValue<GetAsType>(value));
+        const auto epochMs = std::chrono::milliseconds(getValue<int64_t>(value));
 
         object = TimePoint(std::chrono::duration_cast<Duration>(epochMs));
     }
@@ -123,9 +117,9 @@ struct ConvertVocabType<date::sys_time<Duration>> {
     {
         writeValue(
             writer,
-            std::chrono::time_point_cast<std::chrono::milliseconds>(object)
-                .time_since_epoch()
-                .count());
+            static_cast<int64_t>(std::chrono::time_point_cast<std::chrono::milliseconds>(object)
+                                     .time_since_epoch()
+                                     .count()));
     }
 };
 

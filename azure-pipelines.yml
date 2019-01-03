@@ -1,15 +1,19 @@
 # Ossiaco JSON Converter Library
-# 
+#
 # Copyright (C) 2018 Ossiaco
-# 
+#
 # Licensed under the MIT license ("the license"); you may not use this file
 # except in compliance with the license. The license can be found in the root
 # directory of this project, or at
-# 
+#
 # http://opensource.org/licenses/MIT
 
 resources:
-- repo: self
+  repositories:
+  - repository: AzureTemplates
+    type: git
+    name: AzureTemplates
+    ref: refs/tags/alpha-converter
 
 trigger:
   branches:
@@ -23,8 +27,10 @@ trigger:
 variables:
   BOOST_DEFAULT_VERSION: "1.69.0"
   BOOST_VERSION: $(BOOST_DEFAULT_VERSION)
-  DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+
   CMAKE_OPTS: -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=$(DEPS_DIR)/conan_paths.cmake
+
+  DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
 
 jobs:
 # This will be uncommented exactly as soon as the vs2017-win2016 images
@@ -37,7 +43,6 @@ jobs:
 #   variables:
 #     CONAN_OPTS: "-o boost:header_only=True"
 #     DO_JUNIT: 0
-#     PIP_CMD: "python -m pip"
 
 #   strategy:
 #     maxParallel: 4
@@ -48,36 +53,47 @@ jobs:
 #         BUILD_TYPE: Release
 
 #   steps:
-#   - template: ci/deps-setup.yml
-#   - template: ci/build-and-test.yml
+#   - template: deps-setup.yml@AzureTemplates
+#   - template: cmake-build-and-test.yml@AzureTemplates
 
 - job: Mac
 
   pool:
     vmImage: 'macOS-10.13'
 
-  variables:
-    BUILD_TYPE: Release
-    PIP_CMD: "sudo pip"
-
-
   strategy:
     maxParallel: 2
     matrix:
-      xcode-10-1:
+      xcode-10-1-rel:
+        BUILD_TYPE: Release
+        EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_BOOST_FS=1"
+        XCODE_VER: "10.1"
+
+      xcode-10-1-dbg:
+        BUILD_TYPE: Debug
         EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_BOOST_FS=1"
         XCODE_VER: "10.1"
 
   steps:
-  - template: ci/deps-setup.yml
-
   - bash: |
       set -eux
       sudo xcode-select -switch "/Applications/Xcode_${XCODE_VER}.app"
       xcode-select -print-path
     displayName: 'Set XCode ver'
 
-  - template: ci/build-and-test.yml
+  - template: create-directory.yml@AzureTemplates
+    parameters:
+      new_dir: $(DEPS_DIR)
+
+  - template: conan-deps-setup.yml@AzureTemplates
+    parameters:
+      conan_working_dir: $(DEPS_DIR)
+      conan_opts: --build missing
+
+  - template: cmake-build-and-test.yml@AzureTemplates
+    parameters:
+      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
+      ctest_opts: --output-on-failure -j 2
 
 - job: Linux
 
@@ -86,15 +102,9 @@ jobs:
 
   variables:
     BUILD_TYPE: Release
-    CONAN_OPTS: "-o boost:header_only=True"
     CXXFLAGS: ""
     LDFLAGS: ""
     LD_LIBRARY_PATH: ""
-    PIP_CMD: "sudo pip"
-    WANT_VALGRIND: 1
-    # Flag variable which lets the valgrind test suite run
-    # if the build made it to the unit tests, whether or not they pass
-    RUN_VALGRIND: ""
 
   strategy:
     maxParallel: 8
@@ -105,6 +115,7 @@ jobs:
       gcc8-dbg:
         CXX: g++-8
         BUILD_TYPE: Debug
+        ENABLE_MEMCHECK: 1
 
       gcc8-rel:
         CXX: g++-8
@@ -129,14 +140,15 @@ jobs:
       clang7-dbg:
         CXX: clang++-7
         BUILD_TYPE: Debug
+        ENABLE_MEMCHECK: 1
 
       clang7-rel:
         CXX: clang++-7
 
       clang7-ubasan:
+        BUILD_TYPE: RelWithDebInfo
         CXX: clang++-7
         EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_UBASAN=1"
-        WANT_VALGRIND: 0
 
   steps:
   - bash: |
@@ -146,8 +158,18 @@ jobs:
     displayName: 'Use different boost version'
     condition: ne(variables['BOOST_VERSION'], variables['BOOST_DEFAULT_VERSION'])
 
-  - template: ci/deps-setup.yml
+  - template: create-directory.yml@AzureTemplates
+    parameters:
+      new_dir: $(DEPS_DIR)
 
-  - template: ci/compiler-stdlib-setup.yml
+  - template: compiler-stdlib-setup.yml@AzureTemplates
 
-  - template: ci/build-and-test.yml
+  - template: conan-deps-setup.yml@AzureTemplates
+    parameters:
+      conan_working_dir: $(DEPS_DIR)
+      conan_opts: -o boost:header_only=True --build missing
+
+  - template: cmake-build-and-test.yml@AzureTemplates
+    parameters:
+      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
+      ctest_opts: --output-on_failure -j 2
