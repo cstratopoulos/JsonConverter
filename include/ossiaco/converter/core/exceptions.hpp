@@ -44,7 +44,7 @@ class AbstractTypeAllocation;
 template<typename Class>
 class RefMissing;
 
-/// The reference ID was not found in the JSON.
+/// The reference ID was not found or found twice in the JSON.
 class InvalidReferenceId;
 
 /// Expected some sort of type field to map `Enum` to an instance of `Class`.
@@ -131,7 +131,7 @@ class InvalidReferenceId : public SerializationException {
 public:
     InvalidReferenceId(int32_t id)
         : SerializationException(detail::streamFormat(
-            OSSIACO_XPLATSTR("The reference"), id, OSSIACO_XPLATSTR("was not found in the JSON")))
+            OSSIACO_XPLATSTR("The reference"), id, OSSIACO_XPLATSTR("was not found or found twice in the JSON")))
     {}
 };
 

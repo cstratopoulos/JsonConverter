@@ -12,9 +12,6 @@
 #define OSSIACO_CONVERTER_CORE_REFERENCE_MAPPER_HPP
 
 #include <ossiaco/converter/core/exceptions.hpp>
-#include <ossiaco/converter/core/pointer_wrapper.hpp>
-
-#include <boost/ptr_container/ptr_unordered_map.hpp>
 
 #include <atomic>
 #include <memory>
@@ -56,20 +53,21 @@ public:
     template<typename PropertyType>
     std::shared_ptr<PropertyType> add(int32_t id, std::unique_ptr<PropertyType> value)
     {
-        auto tmp    = std::make_unique<PointerWrapper<PropertyType>>(std::move(value));
-        auto result = std::static_pointer_cast<PropertyType>(tmp->value());
+        auto emplaceResult = _references.emplace(id, std::move(value));
 
-        _references.insert(id, std::move(tmp));
+        if (emplaceResult.second == false) {
+            throw InvalidReferenceId(id);
+        }
 
-        return result;
+        return std::static_pointer_cast<PropertyType>((emplaceResult.first)->second);
     }
 
     template<typename PropertyType>
     std::shared_ptr<PropertyType> get(int32_t id) const
     {
         try {
-            return std::static_pointer_cast<PropertyType>(_references.at(id).value());
-        } catch (const boost::bad_ptr_container_operation&) {
+            return std::static_pointer_cast<PropertyType>(_references.at(id));
+        } catch (const std::out_of_range&) {
             throw InvalidReferenceId(id);
         }
     }
@@ -77,7 +75,7 @@ public:
 private:
     std::unordered_map<uintptr_t, int32_t> _map;
 
-    boost::ptr_unordered_map<int32_t, PointerWrapperBase> _references;
+    std::unordered_map<int32_t, std::shared_ptr<void>> _references;
 
     std::atomic<int32_t> _counter{1};
 };

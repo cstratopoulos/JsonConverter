@@ -237,8 +237,7 @@ As mentioned, the library is built on top of [RapidJSON](https://github.com/Tenc
  - [CallableTraits](https://www.boost.org/doc/libs/1_68_0/libs/callable_traits/doc/html/index.html) for PMD-/PMF-wrangling,
  - [Config](https://www.boost.org/doc/libs/1_68_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
  - [Core](https://www.boost.org/doc/libs/1_68_0/libs/core/doc/html/index.html) for printing type decorators,
- - [Mp11](https://www.boost.org/doc/libs/1_68_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming,
- - [Pointer Container](https://www.boost.org/doc/libs/1_68_0/libs/ptr_container/doc/ptr_container.html) for the machinery behind smart pointer conversion, and
+ - [Mp11](https://www.boost.org/doc/libs/1_68_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming, and
  - [TypeTraits](https://www.boost.org/doc/libs/1_68_0/libs/type_traits/doc/html/index.html) for the detection idiom.
 
  Note that Boost >= 1.67 is required.
