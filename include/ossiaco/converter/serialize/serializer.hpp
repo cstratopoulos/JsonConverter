@@ -13,7 +13,7 @@
 
 #include <ossiaco/converter/utils/inconstructible.hpp>
 
-#include <boost/mp11/tuple.hpp>
+#include <boost/hana/for_each.hpp>
 #include <boost/type_traits/is_detected.hpp>
 
 #include <functional>
@@ -59,11 +59,11 @@ void JsonSerializer<Class>::toJson(
 
 
     if constexpr (traits::jsonPropertiesDetected<Class> && !traits::jsonSupportDetected<Class>) {
-        boost::mp11::tuple_for_each(Class::jsonProperties(), [&](auto prop) {
+        boost::hana::for_each(Class::jsonProperties(), [&](auto prop) {
             prop.toJson(object, writer, refs);
         });
     } else {
-        boost::mp11::tuple_for_each(JsonConverter<Class>::_properties, [&](auto prop) {
+        boost::hana::for_each(JsonConverter<Class>::_properties, [&](auto prop) {
             prop.toJson(object, writer, refs);
         });
     }

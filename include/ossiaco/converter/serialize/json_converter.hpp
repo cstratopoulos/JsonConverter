@@ -18,9 +18,11 @@
 #include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/utils/detect_specialization.hpp>
 
+#include <boost/hana/concat.hpp>
+#include <boost/hana/size.hpp>
 #include <boost/type_traits/detected.hpp>
-#include <boost/type_traits/is_detected_exact.hpp>
 #include <boost/type_traits/detected_or.hpp>
+#include <boost/type_traits/is_detected_exact.hpp>
 
 #include <type_traits>
 
@@ -47,7 +49,7 @@ public:
     static constexpr auto _properties{propertiesTuple()};
 
 private:
-    static_assert(std::tuple_size_v<decltype(_properties)>, "JSON properties for a final supported class must be nonempty tuple");
+    static_assert(boost::hana::size(_properties), "JSON properties for a final supported class must be nonempty tuple");
 };
 
 template<typename Class>
@@ -64,24 +66,26 @@ public:
     template<typename Derived = Class, typename Encoding = utf_t>
     static bool ensureRegisteredWithBase()
     {
-        if constexpr(_isPolyRoot)
+        if constexpr(_isPolyRoot) {
             return true;
-        else
+        } else {
             return JsonConverter<typename Class::JsonBase>::template registerDerivedClass<Derived, Encoding>();
+        }
     }
 
     static constexpr auto propertiesTuple()
     {
-        if constexpr(_isPolyRoot)
+        if constexpr (_isPolyRoot) {
             return Class::jsonProperties();
-        else
-            return std::tuple_cat(BaseConverter::_properties, Class::jsonProperties());
+        } else {
+            return boost::hana::concat(BaseConverter::_properties, Class::jsonProperties());
+        }
     }
 
     static constexpr auto _properties{propertiesTuple()};
 
 private:
-    static_assert(std::tuple_size_v<decltype(_properties)> || std::is_abstract_v<Class>,
+    static_assert(std::is_abstract_v<Class> || boost::hana::size(_properties)(),
         "JSON properties for a non-abstract class must be a nonempty tuple either directly or inherited");
 };
 

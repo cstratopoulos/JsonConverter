@@ -13,14 +13,6 @@
 
 #include <boost/config.hpp>
 
-#ifndef OSSIACO_MSVC_TUPLE_WORKAROUND
-#    if defined(_MSC_VER) && !defined(__clang__)
-#        define OSSIACO_MSVC_TUPLE_WORKAROUND 1
-#    else
-#        define OSSIACO_MSVC_TUPLE_WORKAROUND 0
-#    endif
-#endif
-
 #ifndef OSSIACO_LIBCPP_INVOCABLE_WORKAROUND
 #    if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 6000
 #        define OSSIACO_LIBCPP_INVOCABLE_WORKAROUND 1

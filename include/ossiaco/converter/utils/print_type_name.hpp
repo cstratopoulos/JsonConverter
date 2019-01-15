@@ -30,11 +30,8 @@ string_t printTypeName()
         const char* name = typeid(T).name();
 
 #ifdef BOOST_WINDOWS
-        // Windows prefixes name with...
-        if constexpr(std::is_class_v<T>)
-            name += 6; // 'class ' (6 chars) OR
-        else
-            name += 5; // 'enum ' (5 chars)
+        // Windows prefixes name with class/struct/enum
+        name += std::string_view(name).find_first_of(' ') + 1;
 #endif // BOOST_WINDOWS
 
         std::string demangled = boost::core::demangle(name);

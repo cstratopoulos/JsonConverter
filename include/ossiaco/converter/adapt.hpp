@@ -19,7 +19,9 @@
 #include <ossiaco/converter/serialize.hpp>
 #include <ossiaco/converter/utils/detect_specialization.hpp>
 
-#include <tuple>
+#include <boost/hana/append.hpp>
+#include <boost/hana/basic_tuple.hpp>
+#include <boost/hana/concat.hpp>
 
 namespace Ossiaco::converter {
 
@@ -56,14 +58,20 @@ constexpr auto optionalProperty(ChronoFmtPair<MemberPtr> fmtPair, const CharType
 /// Helper class which exposes a chainable call operator for use in macros.
 template<typename... Props>
 struct PropertiesHelper {
-    std::tuple<Props...> _props{};
+    boost::hana::basic_tuple<Props...> _props{};
 
-    /// Template argument deduction helper.
+    template<typename NewProperty>
+    constexpr auto expand(NewProperty&& p)
+    {
+        return PropertiesHelper<Props..., NewProperty>{
+            boost::hana::append(std::move(_props), std::forward<NewProperty>(p))};
+    }
+
     template<typename... NewProps>
-    constexpr auto expand(std::tuple<NewProps...>&& newProps)
+    constexpr auto expand(boost::hana::basic_tuple<NewProps...>&& newProps)
     {
         return PropertiesHelper<Props..., NewProps...>{
-            std::tuple_cat(std::move(_props), std::move(newProps))};
+            boost::hana::concat(std::move(_props), std::move(newProps))};
     }
 
     /// No-op for providing empty properties.
@@ -73,7 +81,7 @@ struct PropertiesHelper {
 	template<typename MemberPtr, typename = std::enable_if_t<std::is_member_pointer_v<MemberPtr>>>
 	constexpr auto operator()(MemberPtr member, const CharType* name)
 	{
-		return expand(std::make_tuple(JsonProperty<MemberPtr>(member, name)));
+		return expand(JsonProperty<MemberPtr>(member, name));
 	}
 
 	// Add a JSON property with explicitly specified missing value policy.
@@ -82,14 +90,14 @@ struct PropertiesHelper {
 	template<typename MemberPtr, NullValuePolicy nullValPolicy, NotFoundHandlerPtr notFound>
 	constexpr auto operator()(JsonProperty<MemberPtr, nullValPolicy, notFound> prop)
 	{
-		return expand(std::make_tuple(std::move(prop)));
+		return expand(std::move(prop));
 	}
 
     // Add a required formatted chrono JSON property by specifying a ChronoFmtPair and name.
     template<typename MemberPtr>
     constexpr auto operator()(ChronoFmtPair<MemberPtr> chronoPair, const CharType* name)
     {
-        return expand(std::make_tuple(ChronoJsonProperty<MemberPtr>(std::move(chronoPair), name)));
+        return expand(ChronoJsonProperty<MemberPtr>(std::move(chronoPair), name));
     }
 
 	// Add a chrono formatted JSON property with explicitly specified missing value policy.
@@ -99,7 +107,7 @@ struct PropertiesHelper {
     template<typename MemberPtr, NotFoundHandlerPtr notFound>
     constexpr auto operator()(ChronoJsonProperty<MemberPtr, notFound> propConv)
     {
-        return expand(std::make_tuple(std::move(propConv)));
+        return expand(std::move(propConv));
     }
 
     /// Add a tuple of properties via function pointer.
@@ -110,9 +118,23 @@ struct PropertiesHelper {
     template<typename ReturnType>
     constexpr auto operator()(ReturnType(*func)())
     {
-        static_assert(isSpecialization<ReturnType, std::tuple>);
+        static_assert(isSpecialization<ReturnType, boost::hana::basic_tuple>);
 
         return expand(func());
+    }
+
+    // Overload for single call to add multiple properties.
+    //
+    // For classes with many data members, this will probably give better compile-time
+    // performance, at the expense of having to spell out `jsonProperty`, `requiredProperty`,
+    // etc., for each argument.
+    // e.g.,
+    //     `operator()(jsonProperty(m1, n1), optionalProperty(m2, n2), ...)`
+    template<typename Arg1, typename Arg2, typename... Args>
+    constexpr auto operator()(Arg1&& arg1, Arg2&& arg2, Args&& ...args)
+    {
+        return expand(boost::hana::make_basic_tuple(
+            std::forward<Arg1>(arg1), std::forward<Arg2>(arg2), std::forward<Args>(args)...));
     }
 };
 
@@ -188,28 +210,13 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
     using JsonConverterSupportTag = _tag;                                                          \
     static_assert(true, "Force trailing semicolon")
 
-#if OSSIACO_MSVC_TUPLE_WORKAROUND
-#    define OSSIACO_JSON_PROPERTIES_IMPL(_chainedCall)                                             \
-        static constexpr auto& jsonProperties()                                                    \
-        {                                                                                          \
-            using namespace Ossiaco::converter;                                                    \
-            static constexpr auto result = PropertiesHelper<> {}                                   \
-            _chainedCall;                                                                          \
-            return result._props;                                                                  \
-        }
-#else
 // Provides a tuple of JSON properties by delegating to the chained call operator of PropertiesHelper.
-// This implementation cannot be used with MSVC due to a bug:
-// https://developercommunity.visualstudio.com/content/problem/202891/visual-studio-1560-preview-60-breaks-existing-cons.html
-// The MSVC workaround implementaiton above could be used unilaterally but for the fact that GCC does not allow
-// static variables to be defined in constexpr functions.
 #    define OSSIACO_JSON_PROPERTIES_IMPL(_chainedCall)                                             \
         static constexpr auto jsonProperties()                                                     \
         {                                                                                          \
             using namespace Ossiaco::converter;                                                    \
             return (PropertiesHelper<> {} _chainedCall)._props;                                    \
         }
-#endif
 
 // Define and implement the method returning a tuple of JSON properties.
 // TODO the return type is auto& due to an MSVC constexpr bug.

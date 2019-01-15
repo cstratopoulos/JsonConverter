@@ -49,7 +49,7 @@ public:
     {
         using namespace Ossiaco::converter;
         if constexpr (pretty) {
-            return std::make_tuple(
+            return boost::hana::make_basic_tuple(
                 requiredProperty(
                     chronoFmtPair(&SprintRecord::_dateOfBirth, TSTR("%Y-%m-%d")),
                     TSTR("DOB")),
@@ -57,7 +57,7 @@ public:
                     chronoFmtPair(&SprintRecord::_100mTime, TSTR("%S seconds")),
                     TSTR("100mTime")));
         } else {
-            return std::make_tuple(
+            return boost::hana::make_basic_tuple(
                 requiredProperty(&SprintRecord::_dateOfBirth, TSTR("DOB")),
                 requiredProperty(&SprintRecord::_100mTime, TSTR("100mTime")));
         }

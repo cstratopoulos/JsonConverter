@@ -17,7 +17,7 @@
 #include <ossiaco/converter/utils/file_handle.hpp>
 #include <ossiaco/converter/utils/inconstructible.hpp>
 
-#include <boost/mp11/tuple.hpp>
+#include <boost/hana/for_each.hpp>
 #include <rapidjson/document.h>
 #include <rapidjson/encodedstream.h>
 #include <rapidjson/filereadstream.h>
@@ -88,7 +88,7 @@ template<typename Class, typename Encoding>
 void JsonDeserializer<Class, Encoding>::fromJson(
     Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
 {
-    boost::mp11::tuple_for_each(JsonConverter<Class>::_properties, [&](auto prop) {
+    boost::hana::for_each(JsonConverter<Class>::_properties, [&](auto prop) {
         prop.fromJson(object, jsonValue, refs);
     });
 }

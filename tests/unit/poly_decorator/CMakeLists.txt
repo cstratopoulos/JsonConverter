@@ -16,6 +16,7 @@
 
 add_executable(poly_decorator_tests
     abstract_base.cpp
+    adapt_make_tuple.cpp
 )
 
 target_link_libraries(poly_decorator_tests
