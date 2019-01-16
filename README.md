@@ -234,23 +234,24 @@ Unit tests for all Linux builds are additionally run under `valgrind`, and a Cla
 ## Dependencies
 
 As mentioned, the library is built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Aside from RapidJSON, the library uses some headers from Boost, [Date](https://github.com/HowardHinnant/date), and [Range v3](https://github.com/ericniebler/range-v3/). The Boost libraries used are
- - [CallableTraits](https://www.boost.org/doc/libs/1_68_0/libs/callable_traits/doc/html/index.html) for PMD-/PMF-wrangling,
- - [Config](https://www.boost.org/doc/libs/1_68_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
- - [Core](https://www.boost.org/doc/libs/1_68_0/libs/core/doc/html/index.html) for printing type decorators,
- - [Mp11](https://www.boost.org/doc/libs/1_68_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming, and
- - [TypeTraits](https://www.boost.org/doc/libs/1_68_0/libs/type_traits/doc/html/index.html) for the detection idiom.
+ - [CallableTraits](https://www.boost.org/doc/libs/1_69_0/libs/callable_traits/doc/html/index.html) for PMD-/PMF-wrangling,
+ - [Config](https://www.boost.org/doc/libs/1_69_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
+ - [Core](https://www.boost.org/doc/libs/1_69_0/libs/core/doc/html/index.html) for printing type decorators,
+ - [Hana](http://boostorg.github.io/hana/) for tuples of JSON properties,
+ - [Mp11](https://www.boost.org/doc/libs/1_69_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming, and
+ - [TypeTraits](https://www.boost.org/doc/libs/1_69_0/libs/type_traits/doc/html/index.html) for the detection idiom.
 
  Note that Boost >= 1.67 is required.
 
 The unit tests additionally use a few more Boost libraries:
-- [Assert](https://www.boost.org/doc/libs/1_68_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
-- [UUID](https://www.boost.org/doc/libs/1_68_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
-- [Container](https://www.boost.org/doc/libs/1_68_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
+- [Assert](https://www.boost.org/doc/libs/1_69_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
+- [UUID](https://www.boost.org/doc/libs/1_69_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
+- [Container](https://www.boost.org/doc/libs/1_69_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
 
 For authoring tests which perform file I/O, the unit tests require some sort of filesystem library. The following are preferred, in order, using `__has_include`:
 1. C++17 filesystem library (`#include <filesystem>`)
 2. C++17 experimental filesystem library (`#include <experimental/filesystem>`)
-3. [Boost.Filesystem](https://www.boost.org/doc/libs/1_68_0/libs/filesystem/doc/index.htm) (`#include <boost/filesystem.hpp>`)
+3. [Boost.Filesystem](https://www.boost.org/doc/libs/1_69_0/libs/filesystem/doc/index.htm) (`#include <boost/filesystem.hpp>`)
 
 Depending on the implementation, this may require an additional library link (e.g., `-lstdc++fs`, `-lc++experimemntal`, `-lboost_filesystem`). Users are responsible
 for handling this at the configure step, unless `-DOSSIACO_CONVERTER_BOOST_FS=1` is passed to CMake, in which case `boost_filesystem` will be linkeed automatically.
