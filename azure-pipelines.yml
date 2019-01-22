@@ -13,7 +13,7 @@ resources:
   - repository: AzureTemplates
     type: git
     name: AzureTemplates
-    ref: refs/tags/alpha-2
+    ref: refs/tags/alpha-3
 
 trigger:
   branches:
@@ -84,6 +84,8 @@ jobs:
   - template: create-directory.yml@AzureTemplates
     parameters:
       new_dir: $(DEPS_DIR)
+
+  - template: get-conan.yml@AzureTemplates
 
   - template: conan-deps-setup.yml@AzureTemplates
     parameters:
@@ -161,6 +163,8 @@ jobs:
   - template: create-directory.yml@AzureTemplates
     parameters:
       new_dir: $(DEPS_DIR)
+
+  - template: get-conan.yml@AzureTemplates
 
   - template: compiler-stdlib-setup.yml@AzureTemplates
 
