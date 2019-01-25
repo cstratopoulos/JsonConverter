@@ -34,12 +34,7 @@ string_t printTypeName()
         name += std::string_view(name).find_first_of(' ') + 1;
 #endif // BOOST_WINDOWS
 
-        std::string demangled = boost::core::demangle(name);
-
-        if constexpr(std::is_same_v<string_t, std::string>)
-            return demangled;
-        else
-            return toPlatString(demangled);
+        return toPlatString(boost::core::demangle(name));
     }();
 
     return result;
