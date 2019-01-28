@@ -1,11 +1,11 @@
 // Ossiaco JSON Converter Library
-// 
+//
 // Copyright (C) 2018 Ossiaco
-// 
+//
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
 // directory of this project, or at
-// 
+//
 // http://opensource.org/licenses/MIT
 
 #ifndef OSSIACO_CONVERTER_ADAPT_HPP
@@ -251,5 +251,18 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
     OSSIACO_INTERNAL_JSON_BASE(_baseType)                                                          \
     OSSIACO_INTERNAL_TOJSON_METHOD_IMPLS(OSSIACO_INTERNAL_TOJSON_METHOD_OVERRIDE_IMPL, _type)      \
     OSSIACO_INTERNAL_JSON_FRIENDS_AND_TAG(_type, Ossiaco::converter::traits::PolySupportTag)
+
+#define OSSIACO_CONVERTER_PP_CAT_(A, B) A##B
+#define OSSIACO_CONVERTER_PP_CAT(A, B) OSSIACO_CONVERTER_PP_CAT_(A, B)
+
+// Use this macro to call the factory registration method enabling polymorphic JSON deserialization
+// for a type adapted with `OSSIACO_CONVERTER_POLY_SUPPORTED`.
+//
+// Result is stored in a `bool` with `__LINE__` appended to the variable name as a measure of
+// uniqueness. Expected use is that, e.g., convertible classes can be defined in `my_class.hpp`
+// and then calls to this macro can appear in `my_class.cpp`.
+#define OSSIACO_CONVERTER_POLY_REGISTER(_type)                                                     \
+    bool OSSIACO_CONVERTER_PP_CAT(converterPolyRegistered, __LINE__) =                             \
+        ::Ossiaco::converter::jsonPolyImpl<_type>()
 
 #endif // OSSIACO_CONVERTER_ADAPT_HPP
