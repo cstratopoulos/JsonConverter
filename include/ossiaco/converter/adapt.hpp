@@ -262,7 +262,7 @@ _implMacro(Ossiaco::converter::PrettyInsituStringStreamWriter, _type)
 // uniqueness. Expected use is that, e.g., convertible classes can be defined in `my_class.hpp`
 // and then calls to this macro can appear in `my_class.cpp`.
 #define OSSIACO_CONVERTER_POLY_REGISTER(_type)                                                     \
-    bool OSSIACO_CONVERTER_PP_CAT(converterPolyRegistered, __LINE__) =                             \
+    static bool OSSIACO_CONVERTER_PP_CAT(converterPolyRegistered, __LINE__) =                      \
         ::Ossiaco::converter::jsonPolyImpl<_type>()
 
 #endif // OSSIACO_CONVERTER_ADAPT_HPP
