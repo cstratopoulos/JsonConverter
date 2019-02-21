@@ -35,7 +35,7 @@ using string_view_t   = std::basic_string_view<CharType>;
 using ostringstream_t = std::basic_ostringstream<CharType>;
 using istringstream_t = std::basic_istringstream<CharType>;
 
-using utf_t = std::conditional_t<wcharUnicodeEnabled, rapidjson::UTF16LE<>, rapidjson::UTF8<>>;
+using utf_t = std::conditional_t<wcharUnicodeEnabled, rapidjson::UTF16LE<CharType>, rapidjson::UTF8<CharType>>;
 
 } // namespace Ossiaco::converter
 

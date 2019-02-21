@@ -13,7 +13,7 @@ resources:
   - repository: AzureTemplates
     type: git
     name: AzureTemplates
-    ref: refs/tags/alpha-3
+    ref: refs/tags/alpha-5
 
 trigger:
   branches:
@@ -28,39 +28,52 @@ variables:
   BOOST_DEFAULT_VERSION: "1.69.0"
   BOOST_VERSION: $(BOOST_DEFAULT_VERSION)
 
-  CMAKE_OPTS: -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=$(DEPS_DIR)/conan_paths.cmake
-
-  DEPS_DIR: $(System.DefaultWorkingDirectory)/deps
+  CMAKE_OPTS: -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake
 
 jobs:
-# This will be uncommented exactly as soon as the vs2017-win2016 images
-# get VS 15.9
-# - job: Windows
+- job: Windows
 
-#   pool:
-#     vmImage: 'vs2017-win2016'
+  pool:
+    vmImage: 'vs2017-win2016'
 
-#   variables:
-#     CONAN_OPTS: "-o boost:header_only=True"
-#     DO_JUNIT: 0
+  variables:
+    CONAN_OPTS: "-o boost:header_only=True"
+    DO_JUNIT: 0
+    EXTRA_CMAKE_OPTS: -G Ninja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_LINKER=lld-link -DCMAKE_CXX_FLAGS="/D_CRT_SECURE_NO_WARNINGS /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS"
 
-#   strategy:
-#     maxParallel: 4
-#     matrix:
-#       Debug:
-#         BUILD_TYPE: Debug
-#       Release:
-#         BUILD_TYPE: Release
+  strategy:
+    maxParallel: 4
+    matrix:
+      Debug:
+        BUILD_TYPE: Debug
+      Release:
+        BUILD_TYPE: Release
 
-#   steps:
-#   - template: deps-setup.yml@AzureTemplates
-#   - template: cmake-build-and-test.yml@AzureTemplates
+  steps:
+  - template: create-directory.yml@AzureTemplates
+    parameters:
+      new_dir: build
+
+  - template: clang-cl-setup.yml@AzureTemplates
+    parameters:
+      clang_cl_version: '7.0.1'
+
+  - template: get-conan.yml@AzureTemplates
+
+  - template: conan-deps-setup.yml@AzureTemplates
+    parameters:
+      conan_working_dir: build
+      conan_opts: -o boost:header_only=True --build missing
+
+  - template: cmake-build-and-test.yml@AzureTemplates
+    parameters:
+      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
+      ctest_opts: --output-on-failure -j 2
 
 - job: Mac
 
   pool:
     vmImage: 'macOS-10.13'
-
   strategy:
     maxParallel: 2
     matrix:
@@ -83,13 +96,13 @@ jobs:
 
   - template: create-directory.yml@AzureTemplates
     parameters:
-      new_dir: $(DEPS_DIR)
+      new_dir: build
 
   - template: get-conan.yml@AzureTemplates
 
   - template: conan-deps-setup.yml@AzureTemplates
     parameters:
-      conan_working_dir: $(DEPS_DIR)
+      conan_working_dir: build
       conan_opts: --build missing
 
   - template: cmake-build-and-test.yml@AzureTemplates
@@ -162,7 +175,7 @@ jobs:
 
   - template: create-directory.yml@AzureTemplates
     parameters:
-      new_dir: $(DEPS_DIR)
+      new_dir: build
 
   - template: get-conan.yml@AzureTemplates
 
@@ -170,7 +183,7 @@ jobs:
 
   - template: conan-deps-setup.yml@AzureTemplates
     parameters:
-      conan_working_dir: $(DEPS_DIR)
+      conan_working_dir: build
       conan_opts: -o boost:header_only=True --build missing
 
   - template: cmake-build-and-test.yml@AzureTemplates
