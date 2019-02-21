@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -102,7 +102,7 @@ struct LeafTypeAllocMap : TypeAllocMapBase<LeafTypeAllocMap<Class, Encoding, Enu
     static TypeAllocator<Class, Encoding> makeMapVal()
     {
         return TypeAllocator<Class, Encoding>::template make<
-            std::conditional_t<std::is_convertible_v<ValType*, Class*>, 
+            std::conditional_t<std::is_convertible_v<ValType*, Class*>,
             ValType, Class>>();
     }
 
@@ -139,7 +139,7 @@ struct NonLeafTypeAllocMap : TypeAllocMapBase<NonLeafTypeAllocMap<Class, Encodin
     {
         return [](const rapidjson::GenericValue<Encoding>&) {
             return AllocType::template make<
-                std::conditional_t<std::is_convertible_v<ValType*, Class*>, 
+                std::conditional_t<std::is_convertible_v<ValType*, Class*>,
                 ValType, Class>>();
         };
     }

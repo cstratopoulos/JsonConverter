@@ -1,6 +1,6 @@
 # Ossiaco JSON Converter Library
 #
-# Copyright (C) 2018 Ossiaco
+# Copyright (C) 2018-2019 Ossiaco
 #
 # Licensed under the MIT license ("the license"); you may not use this file
 # except in compliance with the license. The license can be found in the root
@@ -29,6 +29,6 @@ set(CMAKE_BUILD_TYPE RelWithDebInfo)
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
 )
-set(CMAKE_EXE_LINKER_FLAGS 
+set(CMAKE_EXE_LINKER_FLAGS
     "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
 )

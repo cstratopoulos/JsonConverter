@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -46,8 +46,8 @@ struct Y : public X {
     double _e;
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
-        Y, X, 
-        (requiredProperty(&Y::_j, TSTR("j")), 
+        Y, X,
+        (requiredProperty(&Y::_j, TSTR("j")),
          requiredProperty(&Y::_e, TSTR("e"))));
 };
 
@@ -58,9 +58,9 @@ TEST_CASE("Struct adapted in make_tuple format", "[SimpleTypeAllocator]")
     jsonCompare(
         Oc::toJsonStringPretty(x),
         TSTR(R"--({
-    "@type": "X", 
-    "i": 12, 
-    "d": 345.6, 
+    "@type": "X",
+    "i": 12,
+    "d": 345.6,
     "s": "seven"
 })--"));
 
@@ -69,11 +69,11 @@ TEST_CASE("Struct adapted in make_tuple format", "[SimpleTypeAllocator]")
     jsonCompare(
         Oc::toJsonStringPretty(y),
         TSTR(R"--({
-    "@type": "Y", 
-    "i": 12, 
-    "d": 345.6, 
-    "s": "seven", 
-    "j": 8, 
+    "@type": "Y",
+    "i": 12,
+    "d": 345.6,
+    "s": "seven",
+    "j": 8,
     "e": 910.11
 })--"));
 }

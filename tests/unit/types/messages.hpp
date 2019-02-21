@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -94,7 +94,7 @@ public:
     }
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
-        ChatMessage, Message, 
+        ChatMessage, Message,
         (&ChatMessage::_sender, TSTR("sender")));
 
 private:

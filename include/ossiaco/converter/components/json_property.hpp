@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -32,10 +32,10 @@ enum class NullValuePolicy {
 
 // Interface for JSON conversion of member data.
 //
-// Delegates to a deduced converter, wrapping the common logic of writing a field name or 
-// checking for member existence. 
+// Delegates to a deduced converter, wrapping the common logic of writing a field name or
+// checking for member existence.
 // Note one or both of `toJson`/`fromJson` will be present.
-// When deserializing the default policy is to throw an exception if the value is not 
+// When deserializing the default policy is to throw an exception if the value is not
 // present, unless we're converting an std::optional in which case it will be ignored.
 template<
     typename MemberPtr,

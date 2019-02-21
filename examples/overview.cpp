@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -20,8 +20,8 @@
 
 // Define a simple struct for which we will enable JSON conversion
 struct Point3D {
-    // This macro is used to enable conversion for classes where we 
-    // don't want to enable polymorphic conversion. 
+    // This macro is used to enable conversion for classes where we
+    // don't want to enable polymorphic conversion.
     // Its first argument is...
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         Point3D,                    // ...Class name, followed by...
@@ -38,7 +38,7 @@ struct Point3D {
     double _z{0.0};
 };
 
-// Now let's define an abstract base class which will be the root of an 
+// Now let's define an abstract base class which will be the root of an
 // inheritance hierarchy.
 struct Shape {
     Shape()             = default;
@@ -108,7 +108,7 @@ struct Circle : public Shape {
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         Circle, Shape,
-        (&Circle::_center, TSTR("center"))  
+        (&Circle::_center, TSTR("center"))
         (&Circle::_radius, TSTR("radius")));
 
     Point3D _center{};

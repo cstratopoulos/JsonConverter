@@ -1,6 +1,6 @@
 # Ossiaco JSON Converter Library
 #
-# Copyright (C) 2018 Ossiaco
+# Copyright (C) 2018-2019 Ossiaco
 #
 # Licensed under the MIT license ("the license"); you may not use this file
 # except in compliance with the license. The license can be found in the root
@@ -130,14 +130,14 @@ jobs:
         CXX: g++-8
         BOOST_VERSION: "1.68.0"
 
-      clang4-rel:
-        CXX: clang++-4.0
+      # clang4-rel:
+      #   CXX: clang++-4.0
 
-      clang5-rel:
-        CXX: clang++-5.0
+      # clang5-rel:
+      #   CXX: clang++-5.0
 
-      clang6-rel:
-        CXX: clang++-6.0
+      # clang6-rel:
+      #   CXX: clang++-6.0
 
       clang7-dbg:
         CXX: clang++-7

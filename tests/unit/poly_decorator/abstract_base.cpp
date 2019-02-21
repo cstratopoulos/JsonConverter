@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -80,7 +80,7 @@ struct OopsShape : tt::Shape {
     tt::Point3D center() const override { return {}; }
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
-        OopsShape, test_types::Shape, 
+        OopsShape, test_types::Shape,
         (&OopsShape::_someInt, TSTR("someInt")));
 
     int _someInt{};

@@ -1,6 +1,6 @@
 // Ossiaco JSON Converter Library
 //
-// Copyright (C) 2018 Ossiaco
+// Copyright (C) 2018-2019 Ossiaco
 //
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
@@ -48,7 +48,7 @@ namespace mp11 = boost::mp11;
 
 template<typename T>
 using FirstClassConvertible = mp11::mp_bool<
-    traits::primitiveConvertible<T> || 
+    traits::primitiveConvertible<T> ||
     traits::jsonSupportDetected<T>
 >;
 
@@ -93,7 +93,7 @@ struct ArchetypeMapIndex {
 template<typename T>
 using QuotedDeducedConverter = mp11::mp_second<
     mp11::mp_at<
-        ConverterArchetypeMap<T>, 
+        ConverterArchetypeMap<T>,
         typename ArchetypeMapIndex<T>::Type>
 >;
 

@@ -1,11 +1,11 @@
 // Ossiaco JSON Converter Library
-// 
-// Copyright (C) 2018 Ossiaco
-// 
+//
+// Copyright (C) 2018-2019 Ossiaco
+//
 // Licensed under the MIT license ("the license"); you may not use this file
 // except in compliance with the license. The license can be found in the root
 // directory of this project, or at
-// 
+//
 // http://opensource.org/licenses/MIT
 
 #ifndef OSSIACO_CONVERTER_CORE_EXCEPTIONS_HPP
@@ -59,7 +59,7 @@ class OpenFileError;
 
 /// A class for constructing exceptions from failed RapidJSON assertions.
 ///
-/// No code in the library will ever throw this exception directly. Rather, users may opt to 
+/// No code in the library will ever throw this exception directly. Rather, users may opt to
 /// customise the macro `RAPIDJSON_ASSERT` (e.g., using `BOOST_ASSERT`) to throw [RapidJsonAssert]
 /// whenever a `RAPIDJSON_ASSERT` fails.
 class RapidJsonAssert;
