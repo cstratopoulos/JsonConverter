@@ -13,7 +13,7 @@ resources:
   - repository: AzureTemplates
     type: git
     name: AzureTemplates
-    ref: refs/tags/alpha-5
+    ref: refs/tags/alpha-6
 
 trigger:
   branches:
@@ -143,14 +143,14 @@ jobs:
         CXX: g++-8
         BOOST_VERSION: "1.68.0"
 
-      # clang4-rel:
-      #   CXX: clang++-4.0
+      clang4-rel:
+        CXX: clang++-4.0
 
-      # clang5-rel:
-      #   CXX: clang++-5.0
+      clang5-rel:
+        CXX: clang++-5.0
 
-      # clang6-rel:
-      #   CXX: clang++-6.0
+      clang6-rel:
+        CXX: clang++-6.0
 
       clang7-dbg:
         CXX: clang++-7
