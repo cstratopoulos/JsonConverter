@@ -13,7 +13,7 @@ resources:
   - repository: AzureTemplates
     type: git
     name: AzureTemplates
-    ref: refs/tags/alpha-6
+    ref: refs/tags/alpha-7
 
 trigger:
   branches:
