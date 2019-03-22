@@ -13,7 +13,7 @@ resources:
   - repository: AzureTemplates
     type: git
     name: AzureTemplates
-    ref: refs/tags/alpha-7
+    ref: refs/tags/alpha-8
 
 trigger:
   branches:
@@ -159,6 +159,9 @@ jobs:
 
       clang7-rel:
         CXX: clang++-7
+
+      clang8-rel:
+        CXX: clang++-8
 
       clang7-ubasan:
         BUILD_TYPE: RelWithDebInfo

@@ -24,15 +24,6 @@ namespace Ossiaco::converter {
 
 class ReferenceMapper {
 public:
-    ReferenceMapper()                       = default;
-    ReferenceMapper(ReferenceMapper&&)      = default;
-    ReferenceMapper(const ReferenceMapper&) = delete;
-
-    ReferenceMapper& operator=(const ReferenceMapper&) = delete;
-    ReferenceMapper& operator=(ReferenceMapper&&) = default;
-
-    ~ReferenceMapper() = default;
-
     std::optional<int32_t> at(uintptr_t key)
     {
         if (auto iterator = _map.find(key); iterator != _map.end())
