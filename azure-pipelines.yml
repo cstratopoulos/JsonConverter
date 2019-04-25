@@ -152,20 +152,25 @@ jobs:
       clang6-rel:
         CXX: clang++-6.0
 
-      clang7-dbg:
-        CXX: clang++-7
+      # clang7-dbg:
+      #   CXX: clang++-7
+      #   BUILD_TYPE: Debug
+      #   ENABLE_MEMCHECK: 1
+
+      # clang7-rel:
+      #   CXX: clang++-7
+
+      clang8-dbg:
+        CXX: clang++-8
         BUILD_TYPE: Debug
         ENABLE_MEMCHECK: 1
-
-      clang7-rel:
-        CXX: clang++-7
 
       clang8-rel:
         CXX: clang++-8
 
-      clang7-ubasan:
+      clang8-ubasan:
         BUILD_TYPE: RelWithDebInfo
-        CXX: clang++-7
+        CXX: clang++-8
         EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_UBASAN=1"
 
   steps:
