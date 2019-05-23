@@ -39,7 +39,7 @@ jobs:
   variables:
     CONAN_OPTS: "-o boost:header_only=True"
     DO_JUNIT: 0
-    EXTRA_CMAKE_OPTS: -G Ninja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_LINKER=lld-link -DCMAKE_CXX_FLAGS="/D_CRT_SECURE_NO_WARNINGS /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS"
+    EXTRA_CMAKE_OPTS: -A x64 -DOSSIACO_WCHAR_UNICODE=1 -DCMAKE_CXX_FLAGS="/D_CRT_SECURE_NO_WARNINGS /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS"
 
   strategy:
     maxParallel: 4
@@ -54,10 +54,6 @@ jobs:
     parameters:
       new_dir: build
 
-  - template: clang-cl-setup.yml@AzureTemplates
-    parameters:
-      clang_cl_version: '7.0.1'
-
   - template: get-conan.yml@AzureTemplates
 
   - template: conan-deps-setup.yml@AzureTemplates
@@ -67,7 +63,8 @@ jobs:
 
   - template: cmake-build-and-test.yml@AzureTemplates
     parameters:
-      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
+      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_CONFIGURATION_TYPES=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
+      cmake_build_opts: --parallel --config $(BUILD_TYPE)
       ctest_opts: --output-on-failure -j 2
 
 - job: Mac
