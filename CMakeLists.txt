@@ -35,6 +35,10 @@ include(converter_externals)
 
 add_library(ossiaco_converter INTERFACE)
 
+if(POLICY CMP0076)
+    cmake_policy(SET CMP0076 NEW)
+endif()
+
 target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     # Top level or bulk-include files
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/adapt.hpp

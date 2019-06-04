@@ -12,6 +12,7 @@
 #define OSSIACO_CONVERTER_SERIALIZE_SERIALIZER_HPP
 
 #include <ossiaco/converter/utils/inconstructible.hpp>
+#include <ossiaco/converter/core/traits.hpp>
 
 #include <boost/hana/for_each.hpp>
 #include <boost/type_traits/is_detected.hpp>
