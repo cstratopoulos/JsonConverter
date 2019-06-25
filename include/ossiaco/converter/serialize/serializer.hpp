@@ -11,8 +11,8 @@
 #ifndef OSSIACO_CONVERTER_SERIALIZE_SERIALIZER_HPP
 #define OSSIACO_CONVERTER_SERIALIZE_SERIALIZER_HPP
 
-#include <ossiaco/converter/utils/inconstructible.hpp>
 #include <ossiaco/converter/core/traits.hpp>
+#include <ossiaco/converter/utils/inconstructible.hpp>
 
 #include <boost/hana/for_each.hpp>
 #include <boost/type_traits/is_detected.hpp>
@@ -58,16 +58,8 @@ void JsonSerializer<Class>::toJson(
     if (cb)
         (*cb)(writer);
 
-
-    if constexpr (traits::jsonPropertiesDetected<Class> && !traits::jsonSupportDetected<Class>) {
-        boost::hana::for_each(Class::jsonProperties(), [&](auto prop) {
-            prop.toJson(object, writer, refs);
-        });
-    } else {
-        boost::hana::for_each(JsonConverter<Class>::_properties, [&](auto prop) {
-            prop.toJson(object, writer, refs);
-        });
-    }
+    boost::hana::for_each(
+        jsonProperties<Class>(), [&](auto prop) { prop.toJson(object, writer, refs); });
 
     writer.EndObject();
 }

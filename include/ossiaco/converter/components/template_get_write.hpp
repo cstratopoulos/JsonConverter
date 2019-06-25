@@ -25,13 +25,14 @@ namespace Ossiaco::converter {
 ///
 /// \requires `Value` is [traits::primitiveConvertible].
 template<typename Value, typename Encoding>
-Value getValue(const rapidjson::GenericValue<Encoding>&);
+std::enable_if_t<traits::primitiveConvertible<Value>, Value>
+getValue(const rapidjson::GenericValue<Encoding>&);
 
 /// A template-based interface for putting a value in a writer.
 ///
 /// \requires `Value` is [traits::primitiveConvertible] and `Writer` is a `rapidjson::Writer`.
 template<typename Value, typename Writer>
-bool writeValue(Writer&, const Value&);
+std::enable_if_t<traits::primitiveConvertible<Value>, bool> writeValue(Writer&, const Value&);
 
 namespace detail {
 
@@ -43,7 +44,8 @@ using SafeUnderlyingType =
 } // namespace detail
 
 template<typename Value, typename Encoding>
-Value getValue(const rapidjson::GenericValue<Encoding>& value)
+std::enable_if_t<traits::primitiveConvertible<Value>, Value>
+getValue(const rapidjson::GenericValue<Encoding>& value)
 {
     static_assert(traits::primitiveConvertible<Value>);
 
@@ -73,7 +75,8 @@ Value getValue(const rapidjson::GenericValue<Encoding>& value)
 }
 
 template<typename Value, typename Writer>
-bool writeValue(Writer& writer, const Value& value)
+std::enable_if_t<traits::primitiveConvertible<Value>, bool>
+writeValue(Writer& writer, const Value& value)
 {
     static_assert(traits::primitiveConvertible<Value>);
 

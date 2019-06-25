@@ -22,6 +22,8 @@ add_library(converter_test_utils
     ${CMAKE_CURRENT_SOURCE_DIR}/types/messages2.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/nested_ranges.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/optional_fields.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/opaque.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/types/opaque.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/person.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/point_3d.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/shape.hpp

@@ -14,6 +14,7 @@
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/core/exceptions.hpp>
 #include <ossiaco/converter/core/reference_mapper.hpp>
+#include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/utils/file_handle.hpp>
 #include <ossiaco/converter/utils/inconstructible.hpp>
 
@@ -88,7 +89,7 @@ template<typename Class, typename Encoding>
 void JsonDeserializer<Class, Encoding>::fromJson(
     Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs)
 {
-    boost::hana::for_each(JsonConverter<Class>::_properties, [&](auto prop) {
+    boost::hana::for_each(jsonProperties<Class>(), [&](auto prop) {
         prop.fromJson(object, jsonValue, refs);
     });
 }

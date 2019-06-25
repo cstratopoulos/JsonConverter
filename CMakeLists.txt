@@ -65,6 +65,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/smart_ptr.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/template_get_write.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/vocab_type.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/components/vocab_type_fwd.hpp
 
     # Core definitions/classes
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/core/buffers_streams_writers.hpp
@@ -91,6 +92,7 @@ target_sources(ossiaco_converter INTERFACE $<BUILD_INTERFACE:
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/file_handle.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/inconstructible.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/print_type_name.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/ossiaco/converter/utils/select_overload.hpp
 >)
 
 target_include_directories(ossiaco_converter INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)

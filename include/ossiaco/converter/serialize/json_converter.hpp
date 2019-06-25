@@ -37,19 +37,17 @@ template<typename Class, typename Tag>
 using TagEnable = std::enable_if_t<traits::isExpectedJsonSupportTag<Class, Tag>>;
 
 template<typename Class, typename Enable>
-class JsonConverter;
+class JsonConverter {};
 
 template<typename Class>
 class JsonConverter<Class, TagEnable<Class, traits::FinalSupportTag>> : public SimpleTypeAllocator<Class> {
 public:
     using SubjectType = Class;
 
-    static constexpr auto propertiesTuple() { return Class::jsonProperties(); }
-
-    static constexpr auto _properties{propertiesTuple()};
+    static constexpr auto properties() noexcept { return Class::jsonProperties(); }
 
 private:
-    static_assert(boost::hana::size(_properties), "JSON properties for a final supported class must be nonempty tuple");
+    static_assert(boost::hana::size(properties()), "JSON properties for a final supported class must be nonempty tuple");
 };
 
 template<typename Class>
@@ -73,19 +71,17 @@ public:
         }
     }
 
-    static constexpr auto propertiesTuple()
+    static constexpr auto properties() noexcept
     {
         if constexpr (_isPolyRoot) {
             return Class::jsonProperties();
         } else {
-            return boost::hana::concat(BaseConverter::_properties, Class::jsonProperties());
+            return boost::hana::concat(BaseConverter::properties(), Class::jsonProperties());
         }
     }
 
-    static constexpr auto _properties{propertiesTuple()};
-
 private:
-    static_assert(std::is_abstract_v<Class> || boost::hana::size(_properties)(),
+    static_assert(std::is_abstract_v<Class> || boost::hana::size(properties())(),
         "JSON properties for a non-abstract class must be a nonempty tuple either directly or inherited");
 };
 
@@ -94,8 +90,6 @@ private:
 template<typename Class>
 class JsonConverter : public detail::JsonConverter<Class> {
 public:
-    static_assert(traits::jsonSupportDetected<Class>);
-
     static constexpr bool isPolymorphic()
     {
         return std::is_same_v<typename Class::JsonConverterSupportTag, traits::PolySupportTag>;

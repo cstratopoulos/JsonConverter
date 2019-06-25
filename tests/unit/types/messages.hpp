@@ -13,6 +13,7 @@
 
 #include <ossiaco/converter/adapt.hpp>
 #include <ossiaco/converter/allocate/mapped.hpp>
+#include <ossiaco/converter/components/vocab_type.hpp>
 
 namespace test_types {
 

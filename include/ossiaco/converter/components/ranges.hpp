@@ -12,6 +12,7 @@
 #define OSSIACO_CONVERTER_COMPONENTS_RANGES_HPP
 
 #include <ossiaco/converter/core/traits.hpp>
+#include <ossiaco/converter/components/dispatch.hpp>
 
 #include <boost/type_traits/is_detected.hpp>
 #include <range/v3/action/push_back.hpp>
@@ -21,64 +22,68 @@
 
 namespace Ossiaco::converter {
 
+template<typename>
+struct ConvertRange;
+
+class ReferenceMapper;
+
 namespace detail {
 
 // N.B.: range_value_t is deprecated in favor of range_value_type_t but we use this for
 // compatibility with the range-v3-vs2015 fork which still has the old trait
 template<typename Rng>
-using RangeValueType = ranges::range_value_t<Rng>;
+using RangeValueType = ranges::range_value_type_t<Rng>;
+
+template<typename Rng>
+constexpr bool kvRangeConcept = ranges::view::keys_fn::Concept<Rng>::value;
 
 template<typename Rng>
 void pushBackInsert(Rng& rng, RangeValueType<Rng>&& val);
 
-} // namespace detail
+template<typename Cont, typename Enable = void>
+struct ConvertRange;
 
-template<typename>
-struct ConverterDeductor;
-
-class ReferenceMapper;
-
-template<typename Container>
-struct ConvertLinearRange {
-    static_assert(ranges::InputRange<Container>::value);
-
-    using PropertyType      = detail::RangeValueType<Container>;
-    using PropTypeConverter = typename ConverterDeductor<PropertyType>::Type;
+template<typename Cont>
+struct ConvertRange<
+    Cont,
+    std::enable_if_t<ranges::InputRange<Cont>{} && !detail::kvRangeConcept<Cont>>> {
 
     template<typename Encoding>
     static void fromJson(
-        Container& container,
+        Cont& container,
         const rapidjson::GenericValue<Encoding>& jsonValue,
         ReferenceMapper& references)
     {
         for (const auto& arrayEntry : jsonValue.GetArray()) {
-            PropertyType elem{};
-            PropTypeConverter::fromJson(elem, arrayEntry, references);
+            ranges::range_value_type_t<Cont> elem{};
+            DeducedConverter::fromJson(elem, arrayEntry, references);
 
             ranges::action::push_back(container, std::move(elem));
         }
     }
 
     template<typename Writer>
-    static void toJson(const Container& container, Writer& writer, ReferenceMapper& references)
+    static void toJson(const Cont& container, Writer& writer, ReferenceMapper& references)
     {
         writer.StartArray();
 
-        for (const PropertyType& containerElem : container)
-            PropTypeConverter::toJson(containerElem, writer, references);
+        for (const ranges::range_value_type_t<Cont>& containerElem : container) {
+            DeducedConverter::toJson(containerElem, writer, references);
+        }
 
         writer.EndArray();
     }
 };
 
 template<typename KeyValMap>
-struct ConvertKeyValueRange {
+struct ConvertRange<
+    KeyValMap,
+    std::enable_if_t<ranges::InputRange<KeyValMap>{} && detail::kvRangeConcept<KeyValMap>>> {
     static_assert(ranges::view::keys_fn::Concept<KeyValMap>::value);
 
-    using ValueType           = detail::RangeValueType<KeyValMap>;
+    using ValueType           = ranges::range_value_type_t<KeyValMap>;
     using KeyType             = decltype(std::declval<ValueType>().first);
     using MappedType          = decltype(std::declval<ValueType>().second);
-    using MappedTypeConverter = typename ConverterDeductor<MappedType>::Type;
 
     static_assert(
         std::is_constructible_v<string_t, KeyType>,
@@ -93,7 +98,7 @@ struct ConvertKeyValueRange {
         for (auto iter = jsonValue.MemberBegin(); iter != jsonValue.MemberEnd(); ++iter) {
             MappedType value{};
 
-            MappedTypeConverter::fromJson(value, iter->value, references);
+            DeducedConverter::fromJson(value, iter->value, references);
             kvMap[iter->name.GetString()] = std::move(value);
         }
     }
@@ -106,12 +111,17 @@ struct ConvertKeyValueRange {
         // This could be const auto& [key, val] but this way works with clang 4 too.
         for (const auto& kvPair : kvMap) {
             writer.String(kvPair.first);
-            MappedTypeConverter::toJson(kvPair.second, writer, references);
+            DeducedConverter::toJson(kvPair.second, writer, references);
         }
 
         writer.EndObject();
     }
 };
+
+} // namespace detail
+
+template<typename Cont>
+struct ConvertRange : detail::ConvertRange<Cont> {};
 
 } // namespace Ossiaco::converter
 

@@ -1,7 +1,7 @@
 
 # Ossiaco JSON Converter [![Build Status](https://dev.azure.com/ossiaco/ossiaco/_apis/build/status/JsonConverterCI?branchName=master)](https://dev.azure.com/ossiaco/ossiaco/_build/latest?definitionId=25)
 
-A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types. 
+A header-only C++17 library for conversion between C++ classes and JSON, built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Supports intrusive, polymorphic conversion of user-defined types, as well as out-of-the-box support for ranges and vocabulary types.
 
 ## Overview
 This example demonstrates simple conversion operations on polymorphic structs. Its source is reproduced in [`examples/overview.cpp`](examples/overview.cpp) where it can be built and run with the rest of the example suite.
@@ -18,8 +18,8 @@ This example demonstrates simple conversion operations on polymorphic structs. I
 
 // Define a simple struct for which we will enable JSON conversion
 struct Point3D {
-    // This macro is used to enable conversion for classes where we 
-    // don't want to enable polymorphic conversion. 
+    // This macro is used to enable conversion for classes where we
+    // don't want to enable polymorphic conversion.
     // Its first argument is...
     OSSIACO_CONVERTER_FINAL_SUPPORTED(
         Point3D,                    // ...Class name, followed by...
@@ -36,7 +36,7 @@ struct Point3D {
     double _z{0.0};
 };
 
-// Now let's define an abstract base class which will be the root of an 
+// Now let's define an abstract base class which will be the root of an
 // inheritance hierarchy.
 struct Shape {
     Shape()             = default;
@@ -106,7 +106,7 @@ struct Circle : public Shape {
 
     OSSIACO_CONVERTER_POLY_SUPPORTED(
         Circle, Shape,
-        (&Circle::_center, TSTR("center"))  
+        (&Circle::_center, TSTR("center"))
         (&Circle::_radius, TSTR("radius")));
 
     Point3D _center{};
@@ -227,9 +227,9 @@ This library requires a C++17-compatible compiler with decent support for the C+
 - Mac
     - XCode 10.1
 
-On Windows, Visual Studio 15.9 is supported but not yet part of CI builds pending its inclusion on Azure DevOps hosted instances. 
+On Windows, Visual Studio 15.9 is supported but not yet part of CI builds pending its inclusion on Azure DevOps hosted instances.
 
-Unit tests for all Linux builds are additionally run under `valgrind`, and a Clang 7 build is performed with undefined behavior and address sanitizers enabled. 
+Unit tests for all Linux builds are additionally run under `valgrind`, and a Clang 7 build is performed with undefined behavior and address sanitizers enabled.
 
 ## Dependencies
 
@@ -238,6 +238,7 @@ As mentioned, the library is built on top of [RapidJSON](https://github.com/Tenc
  - [Config](https://www.boost.org/doc/libs/1_69_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
  - [Core](https://www.boost.org/doc/libs/1_69_0/libs/core/doc/html/index.html) for printing type decorators,
  - [Hana](http://boostorg.github.io/hana/) for tuples of JSON properties,
+ - [HOF](https://www.boost.org/doc/libs/1_69_0/libs/hof/doc/html/doc/index.html) for `BOOST_HOF_RETURNS`.
  - [Mp11](https://www.boost.org/doc/libs/1_69_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming, and
  - [TypeTraits](https://www.boost.org/doc/libs/1_69_0/libs/type_traits/doc/html/index.html) for the detection idiom.
 

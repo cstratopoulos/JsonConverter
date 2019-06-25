@@ -50,8 +50,6 @@ public:
     using Class    = ClassOf<MemberPtr>;
     using Property = PropertyOf<MemberPtr>;
 
-    using PropertyConverter = DeducedConverterType<Property>;
-
     static constexpr NullValuePolicy nullValuePolicy = nullValPolicy;
 
 	static constexpr bool enableFromJson = hasMutableAccess<MemberPtr>;
@@ -71,7 +69,7 @@ public:
         -> std::enable_if_t<enableFromJson, Void>
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd()) {
-            PropertyConverter::fromJson(std::invoke(_member, object), findItr->value, refs);
+            DeducedConverter::fromJson(std::invoke(_member, object), findItr->value, refs);
         } else {
             notFound(_name);
         }
@@ -90,7 +88,7 @@ public:
         }
 
         writer.String(_name);
-        PropertyConverter::toJson(field, writer, refs);
+        DeducedConverter::toJson(field, writer, refs);
     }
 
 private:
@@ -98,12 +96,6 @@ private:
 
     const CharType* _name;
 };
-
-template<typename MemberPtr>
-using RequiredJsonProperty = JsonProperty<MemberPtr, NullValuePolicy::silent, throwNotFound<ClassOf<MemberPtr>>>;
-
-template<typename MemberPtr>
-using OptionalJsonProperty = JsonProperty<MemberPtr, NullValuePolicy::silent, &ignoreNotFound>;
 
 } // namespace Ossiaco::converter
 

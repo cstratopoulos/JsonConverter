@@ -11,15 +11,17 @@
 #ifndef OSSIACO_CONVERTER_COMPONENTS_DISPATCH_HPP
 #define OSSIACO_CONVERTER_COMPONENTS_DISPATCH_HPP
 
-#include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/components/custom_value.hpp>
-#include <ossiaco/converter/components/vocab_type.hpp>
+#include <ossiaco/converter/components/first_class.hpp>
+#include <ossiaco/converter/components/vocab_type_fwd.hpp>
+#include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/utils/customized.hpp>
 #include <ossiaco/converter/utils/detect_specialization.hpp>
+#include <ossiaco/converter/utils/select_overload.hpp>
 
 #include <boost/mp11/algorithm.hpp>
-#include <boost/mp11/integral.hpp>
 #include <boost/mp11/function.hpp>
+#include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
 #include <range/v3/range_concepts.hpp>
@@ -31,92 +33,92 @@
 namespace Ossiaco::converter {
 
 template<typename>
-struct ConvertFirstClass;
-
-template<typename>
-struct ConvertLinearRange;
-
-template<typename>
-struct ConvertKeyValueRange;
+struct ConvertRange;
 
 template<typename>
 struct ConvertSmartPtr;
 
-namespace detail {
+class ReferenceMapper;
 
-namespace mp11 = boost::mp11;
+class DeducedConverter {
+public:
+    template<typename C, typename Encoding>
+    static void fromJson(C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs)
+    {
+        DeducedConverter::fromJson(c, jv, refs, selectOverload);
+    }
 
-template<typename T>
-using FirstClassConvertible = mp11::mp_bool<
-    traits::primitiveConvertible<T> ||
-    traits::jsonSupportDetected<T>
->;
+    template<typename C, typename Writer>
+    static void toJson(const C& c, Writer& w, ReferenceMapper& refs)
+    {
+        DeducedConverter::toJson(c, w, refs, selectOverload);
+    }
 
-template<typename T>
-using DeducePointer = mp11::mp_or<
-    SpecializationType<T, std::shared_ptr>,
-    SpecializationType<T, std::weak_ptr>
->;
+private:
+    template<typename C>
+    static constexpr bool deducePointer =
+        isSpecialization<C, std::shared_ptr> || isSpecialization<C, std::weak_ptr>;
 
-// Deduce the converter type for `Rng`, assuming unchecked that `Rng` models `InputRange`.
-template<typename Rng>
-using RangeConverterType = mp11::mp_eval_if<
-    mp11::mp_not<ranges::view::keys_fn::Concept<Rng>>,
-    ConvertLinearRange<Rng>,
-    ConvertKeyValueRange, Rng
->;
+    template<typename C, typename Encoding>
+    static auto fromJson(
+        C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs, OverloadRank<0>)
+        BOOST_HOF_RETURNS(ConvertFirstClass::fromJson(c, jv, refs));
 
-template<typename Trait, template<typename> typename Converter>
-using ConverterMapEntry = mp11::mp_list<Trait, mp11::mp_quote<Converter>>;
+    template<typename C, typename Encoding>
+    static std::enable_if_t<isCustomized<ConvertCustomValue<C>>> fromJson(
+        C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs, OverloadRank<1>)
+    {
+        ConvertCustomValue<C>::fromJson(c, jv, refs);
+    }
 
-template<typename T>
-using ConverterArchetypeMap = mp11::mp_list<
-    ConverterMapEntry<FirstClassConvertible<T>,          ConvertFirstClass>,
-    ConverterMapEntry<Customized<ConvertCustomValue<T>>, ConvertCustomValue>,
-    ConverterMapEntry<Customized<ConvertVocabType<T>>,   ConvertVocabType>,
-    ConverterMapEntry<ranges::InputRange<T>,             RangeConverterType>,
-    ConverterMapEntry<DeducePointer<T>,                  ConvertSmartPtr>
->;
+    template<typename C, typename Encoding>
+    static auto fromJson(
+        C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs, OverloadRank<2>)
+        BOOST_HOF_RETURNS(ConvertVocabType<C>::fromJson(c, jv, refs));
 
-// Checked retrieval of matching map entry
-template<typename T>
-struct ArchetypeMapIndex {
-    // The zero-indexed position of T's converter type in ConverterArchetypeMap<T>
-    using Type = mp11::mp_find_if<ConverterArchetypeMap<T>, mp11::mp_front>;
+    template<typename C, typename Encoding>
+    static std::enable_if_t<ranges::InputRange<C>::value> fromJson(
+        C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs, OverloadRank<3>)
+    {
+        ConvertRange<C>::fromJson(c, jv, refs);
+    }
 
-    static_assert(
-        !std::is_same_v<Type, mp11::mp_size<ConverterArchetypeMap<T>>>,
-        "Couldn't categorize type under converter archetypes. Possible type error or unimplemented case.");
+    template<typename C, typename Encoding>
+    static std::enable_if_t<deducePointer<C>> fromJson(
+        C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs, OverloadRank<4>)
+    {
+        ConvertSmartPtr<C>::fromJson(c, jv, refs);
+    }
+
+    template<typename C, typename Writer>
+    static auto toJson(const C& c, Writer& w, ReferenceMapper& refs, OverloadRank<0>)
+        BOOST_HOF_RETURNS(ConvertFirstClass::toJson(c, w, refs));
+
+    template<typename C, typename Writer>
+    static std::enable_if_t<isCustomized<ConvertCustomValue<C>>>
+    toJson(const C& c, Writer& w, ReferenceMapper& refs, OverloadRank<1>)
+    {
+        ConvertCustomValue<C>::toJson(c, w, refs);
+    }
+
+    template<typename C, typename Writer>
+    static auto toJson(const C& c, Writer& w, ReferenceMapper& refs, OverloadRank<2>)
+        BOOST_HOF_RETURNS(ConvertVocabType<C>::toJson(c, w, refs));
+
+    template<typename C, typename Writer>
+    static std::enable_if_t<ranges::InputRange<C>::value>
+    toJson(const C& c, Writer& w, ReferenceMapper& refs, OverloadRank<3>)
+    {
+        ConvertRange<C>::toJson(c, w, refs);
+    }
+
+    template<typename C, typename Writer>
+    static std::enable_if_t<deducePointer<C>>
+    toJson(const C& c, Writer& w, ReferenceMapper& refs, OverloadRank<4>)
+    {
+        ConvertSmartPtr<C>::toJson(c, w, refs);
+    }
 };
-
-// Quoted version of converter to use
-template<typename T>
-using QuotedDeducedConverter = mp11::mp_second<
-    mp11::mp_at<
-        ConverterArchetypeMap<T>,
-        typename ArchetypeMapIndex<T>::Type>
->;
-
-} // namespace detail
-
-// This could just be an alias template but this way it can be forward declared where we need it in
-// range converters.
-template<typename Class>
-struct ConverterDeductor {
-    using Type = boost::mp11::mp_invoke<
-        detail::QuotedDeducedConverter<Class>, Class>;
-};
-
-// The component converter that shall be used to convert Class.
-template<typename Class>
-using DeducedConverterType = typename ConverterDeductor<Class>::Type;
-
-// Helper variable template for debugging converter component dispatch.
-template<typename Class, template<typename> typename ConverterComponent>
-constexpr bool expectedConverterComponent = std::is_same_v<
-    DeducedConverterType<Class>,
-    ConverterComponent<Class>
->;
 
 } // namespace Ossiaco::converter
 

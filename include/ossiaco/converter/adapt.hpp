@@ -34,25 +34,27 @@ constexpr auto jsonProperty(MemberPtr member, const CharType* name)
 template<typename MemberPtr>
 constexpr auto requiredProperty(MemberPtr member, const CharType* name)
 {
-    return RequiredJsonProperty<MemberPtr>(member, name);
+    return JsonProperty<MemberPtr, NullValuePolicy::silent, &throwNotFound<ClassOf<MemberPtr>>>(
+        member, name);
 }
 
 template<typename MemberPtr>
 constexpr auto optionalProperty(MemberPtr member, const CharType* name)
 {
-	return OptionalJsonProperty<MemberPtr>(member, name);
+    return JsonProperty<MemberPtr, NullValuePolicy::silent, &ignoreNotFound>(member, name);
 }
 
 template<typename MemberPtr>
 constexpr auto requiredProperty(ChronoFmtPair<MemberPtr> fmtPair, const CharType* name)
 {
-	return RequiredChronoJsonProperty<MemberPtr>(std::move(fmtPair), name);
+    return ChronoJsonProperty<MemberPtr, &throwNotFound<ClassOf<MemberPtr>>>(
+        std::move(fmtPair), name);
 }
 
 template<typename MemberPtr>
 constexpr auto optionalProperty(ChronoFmtPair<MemberPtr> fmtPair, const CharType* name)
 {
-    return OptionalChronoJsonProperty<MemberPtr>(std::move(fmtPair), name);
+    return ChronoJsonProperty<MemberPtr, &ignoreNotFound>(std::move(fmtPair), name);
 }
 
 /// Helper class which exposes a chainable call operator for use in macros.

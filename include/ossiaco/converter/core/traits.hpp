@@ -13,7 +13,9 @@
 
 #include <ossiaco/converter/core/char_types.hpp>
 #include <ossiaco/converter/utils/customized.hpp>
+#include <ossiaco/converter/utils/select_overload.hpp>
 
+#include <boost/hof/returns.hpp>
 #include <boost/type_traits/is_detected.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
 #include <boost/type_traits/remove_cv_ref.hpp>
@@ -21,6 +23,24 @@
 #include <type_traits>
 
 namespace Ossiaco::converter {
+
+template<typename>
+class JsonConverter;
+
+template<typename T>
+struct JsonProperties {
+    template<typename U = T>
+    static constexpr auto impl(OverloadRank<0>) BOOST_HOF_RETURNS(JsonConverter<U>::properties());
+
+    template<typename U = T>
+    static constexpr auto impl(OverloadRank<1>) BOOST_HOF_RETURNS(U::jsonProperties());
+
+    template<typename U = T>
+    constexpr auto operator()() const BOOST_HOF_RETURNS(JsonProperties<U>::impl(selectOverload));
+};
+
+template<typename T>
+constexpr JsonProperties<T> jsonProperties{};
 
 namespace traits {
 
@@ -31,7 +51,7 @@ constexpr bool primitiveConvertible =
 // Json converter exposed aliases
 
 template<typename Class>
-using JsonPropertiesType = boost::remove_cv_ref_t<decltype(Class::jsonProperties())>;
+using JsonPropertiesType = decltype(jsonProperties<Class>());
 
 template<typename Class>
 constexpr bool jsonPropertiesDetected = boost::is_detected_v<JsonPropertiesType, Class>;
@@ -59,7 +79,8 @@ template<typename Class>
 constexpr bool jsonSupportDetected = boost::is_detected_v<JsonConverterSupportTagType, Class>;
 
 template<typename Class, typename Tag>
-constexpr bool isExpectedJsonSupportTag = boost::is_detected_exact_v<Tag, JsonConverterSupportTagType, Class>;
+constexpr bool isExpectedJsonSupportTag =
+    boost::is_detected_exact_v<Tag, JsonConverterSupportTagType, Class>;
 
 // Traits class for access to JsonConverter info.
 template<typename Converter>
@@ -77,7 +98,6 @@ using ElementType = typename Class::element_type;
 
 template<typename Class>
 constexpr bool elementTypeDetected = boost::is_detected_v<ElementType, Class>;
-
 
 } // namespace traits
 

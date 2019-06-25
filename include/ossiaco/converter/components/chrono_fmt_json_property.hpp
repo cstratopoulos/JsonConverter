@@ -89,12 +89,6 @@ private:
     const CharType* _name;
 };
 
-template<typename MemberPtr>
-using RequiredChronoJsonProperty = ChronoJsonProperty<MemberPtr, throwNotFound<ClassOf<MemberPtr>>>;
-
-template<typename MemberPtr>
-using OptionalChronoJsonProperty = ChronoJsonProperty<MemberPtr, &ignoreNotFound>;
-
 } // namespace Ossiaco::converter
 
 #endif // OSSIACO_CONVERTER_COMPONENTS_CHRONO_FMT_JSON_PROPERTY_HPP
