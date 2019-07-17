@@ -48,9 +48,7 @@ jobs:
 - template: job-template.yml
   parameters:
     name: Mac
-    vmImage: 'macOS-10.13'
-    variables:
-      XCODE_VER: "10.1"
+    vmImage: 'macOS-10.14'
 
 - template: job-template.yml
   parameters:
