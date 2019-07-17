@@ -27,99 +27,37 @@ trigger:
 variables:
   BOOST_DEFAULT_VERSION: "1.69.0"
   BOOST_VERSION: $(BOOST_DEFAULT_VERSION)
-
+  CONAN_OPTS: -o boost:header_only=True
   CMAKE_OPTS: -DOSSIACO_CONVERTER_TESTS=1 -DOSSIACO_CONVERTER_EXAMPLES=1 -DCMAKE_TOOLCHAIN_FILE=conan_paths.cmake
+  EXTRA_CMAKE_OPTS:
 
 jobs:
-- job: Windows
+- template: job-template.yml
+  parameters:
+    name: VS2019
+    vmImage: 'windows-2019'
 
-  pool:
+- template: job-template.yml
+  parameters:
+    name: VS2017
     vmImage: 'vs2017-win2016'
-
-  variables:
-    CONAN_OPTS: "-o boost:header_only=True"
-    DO_JUNIT: 0
-    EXTRA_CMAKE_OPTS: -A x64 -DOSSIACO_WCHAR_UNICODE=1 -DCMAKE_CXX_FLAGS="/D_CRT_SECURE_NO_WARNINGS /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS"
-
-  strategy:
-    maxParallel: 4
     matrix:
-      Debug:
-        BUILD_TYPE: Debug
-      Release:
+      vs2017-rel:
         BUILD_TYPE: Release
 
-  steps:
-  - template: create-directory.yml@AzureTemplates
-    parameters:
-      new_dir: build
-
-  - template: get-conan.yml@AzureTemplates
-
-  - template: conan-deps-setup.yml@AzureTemplates
-    parameters:
-      conan_working_dir: build
-      conan_opts: -o boost:header_only=True --build missing
-
-  - template: cmake-build-and-test.yml@AzureTemplates
-    parameters:
-      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_CONFIGURATION_TYPES=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
-      cmake_build_opts: --parallel --config $(BUILD_TYPE)
-      ctest_opts: --output-on-failure -j 2
-
-- job: Mac
-
-  pool:
+- template: job-template.yml
+  parameters:
+    name: Mac
     vmImage: 'macOS-10.13'
-  strategy:
-    maxParallel: 2
-    matrix:
-      xcode-10-1-rel:
-        BUILD_TYPE: Release
-        EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_BOOST_FS=1"
-        XCODE_VER: "10.1"
+    variables:
+      XCODE_VER: "10.1"
 
-      xcode-10-1-dbg:
-        BUILD_TYPE: Debug
-        EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_BOOST_FS=1"
-        XCODE_VER: "10.1"
-
-  steps:
-  - bash: |
-      set -eux
-      sudo xcode-select -switch "/Applications/Xcode_${XCODE_VER}.app"
-      xcode-select -print-path
-    displayName: 'Set XCode ver'
-
-  - template: create-directory.yml@AzureTemplates
-    parameters:
-      new_dir: build
-
-  - template: get-conan.yml@AzureTemplates
-
-  - template: conan-deps-setup.yml@AzureTemplates
-    parameters:
-      conan_working_dir: build
-      conan_opts: --build missing
-
-  - template: cmake-build-and-test.yml@AzureTemplates
-    parameters:
-      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
-      ctest_opts: --output-on-failure -j 2
-
-- job: Linux
-
-  pool:
+- template: job-template.yml
+  parameters:
+    name: Linux
     vmImage: 'ubuntu 16.04'
-
-  variables:
-    BUILD_TYPE: Release
-    CXXFLAGS: ""
-    LDFLAGS: ""
-    LD_LIBRARY_PATH: ""
-
-  strategy:
-    maxParallel: 8
+    variables:
+      BUILD_TYPE: Release
     matrix:
       gcc7-rel:
         CXX: g++-7
@@ -131,6 +69,7 @@ jobs:
 
       gcc8-rel:
         CXX: g++-8
+        BUILD_TYPE: Release
 
       gcc8-rel-boost-1_67:
         CXX: g++-8
@@ -149,13 +88,13 @@ jobs:
       clang6-rel:
         CXX: clang++-6.0
 
-      # clang7-dbg:
-      #   CXX: clang++-7
-      #   BUILD_TYPE: Debug
-      #   ENABLE_MEMCHECK: 1
+#       # clang7-dbg:
+#       #   CXX: clang++-7
+#       #   BUILD_TYPE: Debug
+#       #   ENABLE_MEMCHECK: 1
 
-      # clang7-rel:
-      #   CXX: clang++-7
+#       # clang7-rel:
+#       #   CXX: clang++-7
 
       clang8-dbg:
         CXX: clang++-8
@@ -169,29 +108,3 @@ jobs:
         BUILD_TYPE: RelWithDebInfo
         CXX: clang++-8
         EXTRA_CMAKE_OPTS: "-DOSSIACO_CONVERTER_UBASAN=1"
-
-  steps:
-  - bash: |
-      set -eux
-      sed -i "s boost/$BOOST_DEFAULT_VERSION boost/$BOOST_VERSION " conanfile.txt
-      cat conanfile.txt
-    displayName: 'Use different boost version'
-    condition: ne(variables['BOOST_VERSION'], variables['BOOST_DEFAULT_VERSION'])
-
-  - template: create-directory.yml@AzureTemplates
-    parameters:
-      new_dir: build
-
-  - template: get-conan.yml@AzureTemplates
-
-  - template: compiler-stdlib-setup.yml@AzureTemplates
-
-  - template: conan-deps-setup.yml@AzureTemplates
-    parameters:
-      conan_working_dir: build
-      conan_opts: -o boost:header_only=True --build missing
-
-  - template: cmake-build-and-test.yml@AzureTemplates
-    parameters:
-      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
-      ctest_opts: --output-on_failure -j 2

@@ -1,0 +1,83 @@
+# Ossiaco JSON Converter Library
+#
+# Copyright (C) 2018-2019 Ossiaco
+#
+# Licensed under the MIT license ("the license"); you may not use this file
+# except in compliance with the license. The license can be found in the root
+# directory of this project, or at
+#
+# http://opensource.org/licenses/MIT
+
+parameters:
+  beforeBuild: []
+  afterTest: []
+  name: ''
+  vmImage: ''
+  variables: {}
+  matrix:
+    Debug:
+      BUILD_TYPE: Debug
+    Release:
+      BUILD_TYPE: Release
+  publishReleaseTests: 1
+
+jobs:
+- job: ${{ parameters.name }}
+
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+
+  variables:
+    ${{ insert }}: ${{ parameters.variables }}
+
+  strategy:
+    maxParallel: 4
+    matrix:
+      ${{ insert }}: ${{ parameters.matrix }}
+
+  steps:
+  - template: create-directory.yml@AzureTemplates
+    parameters:
+      new_dir: build
+
+  - bash: |
+      set -eux
+      sed -i "s boost/$BOOST_DEFAULT_VERSION boost/$BOOST_VERSION " conanfile.txt
+      cat conanfile.txt
+    displayName: 'Use different boost version'
+    condition: ne(variables['BOOST_VERSION'], variables['BOOST_DEFAULT_VERSION'])
+
+  - ${{ if in(parameters.vmImage, 'windows-2019', 'vs2017-win2016') }}:
+    - powershell: echo '##vso[task.setvariable variable=EXTRA_CMAKE_OPTS] -A x64 -DOSSIACO_WCHAR_UNICODE=1 -DCMAKE_CXX_FLAGS="/D_CRT_SECURE_NO_WARNINGS /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS"'
+      displayName: Set windows cmake opts
+
+  - ${{ if eq(parameters.vmImage, 'windows-2019') }}:
+    - powershell: echo "##vso[task.setvariable variable=PATH]C:\Strawberry\perl\bin\;$(PATH)"
+      displayName: Use StrawberryPerl
+
+  - ${{ if eq(parameters.vmImage, 'macOS-10.13') }}:
+    - bash: |
+        set -eux
+        sudo xcode-select -switch "/Applications/Xcode_${XCODE_VER}.app"
+        xcode-select -print-path
+      displayName: Set XCode ver
+    - bash: |
+        echo "##vso[task.setvariable variable=EXTRA_CMAKE_OPTS]-DOSSIACO_CONVERTER_BOOST_FS=1"
+        echo "##vso[task.setvariable variable=CONAN_OPTS]"
+
+  - ${{ if eq(parameters.vmImage, 'ubuntu 16.04') }}:
+    - template: compiler-stdlib-setup.yml@AzureTemplates
+
+  - template: get-conan.yml@AzureTemplates
+
+  - template: conan-deps-setup.yml@AzureTemplates
+    parameters:
+      conan_working_dir: build
+      conan_opts: $(CONAN_OPTS) --build missing
+
+  - template: cmake-build-and-test.yml@AzureTemplates
+    parameters:
+      cmake_opts: -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DCMAKE_CONFIGURATION_TYPES=$(BUILD_TYPE) $(CMAKE_OPTS) $(EXTRA_CMAKE_OPTS)
+      cmake_build_opts: --parallel --config $(BUILD_TYPE)
+      ctest_opts: --output-on-failure -j 2
+
