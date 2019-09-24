@@ -22,7 +22,7 @@
 #include <range/v3/algorithm/find_if.hpp>
 #include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
 
 #include <memory>
 #include <set>
@@ -128,8 +128,8 @@ inline bool operator==(const Digraph::Node& lhs, const Digraph::Node& rhs)
 
     static const auto transformVec = [](const auto& nbrs) {
         return nbrs
-            | view::remove_if([](const auto& nodePtr) { return !(nodePtr.lock()); })
-            | view::transform([](const auto& nodePtr) { return (nodePtr.lock())->_ident; })
+            | views::remove_if([](const auto& nodePtr) { return !(nodePtr.lock()); })
+            | views::transform([](const auto& nodePtr) { return (nodePtr.lock())->_ident; })
             | to_vector;
     };
 

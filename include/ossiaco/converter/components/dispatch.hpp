@@ -24,7 +24,7 @@
 #include <boost/mp11/integral.hpp>
 #include <boost/mp11/list.hpp>
 #include <boost/mp11/utility.hpp>
-#include <range/v3/range_concepts.hpp>
+#include <range/v3/range/concepts.hpp>
 #include <range/v3/view/map.hpp>
 
 #include <memory>
@@ -77,7 +77,7 @@ private:
         BOOST_HOF_RETURNS(ConvertVocabType<C>::fromJson(c, jv, refs));
 
     template<typename C, typename Encoding>
-    static std::enable_if_t<ranges::InputRange<C>::value> fromJson(
+    static std::enable_if_t<ranges::input_range<C>> fromJson(
         C& c, const rapidjson::GenericValue<Encoding>& jv, ReferenceMapper& refs, OverloadRank<3>)
     {
         ConvertRange<C>::fromJson(c, jv, refs);
@@ -106,7 +106,7 @@ private:
         BOOST_HOF_RETURNS(ConvertVocabType<C>::toJson(c, w, refs));
 
     template<typename C, typename Writer>
-    static std::enable_if_t<ranges::InputRange<C>::value>
+    static std::enable_if_t<ranges::input_range<C>>
     toJson(const C& c, Writer& w, ReferenceMapper& refs, OverloadRank<3>)
     {
         ConvertRange<C>::toJson(c, w, refs);

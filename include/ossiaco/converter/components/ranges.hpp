@@ -11,14 +11,15 @@
 #ifndef OSSIACO_CONVERTER_COMPONENTS_RANGES_HPP
 #define OSSIACO_CONVERTER_COMPONENTS_RANGES_HPP
 
-#include <ossiaco/converter/core/traits.hpp>
 #include <ossiaco/converter/components/dispatch.hpp>
+#include <ossiaco/converter/core/traits.hpp>
 
 #include <boost/type_traits/is_detected.hpp>
 #include <range/v3/action/push_back.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/view/map.hpp>
+#include <range/v3/view/transform.hpp>
 
 namespace Ossiaco::converter {
 
@@ -29,13 +30,11 @@ class ReferenceMapper;
 
 namespace detail {
 
-// N.B.: range_value_t is deprecated in favor of range_value_type_t but we use this for
-// compatibility with the range-v3-vs2015 fork which still has the old trait
 template<typename Rng>
 using RangeValueType = ranges::range_value_type_t<Rng>;
 
 template<typename Rng>
-constexpr bool kvRangeConcept = ranges::view::keys_fn::Concept<Rng>::value;
+constexpr bool kvRangeConcept = ranges::detail::kv_pair_like_<ranges::range_reference_t<Rng>>;
 
 template<typename Rng>
 void pushBackInsert(Rng& rng, RangeValueType<Rng>&& val);
@@ -46,7 +45,7 @@ struct ConvertRange;
 template<typename Cont>
 struct ConvertRange<
     Cont,
-    std::enable_if_t<ranges::InputRange<Cont>{} && !detail::kvRangeConcept<Cont>>> {
+    std::enable_if_t<ranges::input_range<Cont> && !detail::kvRangeConcept<Cont>>> {
 
     template<typename Encoding>
     static void fromJson(
@@ -54,12 +53,14 @@ struct ConvertRange<
         const rapidjson::GenericValue<Encoding>& jsonValue,
         ReferenceMapper& references)
     {
-        for (const auto& arrayEntry : jsonValue.GetArray()) {
-            ranges::range_value_type_t<Cont> elem{};
-            DeducedConverter::fromJson(elem, arrayEntry, references);
+        auto const& jsonArray = jsonValue.GetArray();
 
-            ranges::action::push_back(container, std::move(elem));
-        }
+        container = ranges::to<Cont>(
+            ranges::views::transform(jsonArray, [&references](auto const& arrayEntry) {
+                ranges::range_value_type_t<Cont> elem{};
+                DeducedConverter::fromJson(elem, arrayEntry, references);
+                return elem;
+            }));
     }
 
     template<typename Writer>
@@ -78,12 +79,11 @@ struct ConvertRange<
 template<typename KeyValMap>
 struct ConvertRange<
     KeyValMap,
-    std::enable_if_t<ranges::InputRange<KeyValMap>{} && detail::kvRangeConcept<KeyValMap>>> {
-    static_assert(ranges::view::keys_fn::Concept<KeyValMap>::value);
+    std::enable_if_t<ranges::input_range<KeyValMap> && detail::kvRangeConcept<KeyValMap>>> {
 
-    using ValueType           = ranges::range_value_type_t<KeyValMap>;
-    using KeyType             = decltype(std::declval<ValueType>().first);
-    using MappedType          = decltype(std::declval<ValueType>().second);
+    using ValueType  = ranges::range_value_type_t<KeyValMap>;
+    using KeyType    = decltype(std::declval<ValueType>().first);
+    using MappedType = decltype(std::declval<ValueType>().second);
 
     static_assert(
         std::is_constructible_v<string_t, KeyType>,

@@ -40,20 +40,22 @@ template<typename Class, typename Enable>
 class JsonConverter {};
 
 template<typename Class>
-class JsonConverter<Class, TagEnable<Class, traits::FinalSupportTag>> : public SimpleTypeAllocator<Class> {
+class JsonConverter<Class, TagEnable<Class, traits::FinalSupportTag>>
+    : public SimpleTypeAllocator<Class> {
 public:
     using SubjectType = Class;
 
-    static constexpr auto properties() noexcept { return Class::jsonProperties(); }
-
 private:
-    static_assert(boost::hana::size(properties()), "JSON properties for a final supported class must be nonempty tuple");
+    static_assert(
+        boost::hana::size(jsonProperties<Class>()),
+        "JSON properties for a final supported class must be nonempty tuple");
 };
 
 template<typename Class>
-class JsonConverter<Class, TagEnable<Class, traits::PolySupportTag>> : public PolyAllocBackend<Class> {
+class JsonConverter<Class, TagEnable<Class, traits::PolySupportTag>>
+    : public PolyAllocBackend<Class> {
 public:
-    using SubjectType = Class;
+    using SubjectType     = Class;
     using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;
     using SubjectEnumType = boost::detected_or_t<void, traits::JsonEnumType, Class>;
 
@@ -64,25 +66,19 @@ public:
     template<typename Derived = Class, typename Encoding = utf_t>
     static bool ensureRegisteredWithBase()
     {
-        if constexpr(_isPolyRoot) {
+        if constexpr (_isPolyRoot) {
             return true;
         } else {
-            return JsonConverter<typename Class::JsonBase>::template registerDerivedClass<Derived, Encoding>();
-        }
-    }
-
-    static constexpr auto properties() noexcept
-    {
-        if constexpr (_isPolyRoot) {
-            return Class::jsonProperties();
-        } else {
-            return boost::hana::concat(BaseConverter::properties(), Class::jsonProperties());
+            return JsonConverter<
+                typename Class::JsonBase>::template registerDerivedClass<Derived, Encoding>();
         }
     }
 
 private:
-    static_assert(std::is_abstract_v<Class> || boost::hana::size(properties())(),
-        "JSON properties for a non-abstract class must be a nonempty tuple either directly or inherited");
+    static_assert(
+        std::is_abstract_v<Class> || boost::hana::size(jsonProperties<Class>())(),
+        "JSON properties for a non-abstract class must be a nonempty tuple either directly or "
+        "inherited");
 };
 
 } // namespace detail
@@ -96,7 +92,6 @@ public:
     }
 };
 
-
 namespace traits {
 
 template<typename Class>
@@ -105,15 +100,13 @@ struct ConverterProperties<detail::JsonConverter<Class, void>> {
     using SubjectBaseType = boost::detected_or_t<void, traits::JsonBaseType, Class>;
     using SubjectEnumType = boost::detected_or_t<void, traits::JsonEnumType, Class>;
 
-    using SubjectEnumMapType = boost::mp11::mp_eval_if_c<
-        std::is_void_v<SubjectEnumType>,
-        void,
-        EnumTypeMap, SubjectEnumType
-    >;
+    using SubjectEnumMapType = boost::mp11::
+        mp_eval_if_c<std::is_void_v<SubjectEnumType>, void, EnumTypeMap, SubjectEnumType>;
 };
 
 template<typename Class>
-struct ConverterProperties<JsonConverter<Class>> : ConverterProperties<detail::JsonConverter<Class, void>> {};
+struct ConverterProperties<JsonConverter<Class>>
+    : ConverterProperties<detail::JsonConverter<Class, void>> {};
 
 } // namespace traits
 
@@ -122,7 +115,8 @@ bool jsonPolyImpl()
 {
     static_assert(
         JsonConverter<Class>::isPolymorphic(),
-        "Polymorphic registration is only valid for classes that support polymorphic JSON conversion");
+        "Polymorphic registration is only valid for classes that support polymorphic JSON "
+        "conversion");
 
     return JsonConverter<Class>::ensureRegisteredWithBase();
 }

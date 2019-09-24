@@ -223,36 +223,37 @@ This library requires a C++17-compatible compiler with decent support for the C+
 
 - Linux
     - GCC 7 & 8
-    - Clang 4, 5, 6, 7 using `libc++`
+    - Clang 4, 5, 6, 7, 8 using `libc++`
 - Mac
     - XCode 10.1
+- Windows
+	- VS 2019
 
-On Windows, Visual Studio 15.9 is supported but not yet part of CI builds pending its inclusion on Azure DevOps hosted instances.
-
-Unit tests for all Linux builds are additionally run under `valgrind`, and a Clang 7 build is performed with undefined behavior and address sanitizers enabled.
+CI includes `valgrind` for Linux builds with an additional undefined behavior/address sanitizer build.
 
 ## Dependencies
 
 As mentioned, the library is built on top of [RapidJSON](https://github.com/Tencent/rapidjson). Aside from RapidJSON, the library uses some headers from Boost, [Date](https://github.com/HowardHinnant/date), and [Range v3](https://github.com/ericniebler/range-v3/). The Boost libraries used are
- - [CallableTraits](https://www.boost.org/doc/libs/1_69_0/libs/callable_traits/doc/html/index.html) for PMD-/PMF-wrangling,
- - [Config](https://www.boost.org/doc/libs/1_69_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
- - [Core](https://www.boost.org/doc/libs/1_69_0/libs/core/doc/html/index.html) for printing type decorators,
+ - [CallableTraits](https://www.boost.org/doc/libs/1_71_0/libs/callable_traits/doc/html/index.html) for PMD-/PMF-wrangling,
+ - [Config](https://www.boost.org/doc/libs/1_71_0/libs/config/doc/html/index.html) for detecting Windows-specific functionality,
+ - [Core](https://www.boost.org/doc/libs/1_71_0/libs/core/doc/html/index.html) for printing type decorators,
  - [Hana](http://boostorg.github.io/hana/) for tuples of JSON properties,
- - [HOF](https://www.boost.org/doc/libs/1_69_0/libs/hof/doc/html/doc/index.html) for `BOOST_HOF_RETURNS`.
- - [Mp11](https://www.boost.org/doc/libs/1_69_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming, and
- - [TypeTraits](https://www.boost.org/doc/libs/1_69_0/libs/type_traits/doc/html/index.html) for the detection idiom.
+ - [HOF](https://www.boost.org/doc/libs/1_71_0/libs/hof/doc/html/doc/index.html) for `BOOST_HOF_RETURNS`.
+ - [Mp11](https://www.boost.org/doc/libs/1_71_0/libs/mp11/doc/html/mp11.html) for various template metaprogramming, and
+ - [TypeTraits](https://www.boost.org/doc/libs/1_71_0/libs/type_traits/doc/html/index.html) for the detection idiom.
 
- Note that Boost >= 1.67 is required.
+ Note that Boost >= 1.67 is required. CI mainly tests 1.71.0 with limited tests for 1.69.0 and 1.70.0; older versions are expected to work but
+ not actively tested.
 
 The unit tests additionally use a few more Boost libraries:
-- [Assert](https://www.boost.org/doc/libs/1_69_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
-- [UUID](https://www.boost.org/doc/libs/1_69_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
-- [Container](https://www.boost.org/doc/libs/1_69_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
+- [Assert](https://www.boost.org/doc/libs/1_71_0/libs/assert/doc/html/assert.html) to illustrate customized exception throwing,
+- [UUID](https://www.boost.org/doc/libs/1_71_0/libs/uuid/doc/uuid.html) as an example of writing a converter for a library type, and
+- [Container](https://www.boost.org/doc/libs/1_71_0/doc/html/container.html) to demonstrate arbitrary serialization of non-STL ranges.
 
 For authoring tests which perform file I/O, the unit tests require some sort of filesystem library. The following are preferred, in order, using `__has_include`:
 1. C++17 filesystem library (`#include <filesystem>`)
 2. C++17 experimental filesystem library (`#include <experimental/filesystem>`)
-3. [Boost.Filesystem](https://www.boost.org/doc/libs/1_69_0/libs/filesystem/doc/index.htm) (`#include <boost/filesystem.hpp>`)
+3. [Boost.Filesystem](https://www.boost.org/doc/libs/1_71_0/libs/filesystem/doc/index.htm) (`#include <boost/filesystem.hpp>`)
 
 Depending on the implementation, this may require an additional library link (e.g., `-lstdc++fs`, `-lc++experimemntal`, `-lboost_filesystem`). Users are responsible
 for handling this at the configure step, unless `-DOSSIACO_CONVERTER_BOOST_FS=1` is passed to CMake, in which case `boost_filesystem` will be linkeed automatically.

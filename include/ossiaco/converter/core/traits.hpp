@@ -15,6 +15,7 @@
 #include <ossiaco/converter/utils/customized.hpp>
 #include <ossiaco/converter/utils/select_overload.hpp>
 
+#include <boost/hana/concat.hpp>
 #include <boost/hof/returns.hpp>
 #include <boost/type_traits/is_detected.hpp>
 #include <boost/type_traits/is_detected_exact.hpp>
@@ -30,7 +31,8 @@ class JsonConverter;
 template<typename T>
 struct JsonProperties {
     template<typename U = T>
-    static constexpr auto impl(OverloadRank<0>) BOOST_HOF_RETURNS(JsonConverter<U>::properties());
+    static constexpr auto impl(OverloadRank<0>) BOOST_HOF_RETURNS(
+        boost::hana::concat(U::JsonBase::jsonProperties(), U::jsonProperties()));
 
     template<typename U = T>
     static constexpr auto impl(OverloadRank<1>) BOOST_HOF_RETURNS(U::jsonProperties());
