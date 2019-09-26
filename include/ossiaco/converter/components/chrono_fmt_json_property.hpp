@@ -41,7 +41,7 @@ constexpr auto chronoFmtPair(MemberPtr member, const CharType* format)
 // Property must be any chrono-related type which can be streamed with the to_stream/from_stream API
 // of the date library. Conversion uses date::parse/date::format, potentially enabling ADL for
 // user-defined date types.
-template<typename MemberPtr, NotFoundHandlerPtr notFound = throwNotFound<ClassOf<MemberPtr>>>
+template<typename MemberPtr, NotFoundHandlerPtr notFound = &throwNotFound<ClassOf<MemberPtr>>>
 class ChronoJsonProperty {
 public:
     static_assert(std::is_member_pointer_v<MemberPtr>);

@@ -42,7 +42,7 @@ template<
     NullValuePolicy nullValPolicy = NullValuePolicy::silent,
     NotFoundHandlerPtr notFound   = isSpecialization<PropertyOf<MemberPtr>, std::optional>
                                       ? &ignoreNotFound
-                                      : throwNotFound<ClassOf<MemberPtr>>>
+                                      : &throwNotFound<ClassOf<MemberPtr>>>
 class JsonProperty {
 public:
     static_assert(std::is_member_pointer_v<MemberPtr>);
@@ -52,8 +52,8 @@ public:
 
     static constexpr NullValuePolicy nullValuePolicy = nullValPolicy;
 
-	static constexpr bool enableFromJson = hasMutableAccess<MemberPtr>;
-	static constexpr bool enableToJson   = hasConstAccess<MemberPtr>;
+    static constexpr bool enableFromJson = hasMutableAccess<MemberPtr>;
+    static constexpr bool enableToJson   = hasConstAccess<MemberPtr>;
 
     static_assert(
         enableFromJson || enableToJson,
@@ -65,13 +65,14 @@ public:
 
     template<typename Encoding, typename Void = void>
     auto fromJson(
-        Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper& refs) const
-        -> std::enable_if_t<enableFromJson, Void>
+        Class& object,
+        const rapidjson::GenericValue<Encoding>& jsonValue,
+        ReferenceMapper& refs) const -> std::enable_if_t<enableFromJson, Void>
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd()) {
             DeducedConverter::fromJson(std::invoke(_member, object), findItr->value, refs);
         } else {
-            notFound(_name);
+            notFoundImpl();
         }
     }
 
@@ -81,7 +82,8 @@ public:
     {
         const auto& field = std::invoke(_member, object);
 
-        if constexpr (nullValPolicy == NullValuePolicy::silent && isSpecialization<Property, std::optional>) {
+        if constexpr (
+            nullValPolicy == NullValuePolicy::silent && isSpecialization<Property, std::optional>) {
             if (!field.has_value()) {
                 return;
             }
@@ -92,6 +94,17 @@ public:
     }
 
 private:
+    // Workaround for clang debug linker issue
+    void notFoundImpl() const
+    {
+#ifdef __clang__
+        if constexpr (notFound == &throwNotFound<Class>) {
+            throwNotFound<Class>(_name);
+        }
+#endif
+        notFound(_name);
+    }
+
     MemberPtr _member;
 
     const CharType* _name;
