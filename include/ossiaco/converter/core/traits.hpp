@@ -25,6 +25,9 @@
 
 namespace Ossiaco::converter {
 
+// Function pointer as policy template parameter for handling missing JSON property.
+using NotFoundHandlerPtr = std::add_pointer_t<void(string_view_t)>;
+
 template<typename>
 class JsonConverter;
 

@@ -16,6 +16,7 @@
 #include <ossiaco/converter/components/json_property.hpp>
 #include <ossiaco/converter/core/buffers_streams_writers.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
+#include <ossiaco/converter/core/not_found.hpp>
 #include <ossiaco/converter/serialize.hpp>
 #include <ossiaco/converter/utils/detect_specialization.hpp>
 

@@ -13,7 +13,6 @@
 
 #include <ossiaco/converter/components/dispatch.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
-#include <ossiaco/converter/core/not_found.hpp>
 #include <ossiaco/converter/utils/accessors.hpp>
 #include <ossiaco/converter/utils/detect_specialization.hpp>
 
@@ -40,9 +39,7 @@ enum class NullValuePolicy {
 template<
     typename MemberPtr,
     NullValuePolicy nullValPolicy = NullValuePolicy::silent,
-    NotFoundHandlerPtr notFound   = isSpecialization<PropertyOf<MemberPtr>, std::optional>
-                                      ? &ignoreNotFound
-                                      : &throwNotFound<ClassOf<MemberPtr>>>
+    NotFoundHandlerPtr notFound   = nullptr>
 class JsonProperty {
 public:
     static_assert(std::is_member_pointer_v<MemberPtr>);
@@ -71,8 +68,10 @@ public:
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd()) {
             DeducedConverter::fromJson(std::invoke(_member, object), findItr->value, refs);
-        } else {
-            notFoundImpl();
+        } else if constexpr (notFound != nullptr) {
+            notFound(_name);
+        } else if constexpr (!isSpecialization<Property, std::optional>) {
+            throw RequiredPropertyMissing<Class>(_name);
         }
     }
 
@@ -94,17 +93,6 @@ public:
     }
 
 private:
-    // Workaround for clang debug linker issue
-    void notFoundImpl() const
-    {
-#ifdef __clang__
-        if constexpr (notFound == &throwNotFound<Class>) {
-            throwNotFound<Class>(_name);
-        }
-#endif
-        notFound(_name);
-    }
-
     MemberPtr _member;
 
     const CharType* _name;

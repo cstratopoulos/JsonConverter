@@ -13,7 +13,7 @@
 
 #include <ossiaco/converter/components/template_get_write.hpp>
 #include <ossiaco/converter/core/char_types.hpp>
-#include <ossiaco/converter/core/not_found.hpp>
+#include <ossiaco/converter/core/exceptions.hpp>
 #include <ossiaco/converter/utils/accessors.hpp>
 
 #include <date/date.h>
@@ -41,15 +41,15 @@ constexpr auto chronoFmtPair(MemberPtr member, const CharType* format)
 // Property must be any chrono-related type which can be streamed with the to_stream/from_stream API
 // of the date library. Conversion uses date::parse/date::format, potentially enabling ADL for
 // user-defined date types.
-template<typename MemberPtr, NotFoundHandlerPtr notFound = &throwNotFound<ClassOf<MemberPtr>>>
+template<typename MemberPtr, NotFoundHandlerPtr notFound = nullptr>
 class ChronoJsonProperty {
 public:
     static_assert(std::is_member_pointer_v<MemberPtr>);
 
     using Class = ClassOf<MemberPtr>;
 
-	static constexpr bool enableFromJson = hasMutableAccess<MemberPtr>;
-	static constexpr bool enableToJson   = hasConstAccess<MemberPtr>;
+    static constexpr bool enableFromJson = hasMutableAccess<MemberPtr>;
+    static constexpr bool enableToJson   = hasConstAccess<MemberPtr>;
 
     static_assert(
         enableFromJson || enableToJson,
@@ -60,16 +60,18 @@ public:
     {}
 
     template<typename Encoding, typename Void = void>
-    auto
-    fromJson(Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&) const
+    auto fromJson(
+        Class& object, const rapidjson::GenericValue<Encoding>& jsonValue, ReferenceMapper&) const
         -> std::enable_if_t<enableFromJson, Void>
     {
         if (auto findItr = jsonValue.FindMember(_name); findItr != jsonValue.MemberEnd()) {
             istringstream_t in(getValue<string_t>(findItr->value));
 
             in >> date::parse(_format, std::invoke(_member, object));
-        } else {
+        } else if constexpr (notFound != nullptr) {
             notFound(_name);
+        } else {
+            throw RequiredPropertyMissing<Class>(_name);
         }
     }
 
