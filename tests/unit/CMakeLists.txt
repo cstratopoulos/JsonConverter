@@ -44,6 +44,10 @@ if(${OSSIACO_CONVERTER_BOOST_FS})
     target_link_libraries(converter_test_utils
         PUBLIC Boost::filesystem
     )
+
+    target_compile_definitions(converter_test_utils PUBLIC
+        OSSIACO_CONVERTER_BOOST_FS
+    )
 endif()
 
 add_subdirectory(core_final)

@@ -30,17 +30,17 @@
 #include <tuple>
 #include <type_traits>
 
-#if __has_include(<filesystem>)
+#ifdef OSSIACO_CONVERTER_BOOST_FS
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#elif __has_include(<filesystem>)
 #include <filesystem>
 namespace fs = std::filesystem;
 #elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
-#elif __has_include(<boost/filesystem.hpp>)
-#    include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
 #else
-#    error "Some sort of filesystem implementation needed for unit tests"
+#error "Some sort of filesystem implementation needed for unit tests"
 #endif
 
 inline void jsonCompare(Ossiaco::converter::string_view_t json1, Ossiaco::converter::string_view_t json2)
