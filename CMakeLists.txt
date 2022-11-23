@@ -98,7 +98,8 @@ target_include_directories(ossiaco_converter INTERFACE
 
 target_link_libraries(ossiaco_converter INTERFACE
     Boost::boost
-    range-v3 meta
+    range-v3::range-v3
+    range-v3::meta
 )
 
 target_compile_features(ossiaco_converter INTERFACE cxx_std_17)
